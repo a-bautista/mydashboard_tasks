@@ -1,0 +1,13 @@
+# Distribution and packages
+
+venv/
+
+
+# Databases
+
+db.sqlite3
+
+# Cache
+
+mydashboard/mydashboard/__pycache__/*
+

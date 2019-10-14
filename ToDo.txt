@@ -1,0 +1,5 @@
+My Dashboard (activities)
+
+Pending: 
+
+1. Visualize all your tasks in a grid.
