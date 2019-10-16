@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+<<<<<<< HEAD
+
+
+#import the URLs from my dashboard
+from .views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('dashboard.urls'))
+    path('', home)
+>>>>>>> 7628ce20597a533f9b51c33d7bffb32525a058d0
 ]
