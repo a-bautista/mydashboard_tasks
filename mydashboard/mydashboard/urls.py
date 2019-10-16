@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-#import the URLs from my dashboard
-from .views import home
+#import the URLs from the main dashboard component
+from .views import home, about
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home)
+    path('', home),
+    path('about/', about),
+    path('dashboard/', include('dashboard.urls')) # connect this application with the dashboard application by including the dashboard.urls
 ]
