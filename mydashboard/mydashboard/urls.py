@@ -13,16 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
-<<<<<<< HEAD
 
-
-#import the URLs from my dashboard
-from .views import home
+#import the URLs from the main dashboard component
+from .views import home, about
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home)
->>>>>>> 7628ce20597a533f9b51c33d7bffb32525a058d0
+    path('', home),
+    path('about/', about),
+    path('dashboard/', include('dashboard.urls')) # connect this application with the dashboard application by including the dashboard.urls
 ]

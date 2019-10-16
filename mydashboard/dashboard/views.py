@@ -8,17 +8,20 @@ def home(request):
     return render(request, "home.html", context)
 
 def create_task(request):
-    
-    template_name = 'create_task.html'
+    template_name = 'dashboard/create_task.html'
     context = {'form': None}
     return render(request, template_name, context)
 
 
 def delete_task(request):
-    pass
+    template_name = 'dashboard/delete_task.html'
+    context = {'form': None}
+    return render(request, template_name, context)
 
 def update_task(request):
-    pass
+    template_name = 'dashboard/update_task.html'
+    context = {'form': None}
+    return render(request, template_name, context)
 
 def view_tasks(request):
     pass

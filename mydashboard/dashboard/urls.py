@@ -1,6 +1,11 @@
-from django.conf.urls import url
-from .views import (home)
+from django.urls import path
+# import the component dashboard
+from .views import (create_task,
+                   delete_task,
+                   update_task)
 
 urlpatterns = [
-    #url(r'home', home)
+    path('task-create/', create_task),
+    path('task-update/', update_task),
+    path('task-delete/', delete_task),
 ]
