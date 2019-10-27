@@ -38,7 +38,24 @@ def update_task(request):
     return render(request, template_name, context)
 
 def view_tasks(request):
-    pass
+    qs = Task.objects.all()
+    template_name = 'task/tasks.html'
+    print(qs)
+    context = {'task_list', qs}
+    return render(request, template_name, context)
+
 
 def view_task_details(request):
-    pass
+
+    queryset = Task.objects.all()
+    template_name = 'blog_post_retrieve.html'
+
+    obj = get_object_or_404(BlogPost, slug=slug)
+
+    context = {'object': obj}
+
+
+    return render(request, template_name, context)
+
+def connection_db_postgresql():
+    connection = psycopg2.connect(host="localhost", database="postgres", user="postgres", password="Ab152211@")

@@ -1,13 +1,14 @@
 # Distribution and packages
 
+# Virtual environments
 venv/
 
-
 # Databases
-
 db.sqlite3
 
 # Cache
-
 mydashboard/mydashboard/__pycache__/*
+mydashboard/task/__pycache__/*
 
+# Other folders
+.idea/

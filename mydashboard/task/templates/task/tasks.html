@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for task in task_list %}
+        {% include 'task/list-inline.html' %}
+    {% endfor %}
+{% endblock %}
