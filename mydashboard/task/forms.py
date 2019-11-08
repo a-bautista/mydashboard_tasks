@@ -1,5 +1,5 @@
 ######## Python libraries ########
-from datetime import date, datetime
+from datetime import date
 
 ######## Django libraries #######
 from django import forms
@@ -7,9 +7,8 @@ from .models import Task
 
 '''Declare the class to indicate the data that will be stored. '''
 class TaskForm(forms.Form):
-    responsible = forms.CharField()
-    task = forms.CharField()
-    initial_date = forms.DateField()
+    task     = forms.CharField()
+    category = forms.ChoiceField(choices=[(x,x) for x in range (len(Task.CATEGORIES))])
 
 class DropDownMenuForm(forms.Form):
     # start the current week in Monday and end in Sunday
@@ -23,6 +22,6 @@ class DropDownMenuForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['responsible', 'task', 'initial_date']
+        fields = ['task', 'category']
 
 

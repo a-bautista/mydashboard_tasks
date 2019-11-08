@@ -6,7 +6,7 @@ import psycopg2, json
 
 class HomeView(View):
     def get(self, request, *args, **kwargs):
-        my_title = "Priority App"
+        my_title = "Telos App"
         # I had to configure the template dir in the settings of the app
         context = {"title": my_title}
         return render(request, 'task/home.html', context)
@@ -51,7 +51,6 @@ def view_tasks(request):
 
 
 def view_previous_tasks(request):
-
     if request.method == "GET":
         template_name = 'task/no_retrieval_results/previous_tasks.html'
         form = DropDownMenuForm()
@@ -110,8 +109,8 @@ def connection_db_postgresql(beginning_datetime_format, ending_datetime_format):
 
 
     cursor = connection.cursor()
-    cursor.execute("select id, responsible, task, initial_date, ending_date from task_task "
-                   "where initial_date between '"+ str(beginning_datetime_format)
+    cursor.execute("select id, responsible, task, status, category, initial_date, ending_date "
+                   "from task_task where initial_date between '"+ str(beginning_datetime_format)
                    + "' and '" + str(ending_datetime_format) + "';")
     records = cursor.fetchall()
     cursor.close()
@@ -123,6 +122,8 @@ def connection_db_postgresql(beginning_datetime_format, ending_datetime_format):
         general_list.append(str(tuple_value[2]))
         general_list.append(str(tuple_value[3]))
         general_list.append(str(tuple_value[4]))
+        general_list.append(str(tuple_value[5]))
+        general_list.append(str(tuple_value[6]))
         general_list.append(";")
 
     for element in general_list:

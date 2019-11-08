@@ -4052,7 +4052,7 @@ input[type="button"].btn-block {
 
 .nav {
   display: -ms-flexbox;
-  display: flex;
+  /* display: flex; */ /* Modified*/
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
   padding-left: 0;
