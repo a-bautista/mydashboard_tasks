@@ -1,0 +1,30 @@
+{% block content %}
+
+    <div class="row">
+        <h3 style="color:#fff">Please, select the year and week number to retrieve the data.</h3>
+    </div>
+    <form id="search_dates" method="POST" action="{{ action }}"> {% csrf_token %}
+        <div class="row">
+            <div style="display:inline-block">
+                <h4 style="color:#000">Select year</h4>
+                <select name="select_year">
+                    <option value={{form.year}}></option>
+                </select>
+            </div>
+
+            <div style="display:inline-block"></div>
+            <div style="display:inline-block"></div>
+
+            <div style="display:inline-block">
+                <h4 style="color:#000">Select week</h4>
+                <select name="select_week">
+                    <option value={{form.week}}></option>
+                </select>
+            </div>
+
+            <div style="display:inline-block"></div>
+            <button type="submit" class="submit" input="submit" id="submit">Submit</button>
+        </div>
+    </form>
+
+{% endblock content %}

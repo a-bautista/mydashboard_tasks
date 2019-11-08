@@ -9,6 +9,11 @@ db.sqlite3
 # Cache
 mydashboard/mydashboard/__pycache__/*
 mydashboard/task/__pycache__/*
+mydashboard/settings/__pycache__/*
+
+
+task/migrations
+live-static/*
 
 # Other folders
 .idea/

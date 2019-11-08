@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+<script>
+    {% block jquery %}
+        data = {{converted_front_end_dictionary | safe}}
+
+        var year  = data.year
+        var week  = data.week
+        var table_results  = data.table_results
+
+        console.log(year)
+        console.log(table_results)
+
+        document.getElementById("display_year").innerHTML = year;
+	    document.getElementById("display_week").innerHTML = week;
+
+
+        $('#results').DataTable({
+            data: table_results
+        });
+
+    {% endblock %}
+</script>
+
+{% block content %}
+    <div class = 'row' >
+        <h3 style="color:#000">You are reviewing:</h3>
+            <div style="display:inline-block"></div>
+            <div style="display:inline-block">
+                <h4 style="color:#000">Current year: <span id="display_year"></span></h4>
+            </div>
+            <div style="display:inline-block"></div>
+            <div style="display:inline-block">
+                <h4 style="color:#000">Current week: <span id="display_week"></span></h4>
+            </div>
+    </div>
+    <div class="col-sm-14">
+            <table id="results" style="width:100%">
+                <thead>
+                    <tr>
+                        <th bgcolor="#fff">Initial Date</th>
+                        <th bgcolor="#fff">Responsible</th>
+                        <th bgcolor="#fff">Task</th>
+                        <th bgcolor="#fff">Ending Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+    </div>
+{% endblock content %}

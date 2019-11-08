@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div id="form_create">
+    <form method="POST" action="." enctype="multipart/form-data"> {% csrf_token %}
+            {{ form_create.responsible}}
+            {{ form_create.task|add_class:"card" }}
+            {{ form_create.initial_date|add_class:"card" }}
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+{% endblock content %}

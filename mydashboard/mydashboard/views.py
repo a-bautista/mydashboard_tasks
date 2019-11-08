@@ -1,12 +1,11 @@
 from django.shortcuts import render
-# Create your views here.
 
 def home(request):
     # Basic function based view
-    my_title = "Hello there"
+    my_title = "Priority App"
     # I had to configure the template dir in the settings of the app
-    template_name = 'home.html'
-    context = {"title": my_title, "my_list": [1, 2, 3, 4, 5]}
+    template_name = 'mydashboard/home.html'
+    context = {"title": my_title}
     return render(request, template_name, context)
 
 def about(request):
