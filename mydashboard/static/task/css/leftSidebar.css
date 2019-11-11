@@ -41,6 +41,7 @@ a {
   background: #2A2D33;
   border-right: 1px solid #E0E0E0;
   overflow-y: scroll;
+  /*margin-bottom: 300%*/ /*Modified - Increases the size of the left side bar.*/
 }
 #sidebar-nav h2 {
   color: #60636B;
@@ -93,3 +94,40 @@ a {
   width: 25px;
   text-align: center;
 }
+
+/* New code */
+
+/*
+.sidebar-nav .sidebar-menu .sidebar-dropdown .sidebar-submenu ul {
+  padding: 5px 0;
+}
+
+.sidebar-nav .sidebar-menu .sidebar-dropdown .sidebar-submenu li {
+  padding-left: 25px;
+  font-size: 13px;
+}
+
+.sidebar-nav .sidebar-menu .sidebar-dropdown .sidebar-submenu li a:before {
+  content: "\f111";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 400;
+  font-style: normal;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-right: 10px;
+  font-size: 8px;
+}
+
+.sidebar-nav .sidebar-menu .sidebar-dropdown .sidebar-submenu li a .badge,
+.sidebar-nav .sidebar-menu .sidebar-dropdown .sidebar-submenu li a .label {
+  float: right;
+  margin-top: 0px;
+}
+
+.sidebar-nav .sidebar-menu .sidebar-submenu {
+  display: none;
+}
+*/
