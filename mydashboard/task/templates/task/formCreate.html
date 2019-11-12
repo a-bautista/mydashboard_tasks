@@ -5,12 +5,10 @@
 <div class="content-header">
           <h1>Create a new task</h1>
       </div>
-    <form>
         <div id="form-group">
             <form method="POST" action="." enctype="multipart/form-data"> {% csrf_token %}
                 <div class="tweet-composer">
                     <label>Insert your task</label>
-
                         {{ form_create.task|add_class:"card js-keeper-editor" }}
                 </div>
                 <label>Select your category</label>
@@ -18,7 +16,6 @@
                 <button type="submit">Send</button>
             </form>
         </div>
-    </form>
   </div>
 
 </section>

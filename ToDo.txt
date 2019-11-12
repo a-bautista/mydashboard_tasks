@@ -1,9 +1,10 @@
 My Dashboard (activities)
 
 Pending :
-    P1. Use a better template for the app.
     P3. Display your current pending activities for the week (Ajax).
-    P2 . Implement the system for adding the priorities to your tasks.
+    P2. Implement the system for adding the priorities to your tasks.
 
 Completed:
     Visualize all your tasks in a grid.
+    Use a better template for the app.
+

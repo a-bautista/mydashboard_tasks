@@ -1,32 +1,36 @@
 {% block content %}
 
-    <form>
-        <div id="form-group">
-            <h4 style="color:#000">Please, select the year and week number to retrieve the data.</h4>
-        </div>
-    </form>
-    <form id="search_dates" method="POST" action="{{ action }}"> {% csrf_token %}
-        <div class="row">
-            <div style="display:inline-block">
-                <h4 style="color:#000">Select year</h4>
-                <select name="select_year">
-                    <option value={{form.year}}></option>
-                </select>
-            </div>
+<div id="form-group">
+  <h4 style="color:#000">
+    Please, select the year and week number to retrieve the data.
+  </h4>
+</div>
+<br />
 
-            <div style="display:inline-block"></div>
-            <div style="display:inline-block"></div>
+<form id="search_dates" method="POST" action="{{ action }}">
+  {% csrf_token %}
 
-            <div style="display:inline-block">
-                <h4 style="color:#000">Select week</h4>
-                <select name="select_week">
-                    <option value={{form.week}}></option>
-                </select>
-            </div>
+  <div style="display:inline-block">
+    <h4 style="color:#000">Select year</h4>
+    <select name="select_year">
+      <option value="{{ form.year }}"></option>
+    </select>
+  </div>
 
-            <div style="display:inline-block"></div>
-            <button type="submit" class="submit" input="submit" id="submit">Submit</button>
-        </div>
-    </form>
+  <div style="display:inline-block"></div>
+  <div style="display:inline-block"></div>
+
+  <div style="display:inline-block">
+    <h4 style="color:#000">Select week</h4>
+    <select name="select_week">
+      <option value="{{ form.week }}"></option>
+    </select>
+  </div>
+
+  <div style="display:inline-block"></div>
+  <button type="submit" class="submit" input="submit" id="submit">
+    Submit
+  </button>
+</form>
 
 {% endblock content %}
