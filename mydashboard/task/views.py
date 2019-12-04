@@ -69,34 +69,28 @@ def view_previous_tasks(request):
         template_name = 'task/retrieval_results/previous_tasks.html'
         year = request.POST.get('select_year', None)
         week = request.POST.get('select_week', None)
+        values_graph = ""
+        keys_graph = ""
+
+        option = 0
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date = get_start_end_date(year, week)[0]
+        beginning_datetime_format, ending_datetime_format = conversion_string_to_datetime(
+            initial_date)
 
-        beginning_year = str(initial_date).split("-")[0]
-        beginning_month = str(initial_date).split("-")[1]
-        beginning_day = str(initial_date).split("-")[2]
-
-        beginning_hour = 0
-        beginning_minute = 0
-        beginning_second = 0
-
-        # conversion from string to datetime
-        beginning_datetime_format = datetime(int(beginning_year), int(beginning_month),
-                                             int(beginning_day), int(
-                                                 beginning_hour),
-                                             int(beginning_minute), int(beginning_second))
-
-        ending_datetime_format = beginning_datetime_format + timedelta(days=7)
-
-        general_dictionary = connection_db_postgresql(beginning_datetime_format,
+        general_dictionary = connection_db_postgresql(option, beginning_datetime_format,
                                                       ending_datetime_format)
 
-        values_to_display_graph = connection_db_postgresql_graph(
-            beginning_datetime_format, ending_datetime_format)
+        option = 1
+        values_to_display_graph_dict = connection_db_postgresql(
+            option, beginning_datetime_format, ending_datetime_format)
 
-        keys_graph, values_graph = zip(*values_to_display_graph.items())
-        print(values_to_display_graph)
-        print(keys_graph, values_graph)
+        # separate the dictionary into lists of keys and values
+        # patch 0.0.1
+        # Verify if you have an empty list. If you do then you will get an error when trying to create a dictionary based on empty list values
+        if len(values_to_display_graph_dict) != 0:
+            keys_graph, values_graph = zip(
+                *values_to_display_graph_dict.items())
 
         values_to_display_table = get_values_table(general_dictionary)
 
@@ -114,97 +108,106 @@ def view_previous_tasks(request):
         return render(request, template_name, converted_front_end_dictionary)
 
 
-def connection_db_postgresql(beginning_datetime_format, ending_datetime_format):
+def conversion_string_to_datetime(initial_date):
 
-    temp_list = []  # ['1', 'Alejandro', 'Task 1', '2019-10-29', None, ';' ]
-    keys_dict_list = []  # ['1', '2', '3']
-    general_list = []  # ['1', 'Alejandro', 'Task 1', '2019-10-29', None, ';' , '2', 'Alejandro', 'Task 2', '2019-10-30', None, ';']
-    values_dict_list = []  # ['Alejandro', 'Task 1', '2019-10-29', None]
+    beginning_year = str(initial_date).split("-")[0]
+    beginning_month = str(initial_date).split("-")[1]
+    beginning_day = str(initial_date).split("-")[2]
 
-    connection = psycopg2.connect(host="localhost",
-                                  database="mydashboard_tasks",
-                                  user="postgres",
-                                  password="Ab152211")
+    beginning_hour = 0
+    beginning_minute = 0
+    beginning_second = 0
 
-    cursor = connection.cursor()
-    cursor.execute("select id, responsible, task, status, category, initial_date, ending_date "
-                   "from task_task where initial_date between '" +
-                   str(beginning_datetime_format)
-                   + "' and '" + str(ending_datetime_format) + "';")
-    records = cursor.fetchall()
-    cursor.close()
+    # conversion from string to datetime
+    beginning_datetime_format = datetime(int(beginning_year), int(beginning_month),
+                                         int(beginning_day), int(
+        beginning_hour),
+        int(beginning_minute), int(beginning_second))
 
-    # Iterate through the tuple to retrieve the results from the query
-    for index, tuple_value in enumerate(records):
+    ending_datetime_format = beginning_datetime_format + timedelta(days=7)
 
-        # ids (stored in a different dictionary)
-        keys_dict_list.append(str(tuple_value[0]))
-        general_list.append(str(tuple_value[1]))   # responsible
-        general_list.append(str(tuple_value[2]))   # task
-        general_list.append(str(tuple_value[3]))   # status
-        general_list.append(str(tuple_value[4]))   # category
-        general_list.append(str(tuple_value[5]))   # initial_date
-        general_list.append(str(tuple_value[6]))   # ending_date
-        general_list.append(";")
+    return beginning_datetime_format, ending_datetime_format
 
-    for element in general_list:
-        # Add each new element into a temporary list in order to display each task based on its ID.
-        if element != ';':
-            temp_list.append(element)
-        # If the element is equal to ; then attach each new list into the another list that will hold all the temporary lists
+
+def list_of_queries(option, beginning_datetime_format, ending_datetime_format):
+    '''We will store the queries in a dictionary and then loop through  '''
+    options = {0: "select id, responsible, task, status, category, initial_date, ending_date from task_task where initial_date between '" +
+               str(beginning_datetime_format) + "' and '" +
+               str(ending_datetime_format) + "';",
+               1: "select category, count(*) from task_task where initial_date between '" + str(beginning_datetime_format) + "' and '" +
+               str(ending_datetime_format) + "' group by category;"}
+
+    # fix this because it doesn't make much sense
+    for i in range(len(options)):
+        if option in options:
+            query = options[option]
         else:
-            values_dict_list.append(temp_list)
-            # print(temp_list)
-            temp_list = []
+            query = ""
+    return query
 
-    # Convert the two lists into a dictionary
-    general_dictionary = dict(zip(keys_dict_list, values_dict_list))
-    return general_dictionary
+# this needs to be encrypted
 
 
-def connection_db_postgresql_graph(beginning_datetime_format, ending_datetime_format):
+def connect_db():
+    connection = psycopg2.connect(host="localhost",
+                                  database="mydashboard_tasks",
+                                  user="postgres",
+                                  password="Ab152211")
+    return connection
+
+
+def connection_db_postgresql(option, beginning_datetime_format, ending_datetime_format):
 
     temp_list = []  # ['1', 'Alejandro', 'Task 1', '2019-10-29', None, ';' ]
     keys_dict_list = []  # ['1', '2', '3']
     general_list = []  # ['1', 'Alejandro', 'Task 1', '2019-10-29', None, ';' , '2', 'Alejandro', 'Task 2', '2019-10-30', None, ';']
     values_dict_list = []  # ['Alejandro', 'Task 1', '2019-10-29', None]
 
-    connection = psycopg2.connect(host="localhost",
-                                  database="mydashboard_tasks",
-                                  user="postgres",
-                                  password="Ab152211")
+    query = list_of_queries(option, beginning_datetime_format,
+                            ending_datetime_format)
+    connection = connect_db()
 
     cursor = connection.cursor()
-    # The character ' is necessary because that encompasses the date values
-    cursor.execute("select category, count(*) from task_task where initial_date between '" +
-                   str(beginning_datetime_format) + "' and '" + str(ending_datetime_format) + "' group by category;")
+    cursor.execute(query)
     records = cursor.fetchall()
     cursor.close()
+    # Iterate through the tuple to retrieve the results from the query
 
-    for index, tuple_value in enumerate(records):
-
-        # ids (stored in a different dictionary)
-        keys_dict_list.append(str(tuple_value[0]))
-        general_list.append(str(tuple_value[1]))   # count of categories
+    for element in records:
+        # get the ID of the task and store it in keys_dict_list
+        keys_dict_list.append(element[0])
+        # skip the first element 0 and start on the element 1 because I already got the IDs of each task in the list keys_dict_list
+        for tuple_value in element[1:]:
+            general_list.append(str(tuple_value))
         general_list.append(';')
 
+    # print(records)
+    # print("These are the values of the general list: \n")
+    # print(general_list)
+
     for element in general_list:
-        # Add each new element into a temporary list in order to display each task based on its ID.
         if element != ';':
+            # Add each new element into a temporary list in order to display each task based on its ID.
             temp_list.append(element)
-        # If the element is equal to ; then attach each new list into the another list that will hold all the temporary lists
         else:
+            # If the element is equal to ; then attach each new list into the another list that will hold
+            # all the temporary lists, i.e., [[],[]]
             values_dict_list.append(temp_list)
             # print(temp_list)
             temp_list = []
 
-    # Convert the two lists into a dictionary
+    # print("The values of dict list:\n")
+    # print(values_dict_list)
+
+    # Based on 2 lists, create a dictionary
+    # general_dictionary = {1: [], 2:[], 3:[]}
     general_dictionary = dict(zip(keys_dict_list, values_dict_list))
-    return general_dictionary  # {SL: [20], DV: [10]}
 
+    print("These are the values of the general dictionary:")
+    print(general_dictionary)
+    print("\n")
 
-def get_values_graph_categories(general_dictionary):
-    '''You need a dictionary with the count of each category.'''
+    return general_dictionary
 
 
 def get_values_table(general_dictionary):

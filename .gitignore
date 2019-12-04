@@ -11,9 +11,13 @@ mydashboard/mydashboard/__pycache__/*
 mydashboard/task/__pycache__/*
 mydashboard/settings/__pycache__/*
 
+# Migrations
+mydashboard/task/migrations/__pycache__/*
+mydashboard/task/migrations/*
 
 task/migrations
 live-static/*
 
 # Other folders
 .idea/
+mydashboard/live-static/static-root/*

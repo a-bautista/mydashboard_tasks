@@ -10,6 +10,7 @@
       var labels = data.labels_graph
       var values = data.values_graph
 
+      console.log(values);
       document.getElementById("display_year").innerHTML = year;
       document.getElementById("display_week").innerHTML = week;
 
@@ -88,11 +89,15 @@
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
+                        //console.log(tooltipData);
+                        //console.log(allData);
                         var total = 0;
                         for (var i in allData) {
                             total += allData[i];
                         }
+                        console.log(tooltipData/total);
                         var tooltipPercentage = Math.round((tooltipData / total) * 100);
+
                         return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
                               } //end of function
                           } // end of callbacks
@@ -113,8 +118,7 @@
 <div style="display:inline-block">
   <h4 style="color:#000">Current week: <span id="display_week"></span></h4>
 </div>
-
-<div class="col-sm-10">
+<div class="col-sm-8">
   <div><canvas id="graph" width="700" height="400"></canvas></div>
 </div>
 
