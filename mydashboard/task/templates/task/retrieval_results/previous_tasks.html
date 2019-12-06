@@ -10,7 +10,7 @@
       var labels = data.labels_graph
       var values = data.values_graph
 
-      console.log(values);
+      //console.log(values);
       document.getElementById("display_year").innerHTML = year;
       document.getElementById("display_week").innerHTML = week;
 
@@ -89,13 +89,10 @@
                         var allData = data.datasets[tooltipItem.datasetIndex].data;
                         var tooltipLabel = data.labels[tooltipItem.index];
                         var tooltipData = allData[tooltipItem.index];
-                        //console.log(tooltipData);
-                        //console.log(allData);
                         var total = 0;
                         for (var i in allData) {
-                            total += allData[i];
+                            total +=  parseInt(allData[i]);
                         }
-                        console.log(tooltipData/total);
                         var tooltipPercentage = Math.round((tooltipData / total) * 100);
 
                         return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
@@ -123,8 +120,8 @@
 </div>
 
 <div class="col-sm-14">
-  <table id="results" style="width:100%">
-    <thead>
+  <table class="table table-borderless" id="results" style="width:100%">
+    <thead class="border-bottom font-weight-bold">
       <tr>
         <th bgcolor="#fff">Responsible</th>
         <th bgcolor="#fff">Task</th>

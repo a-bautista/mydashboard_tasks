@@ -1,7 +1,8 @@
 from datetime import date, datetime, timedelta
 from django.views.generic import View
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .forms import TaskModelForm, DropDownMenuForm
+from .models import Task
 import psycopg2
 import json
 
@@ -20,34 +21,53 @@ def create_task(request):
     if form_create.is_valid():
         # print(form.cleaned_data)
         # obj = Task.objects.create(**form.cleaned_data) grabs all the fields from the forms and stores them in the Task
-        obj = form_create.save(commit=False)
+        obj = form_create.save()
+        # The code from below allows us to do some intermediate steps to the data before storing them into the db
+        # obj = form_create.save(commit=False)
         # obj = Task.objects.create(**form.cleaned_data)
         # you can do intermediate steps with the class based models
         # obj.responsible = form.cleaned_data.get('responsible') + "0"
         obj.save()
-        # Reinitialize the form or clean it
-        form = TaskModelForm()
-    template_name = 'task/formCreate.html'
-
-    # the form gets all the data that will be passed along
-    context = {'form_create': form_create}
+        # Clean the form
+        form_create = TaskModelForm()
+    template_name = 'task/formTask.html'
+    # the form keyword gets all the data that will be passed along to the formCreate template
+    context = {'form': form_create}
     return render(request, template_name, context)
 
 
-def delete_task(request):
-    template_name = 'task/delete.html'
-    context = {'form': None}
-    return render(request, template_name, context)
+def delete_task(request, id):
+    '''Delete a task'''
+    task = Task.objects.get(pk=id)
+    if request.method == "POST":
+        task.delete()
+    return redirect('/task/tasks/')
 
 
-def update_task(request):
-    template_name = 'task/update.html'
-    context = {'form': None}
-    return render(request, template_name, context)
+def retrieve_all(request):
+    '''Get the list of all tasks'''
+    template_name = 'task/formRetrieval.html'
+    form = {'task_list': Task.objects.all()}
+    return render(request, template_name, form)
+
+
+def update_task(request, id):
+    '''Update a task'''
+    task = Task.objects.get(pk=id)  # get the task id from the db
+    # overwrite the task, do not create a new one
+    form = TaskModelForm(request.POST or None, instance=task)
+
+    if request.method == "GET":
+        template_name = 'task/formTask.html'
+        return render(request, template_name, {'form': form})
+
+    elif request.method == "POST":
+        if form.is_valid():
+            form.save()
+        return redirect('/task/tasks/')
+
 
 # Ajax maybe?
-
-
 '''
 def view_tasks(request):
     template_name = 'task/tasks.html'
@@ -72,18 +92,23 @@ def view_previous_tasks(request):
         values_graph = ""
         keys_graph = ""
 
-        option = 0
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date = get_start_end_date(year, week)[0]
+        #ending_date = initial_date + 7
+
         beginning_datetime_format, ending_datetime_format = conversion_string_to_datetime(
             initial_date)
 
-        general_dictionary = connection_db_postgresql(option, beginning_datetime_format,
+        # qs = Task.objects.filter(
+        #    initial_date=[str(beginning_datetime_format), str(ending_datetime_format)])
+        # print(qs)
+
+        # the connection to the db can be avoided
+        general_dictionary = connection_db_postgresql(0, beginning_datetime_format,
                                                       ending_datetime_format)
 
-        option = 1
         values_to_display_graph_dict = connection_db_postgresql(
-            option, beginning_datetime_format, ending_datetime_format)
+            1, beginning_datetime_format, ending_datetime_format)
 
         # separate the dictionary into lists of keys and values
         # patch 0.0.1
@@ -130,7 +155,7 @@ def conversion_string_to_datetime(initial_date):
 
 
 def list_of_queries(option, beginning_datetime_format, ending_datetime_format):
-    '''We will store the queries in a dictionary and then loop through  '''
+    '''We will store the queries in a dictionary and then loop through it '''
     options = {0: "select id, responsible, task, status, category, initial_date, ending_date from task_task where initial_date between '" +
                str(beginning_datetime_format) + "' and '" +
                str(ending_datetime_format) + "';",
@@ -138,11 +163,10 @@ def list_of_queries(option, beginning_datetime_format, ending_datetime_format):
                str(ending_datetime_format) + "' group by category;"}
 
     # fix this because it doesn't make much sense
-    for i in range(len(options)):
-        if option in options:
-            query = options[option]
-        else:
-            query = ""
+    if option in options:
+        query = options[option]
+    else:
+        query = ""
     return query
 
 # this needs to be encrypted
