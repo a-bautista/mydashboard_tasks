@@ -1,0 +1,7 @@
+{% extends "base.html" %} {% load widget_tweaks %} {% block content %}
+<h1>hello</h1>
+{% include "task/retrieval_weekly_form.html" with action='/task/previous_tasks/'
+%}
+
+<label>When did you finish the task?</label>
+{{ form.ending_date|add_class:"card" }} {%endblock content %}
