@@ -31,7 +31,7 @@ class DropDownMenuForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task', 'category']
+        fields = ['task', 'category', 'status']
 
     def __init__(self, *args, **kwargs):
         super(TaskModelForm, self).__init__(*args, **kwargs)
