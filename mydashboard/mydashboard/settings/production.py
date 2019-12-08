@@ -25,7 +25,7 @@ SECRET_KEY = 'zk6r!vjkf)1&4$m0m%dj(j5z(i6$jwq2)_(i0)2^04$sbyx1!)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dashboard-telos.herokuapp.com']
 
 
 # Application definition

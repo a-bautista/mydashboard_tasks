@@ -78,3 +78,20 @@ In Postgres you can see all your tables by typing:
 
 https://linux4one.com/how-to-install-postgresql-on-linux-mint-19/
 
+## Submitting to Heroku
+
+Create the name of you heroku app:
+
+    `heroku create dashboard-telos`
+
+Create the file Procfile with the contents:
+
+    `web: gunicorn <name_of_your_app>.wsgi --log-file -`
+
+Create a runtime.txt file which will contain the version of your Python version:
+
+    `python-3.6.7`
+
+Create your secret keys for the settings file:
+
+    `heroku config:set SECRET_KEY="<settings_password>"`
