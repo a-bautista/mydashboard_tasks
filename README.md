@@ -22,6 +22,7 @@ In case you want to exit you type:
 
 
 Other steps that you need to perform in the db:
+
     `\conninfo` -- check to which database and port your are currently connected
     `select version();` -- check the current version of postgres
     `select * from pg_database where datistemplate = false;` -- check all the databases

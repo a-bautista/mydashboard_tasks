@@ -34,11 +34,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # install environment dependencies
 RUN pip3 install --upgrade pip
-RUN pip3 install pipenv
 
 # Install project dependencies
-RUN pipenv install --skip-lock --system --dev
+RUN pip3 install -r requirements.txt
 
 # Expose is NOT supported by Heroku
 # EXPOSE 8888
-CMD gunicorn djangodocker.wsgi:application --bind 0.0.0.0:$PORT
+CMD gunicorn mydashboard.wsgi:application --bind 0.0.0.0:$PORT
