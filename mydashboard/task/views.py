@@ -19,6 +19,7 @@ class HomeView(View):
 def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
+    print(form_create)
     if form_create.is_valid():
         # print(form.cleaned_data)
         # obj = Task.objects.create(**form.cleaned_data) grabs all the fields from the forms and stores them in the Task
