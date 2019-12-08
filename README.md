@@ -84,6 +84,14 @@ Create the name of you heroku app:
 
     `heroku create dashboard-telos`
 
+Create the Heroku repo and add it to your list of remotes:
+
+    `git remote add heroku https://git.heroku.com/dashboard-telos.git`
+
+    In case you need to remove the repo you use:
+
+    `git remote remove heroku`
+
 Create the file Procfile with the contents:
 
     `web: gunicorn <name_of_your_app>.wsgi --log-file -`

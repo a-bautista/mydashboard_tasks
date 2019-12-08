@@ -129,4 +129,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
-STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'static', 'mydashboard'))
+#STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'static', 'mydashboard'))
+STATIC_ROOT = os.path.join(BASE_DIR, "live-static", "static-root")
+
+
+# Static files for running your app in Live
+# Whitenoise is mandatory for making the gunicorn to work correctly
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+
+# Media files for running your app in Live
+MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
