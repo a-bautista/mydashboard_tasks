@@ -20,8 +20,23 @@ In case you want to exit you type:
 
     `\q`
 
-Go to the following website to install PostgreSQL:
-Change this line  `'ENGINE': 'django.db.backends.sqlite3'` to `'ENGINE': 'django.db.backends.postgresql'`
+
+Other steps that you need to perform in the db:
+    `\conninfo` -- check to which database and port your are currently connected
+    `select version();` -- check the current version of postgres
+    `select * from pg_database where datistemplate = false;` -- check all the databases
+    `du\` -- check all the current users
+    `alter role postgres with password 'new_password'` -- change the password of user postgres
+    `create database mydashboard_tasks owner = postgres;` -- create the mydashboard_tasks db
+    `psql mydashboard_tasks postgres`; -- connect to the newly created db
+    `` -- create the table task
+
+Aditional steps that you need to do in Django:
+
+    `python manage.py createsuperuser` # create the super user
+    `python manage.py makemigrations`  # make migrations
+    `python manage.py migrate`         # apply migrations
+
 
 ### 2. Using Postgresql with Django
 
