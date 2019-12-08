@@ -3,6 +3,7 @@ Django==2.2.6
 django-widget-tweaks==1.4.5
 entrypoints==0.3
 flake8==3.7.9
+gunicorn==19.9.0
 mccabe==0.6.1
 psycopg2==2.8.4
 pycodestyle==2.5.0

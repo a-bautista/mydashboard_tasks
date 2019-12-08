@@ -92,8 +92,9 @@ Create the Heroku repo and add it to your list of remotes:
 
     `git remote remove heroku`
 
-Create the file Procfile with the contents:
+Create the file Procfile with the contents (install gunicorn first):
 
+    `pip3 install gunicorn`
     `web: gunicorn <name_of_your_app>.wsgi --log-file -`
 
 Create a runtime.txt file which will contain the version of your Python version:
@@ -103,3 +104,7 @@ Create a runtime.txt file which will contain the version of your Python version:
 Create your secret keys for the settings file:
 
     `heroku config:set SECRET_KEY="<settings_password>"`
+
+ Install whitenoise for the production file
+
+    `pip3 install whitenoise`
