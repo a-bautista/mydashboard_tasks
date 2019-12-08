@@ -14,7 +14,7 @@
 
     {% if request.resolver_match.url_name == 'update_task' %}
       <label>What's the status of the task?</label>
-      {{ form.status|add_class:"card" }}
+        {{ form.status|add_class:"card" }}
     {% endif %}
     <button type="submit" class="btn btn-success">Send</button>
   </form>

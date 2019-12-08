@@ -35,5 +35,6 @@ class TaskModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskModelForm, self).__init__(*args, **kwargs)
-        #self.fields['category'].empty_label = "Select"
+        # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
+        self.fields['status'].required = False
         self.fields['task'].required = True
