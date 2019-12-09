@@ -103,7 +103,7 @@ Create the file Procfile with the contents (install gunicorn first):
 
 Create a runtime.txt file which will contain the version of your Python version:
 
-    `python-3.6.7`
+    `python-3.6.9`
 
 Create your secret keys for the settings file:
 
