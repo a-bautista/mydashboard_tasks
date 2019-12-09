@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 #import the URLs from the main dashboard component
-from .views import home, about
+from .views import home
 from task.views import (HomeView)
 
 urlpatterns = [

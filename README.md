@@ -177,6 +177,7 @@ to connect to your database. In order to connect to the db, you should type a co
   or
 `heroku pg:psql --app dashboard-telos`
 
-create the table task based on the models.py file:
+create the table task based on the models.py file (notice the name must be task_task to make this working):
 
-`create table task_task(id numeric primary key, responsible text, task text, category text, status text, initial_date date, ending_date date);`
+`create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
+
