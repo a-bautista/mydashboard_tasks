@@ -4,7 +4,7 @@
 
 Go to the following website to install PostgreSQL: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 
-### 2. Installing PostgreSQL in Linux
+### 2. Installing PostgreSQL in Linux (For dev purposes, not for live)
 
 Use the following command to install PostgreSQL:
 
@@ -82,7 +82,39 @@ https://linux4one.com/how-to-install-postgresql-on-linux-mint-19/
 ## Submitting to Heroku
 
 
-### Testing with Heroku local web
+### Testing with Heroku (Dev)
+
+Install gunicorn
+
+    `pip3 install gunicorn`
+
+Create the file Procfile with the contents (install gunicorn first):
+
+    `web: gunicorn <name_of_your_app>.wsgi --log-file -`
+
+Create a runtime.txt file which will contain the version of your Python version:
+
+    `python-3.6.9`
+
+Install whitenoise for the production file
+
+    `pip3 install whitenoise`
+
+In order to fix the static media files you need to add the following line in the middleware section from the local.py file.
+
+'whitenoise.middleware.WhiteNoiseMiddleware', # this line is mandatory in order to see the css and images
+
+Make sure to have the correct path for displaying the media files:
+
+`BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))`
+
+Allow the following hosts:
+
+`ALLOWED_HOSTS = ['0.0.0.0', 'localhost:5000', '127.0.0.1', 'localhost']`
+
+View the changes with `heroku local web`
+
+### Testing with Heroku (Live)
 
 Create the name of you heroku app:
 
@@ -96,54 +128,40 @@ Create the Heroku repo and add it to your list of remotes:
 
     `git remote remove heroku`
 
-Create the file Procfile with the contents (install gunicorn first):
+Install gunicorn
 
     `pip3 install gunicorn`
+
+Create the file Procfile with the contents (install gunicorn first):
+
     `web: gunicorn <name_of_your_app>.wsgi --log-file -`
 
 Create a runtime.txt file which will contain the version of your Python version:
 
     `python-3.6.9`
 
+Install whitenoise for the production file
+
+    `pip3 install whitenoise`
+
 Create your secret keys for the settings file:
 
     `heroku config:set SECRET_KEY="<settings_password>"`
 
- Install whitenoise for the production file
-
-    `pip3 install whitenoise`
-
- This project has the following structure:
-
- mydashboard_tasks
-    |----mydashboard
-            | components
-            | live-static
-            | static
-            | task
-            | templates
-            | db.sqlite3
-            | manage.py
-            | mydashboard ----------| __init__.py
-            |                       | settings.py
-            |                       | urls.py
-            |                       | wsgi.py
-            |                       | forms.py
-            | .gitignore
-            | Dockerfile
-            | Dockerfile-local
-            | Procfile
-            | README.md
-            | requirements.txt
-            | runtime.txt
-            | ToDo.txt
-
- Because of the following file structure of the app, the wsgi.py, Procfile, Local and Production files, and mydashboard/url.py files
- need to be modified to include the new route of the file structure, i.e.,mydashboard.mydashboard.settings, mydashboard.mydashboard.wsgi,
- mydashboard.mydashboard.wsgi.application, mydashboard.task (from the installed_apps), mydashboard.task.urls.
-
-After this you can try running heroku with `heroku local web`.
 
 In order to fix the static media files you need to add the following line in the middleware section from the local.py file.
 
 'whitenoise.middleware.WhiteNoiseMiddleware', # this line is mandatory in order to see the css and images
+
+Make sure to have the correct path for displaying the media files:
+
+`BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))`
+
+Allow the following hosts:
+
+`ALLOWED_HOSTS = ['dashboard-telos.herokuapp.com']`
+
+Add the files you have modified, then commit the changes and push them to Heroku:
+
+`git add -A`
+`git push heroku master`
