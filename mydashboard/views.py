@@ -7,6 +7,3 @@ def home(request):
     template_name = 'mydashboard/home.html'
     context = {"title": my_title}
     return render(request, template_name, context)
-
-def about(request):
-    return render(request, "about.html", {"title": "About"})

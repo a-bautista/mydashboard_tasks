@@ -25,5 +25,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
     path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls
-    path('about/', about)
 ]
