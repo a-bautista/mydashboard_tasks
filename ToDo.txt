@@ -1,0 +1,12 @@
+My Dashboard (activities)
+To see the full list of activities, please see the list of activities at the trello website https://trello.com/b/NnllGZiY/priority-app. 
+
+Pending :
+
+    P3. Display your current pending activities for the week (Ajax).
+    P2. Implement the system for adding the priorities to your tasks.
+
+Completed:
+    Visualize all your tasks in a grid.
+    Use a better template for the app.
+

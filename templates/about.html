@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block head_title %}
+  This is your website
+{% endblock %}
+    <p>More stuff to be added soon!</p><br />
+{% block content %}
+
+{{ title }}
+
+{{ request.user }}
+
+{{ request.path }}
+
+{{ user }}
+
+{{ user.is_authenticated }}
+
+{% endblock %}

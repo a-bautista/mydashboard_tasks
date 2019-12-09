@@ -1,0 +1,8 @@
+- mydashboard
+  |
+  |
+  - live-static
+  - mydashboard
+  + static
+  + task
+  + templates
