@@ -20,13 +20,12 @@ In case you want to exit you type:
 
     `\q`
 
-
 Other steps that you need to perform in the db:
 
     `\conninfo` -- check to which database and port your are currently connected
     `select version();` -- check the current version of postgres
     `select * from pg_database where datistemplate = false;` -- check all the databases
-    `du\` -- check all the current users
+    `\du` -- check all the current users
     `alter role postgres with password 'new_password'` -- change the password of user postgres
     `create database mydashboard_tasks owner = postgres;` -- create the mydashboard_tasks db
     `psql mydashboard_tasks postgres`; -- connect to the newly created db
@@ -148,6 +147,9 @@ Create your secret keys for the settings file:
 
     `heroku config:set SECRET_KEY="<settings_password>"`
 
+Use the free version of postgresql that is included:
+
+    `heroku addons:create heroku-postgresql:hobby-dev`
 
 In order to fix the static media files you need to add the following line in the middleware section from the local.py file.
 
@@ -165,3 +167,16 @@ Add the files you have modified, then commit the changes and push them to Heroku
 
 `git add -A`
 `git push heroku master`
+
+### Connect to the postgresql database and create the initial tables
+
+Go to data.heroku.com, then select your db and click on the settings option and click on the view credentials button to see the configuration that you need
+to connect to your database. In order to connect to the db, you should type a command similar to the following:
+
+`heroku pg:psql postgresql-transparent-84888 --app dashboard-telos`
+  or
+`heroku pg:psql --app dashboard-telos`
+
+create the table task based on the models.py file:
+
+`create table task_task(id numeric primary key, responsible text, task text, category text, status text, initial_date date, ending_date date);`

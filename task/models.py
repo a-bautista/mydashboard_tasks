@@ -10,6 +10,7 @@ from django.utils import timezone
 
 class Task(models.Model):
 
+    # ------------------------- Initial definitions -----------------------------
     DATAVIEWS = 'Dataviews'
     SOX_COMPLIANCE_ISSUES = 'SOX Compliance Issues'
     TROUBLESHOOTING = 'Troubleshooting'
@@ -29,6 +30,8 @@ class Task(models.Model):
     STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED),
               (FINALIZED, FINALIZED)]
 
+    # ------------------------- Main fields --------------------------------------
+    id = models.AutoField(primary_key=True)
     responsible = models.CharField(
         null=False, max_length=120, default='Alejandro Bautista')
     task = models.CharField(
