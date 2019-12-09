@@ -78,7 +78,11 @@ In Postgres you can see all your tables by typing:
 
 https://linux4one.com/how-to-install-postgresql-on-linux-mint-19/
 
+
 ## Submitting to Heroku
+
+
+### Testing with Heroku local web
 
 Create the name of you heroku app:
 
@@ -108,3 +112,38 @@ Create your secret keys for the settings file:
  Install whitenoise for the production file
 
     `pip3 install whitenoise`
+
+ This project has the following structure:
+
+ mydashboard_tasks
+    |----mydashboard
+            | components
+            | live-static
+            | static
+            | task
+            | templates
+            | db.sqlite3
+            | manage.py
+            | mydashboard ----------| __init__.py
+            |                       | settings.py
+            |                       | urls.py
+            |                       | wsgi.py
+            |                       | forms.py
+            | .gitignore
+            | Dockerfile
+            | Dockerfile-local
+            | Procfile
+            | README.md
+            | requirements.txt
+            | runtime.txt
+            | ToDo.txt
+
+ Because of the following file structure of the app, the wsgi.py, Procfile, Local and Production files, and mydashboard/url.py files
+ need to be modified to include the new route of the file structure, i.e.,mydashboard.mydashboard.settings, mydashboard.mydashboard.wsgi,
+ mydashboard.mydashboard.wsgi.application, mydashboard.task (from the installed_apps), mydashboard.task.urls.
+
+After this you can try running heroku with `heroku local web`.
+
+In order to fix the static media files you need to add the following line in the middleware section from the local.py file.
+
+'whitenoise.middleware.WhiteNoiseMiddleware', # this line is mandatory in order to see the css and images

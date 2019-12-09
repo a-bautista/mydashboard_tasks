@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -131,7 +132,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
 #STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'static', 'mydashboard'))
 STATIC_ROOT = os.path.join(BASE_DIR, "live-static", "static-root")
-
 
 # Static files for running your app in Live
 # Whitenoise is mandatory for making the gunicorn to work correctly

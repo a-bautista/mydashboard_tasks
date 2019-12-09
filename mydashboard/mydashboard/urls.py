@@ -19,11 +19,11 @@ from django.urls import path, include
 
 #import the URLs from the main dashboard component
 from .views import home, about
-from task.views import (HomeView)
+from mydashboard.task.views import (HomeView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
-    path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls
+    path('task/', include('mydashboard.task.urls')), # connect this application with the dashboard application by including the task.urls
     path('about/', about)
 ]

@@ -1,1 +1,1 @@
-web: gunicorn mydashboard.wsgi --log-file -
+web: gunicorn mydashboard.mydashboard.wsgi --log-file -

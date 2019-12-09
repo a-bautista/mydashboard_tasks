@@ -25,7 +25,7 @@ SECRET_KEY = 'zk6r!vjkf)1&4$m0m%dj(j5z(i6$jwq2)_(i0)2^04$sbyx1!)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost:5000', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -36,12 +36,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'task',
+    'mydashboard.task',
     'widget_tweaks'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # this line is mandatory in order to see the css and images
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'mydashboard.urls'
+ROOT_URLCONF = 'mydashboard.mydashboard.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'mydashboard.wsgi.application'
+WSGI_APPLICATION = 'mydashboard.mydashboard.wsgi.application'
 
 
 # Database
