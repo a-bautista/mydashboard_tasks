@@ -1,3 +1,4 @@
+Author: Alejandro Bautista Ramos
 ## Installing PostgreSQL
 
 ### 1. Installing PostgreSQL in Windows
