@@ -25,7 +25,7 @@ SECRET_KEY = 'zk6r!vjkf)1&4$m0m%dj(j5z(i6$jwq2)_(i0)2^04$sbyx1!)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['telos-dashboard-container.herokuapp.com', '0.0.0.0']
 
 
 # Application definition
@@ -78,7 +78,8 @@ WSGI_APPLICATION = 'mydashboard.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql'
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
