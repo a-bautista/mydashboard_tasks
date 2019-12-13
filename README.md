@@ -178,7 +178,14 @@ to connect to your database. In order to connect to the db, you should type a co
   or
 `heroku pg:psql --app dashboard-telos`
 
+There is NO need to type in the credentials of your db in the django app because heroku manages this automatically (this applies for creating an app with a container and via Git).
+
 create the table task based on the models.py file (notice the name must be task_task to make this working):
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
+After you have created the db, you need to apply the migrations and create a super user:
+
+    `heroku run python3 manage.py migrate -a djangodocker`
+    `heroku run python3 manage.py makemigrations -a djangodocker`
+    `heroku run python3 manage.py create superuser`
