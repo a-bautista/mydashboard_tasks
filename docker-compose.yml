@@ -2,7 +2,7 @@ version: "3"
 
 services:
   web: # this is the name of your first container
-    build: . # this is equivalent to sudo docker build . (executes the Dockerfile)
+    build: . # this is equivalent to sudo docker build . (executes the Dockerfile in the root folder)
 
     #ports: # Use this only when you are troubleshooting the app without the server nginx
     #  - "3000:8888" # map from your web browser port 3000 to container port 8888 (8888 was created by gunicorn)
@@ -11,16 +11,16 @@ services:
       - db
 
   nginx:
-    build: ./nginx
+    build: ./nginx # build the Docker image from the ./nginx folder
     depends_on:
       - web
     command: nginx -g 'daemon off;'
     ports:
       - "80:80"
     volumes:
-      - ./static:/var/www/static
-      - ./media:/var/www/media
+      - ./static:/var/www/static # from the static folder, map it to the folders from the nginx server
+      - ./media:/var/www/media   # from the media folder, map it to the folders from the nginx server
 
-  db: # this is the name of your second container
+  db: # this is the name of your second container that will be downloaded
     image: postgres:11
 

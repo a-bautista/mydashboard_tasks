@@ -1,0 +1,11 @@
+sudo: required
+services:
+  - docker
+
+script:
+  - docker build -t abautista/nginx ./nginx
+  - docker build -t abautista/mydashboard .
+
+  # Log in to the docker CLI
+
+  # Take those images to docker hub

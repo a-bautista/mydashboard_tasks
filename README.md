@@ -203,6 +203,7 @@ and modify the settings.py to add the following lines:
         `'USER': 'postgres',`
         `'HOST': 'db',`
         `'PORT': 5432`
+        `#If there is not any password set up then everyone can access to this db`
     `}
 `}`
 
@@ -222,8 +223,25 @@ and modify the settings.py to add the following lines:
   `db: # this is the name of your second container`
     `image: postgres:11`
 
-Then check your different containers running connect to the database service with:
+The ports that were setup in the web service are used to map your container to your web browser, so your port `localhost:3000` will redirect you to the port 8888
+of your container.
+
+The postgres container is created from the docker-compose.yml file and once it is running you can connect to the database  with:
 
 `sudo docker exec -it mydashboard_db_1 psql -U postgres` and then create your table task:
 
+You can see all your running container from the docker-compose with the command `docker-compose ps` and you can delete all those container with `docker-compose rm`.
+
+Then you insert the following command to create your table.
+
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
+
+Every time you access to the container, the database will be already there but in case you encounter problems within it, you should destroy all the images with
+`sudo docker-compose rm`.
+
+After creating the database, you should be able to use all the CRUD operations.
+
+### Working with nginx
+
+What nginx does is that instead of using Django as the server for displaying your app you will be using nginx. You need to create a separate folder with its Dockerfile
+and the nginx.conf file.
