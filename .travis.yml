@@ -10,7 +10,7 @@ after_success:
 
   # Log in to the docker CLI
   # Do a sudo docker login in your terminal first
-  - echo "$DOCKER_PASSWORD" | docker-login -u "$DOCKER_ID" --password-stdin
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # Take your images to docker hub
   - docker push abautista/nginx
