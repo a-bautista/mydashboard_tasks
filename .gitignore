@@ -14,6 +14,7 @@ mydashboard/settings/__pycache__/*
 mydashboard/__init__.pyc
 mydashboard/__pycache__/wsgi.cpython-36.pyc
 mydashboard/__pycache__/urls.cpython-36.pyc
+mydashboard/wsgi.pyc
 
 task/__pycache__/*
 

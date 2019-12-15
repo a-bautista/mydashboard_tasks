@@ -6,6 +6,12 @@ script:
   - docker build -t abautista/nginx ./nginx
   - docker build -t abautista/mydashboard .
 
-  # Log in to the docker CLI
+after_success:
 
-  # Take those images to docker hub
+  # Log in to the docker CLI
+  # Do a sudo docker login in your terminal first
+  - echo "$DOCKER_PASSWORD" | docker-login -u "$DOCKER_ID" --password-stdin
+
+  # Take your images to docker hub
+  - docker push abautista/nginx
+  - docker push abautista/mydashboard
