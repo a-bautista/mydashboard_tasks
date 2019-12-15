@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  web: # this is the name of your first container
+    build: . # this is equivalent to sudo docker build . (executes the Dockerfile)
+
+    #ports: # Use this only when you are troubleshooting the app without the server nginx
+    #  - "3000:8888" # map from your web browser port 3000 to container port 8888 (8888 was created by gunicorn)
+
+    depends_on: # this indicates to run the db before the web service
+      - db
+
+  nginx:
+    build: ./nginx
+    depends_on:
+      - web
+    command: nginx -g 'daemon off;'
+    ports:
+      - "80:80"
+    volumes:
+      - ./static:/var/www/static
+      - ./media:/var/www/media
+
+  db: # this is the name of your second container
+    image: postgres:11
+

@@ -189,3 +189,41 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku run python3 manage.py migrate -a djangodocker`
     `heroku run python3 manage.py makemigrations -a djangodocker`
     `heroku run python3 manage.py create superuser`
+
+Testing with AWS
+
+In order to run your app with AWS, we need to create each service (Django, Nginx and PostgreSQL) separately. For doing that we need to create the docker-compose.yml file
+and modify the settings.py to add the following lines:
+
+`settings.py`
+`DATABASES = {`
+    `'default': {`
+        `'ENGINE': 'django.db.backends.postgresql',`
+        `'NAME': 'postgres',`
+        `'USER': 'postgres',`
+        `'HOST': 'db',`
+        `'PORT': 5432`
+    `}
+`}`
+
+`docker-compose.yml`
+
+`version: "3"`
+
+`services:``
+  `web: # this is the name of your first container`
+    `build: . # this is equivalent to sudo docker build . (executes the Dockerfile)`
+    `ports:`
+      `- "3000:8888" # map from your web browser port 3000 to container port 8888`
+
+    `depends_on: # this indicates to run the db before the web service`
+    `  - db`
+
+  `db: # this is the name of your second container`
+    `image: postgres:11`
+
+Then check your different containers running connect to the database service with:
+
+`sudo docker exec -it mydashboard_db_1 psql -U postgres` and then create your table task:
+
+`create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`

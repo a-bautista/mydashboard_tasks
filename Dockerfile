@@ -36,6 +36,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-# Expose is NOT supported by Heroku
 # EXPOSE 8888
 CMD gunicorn mydashboard.wsgi:application --bind 0.0.0.0:$PORT
