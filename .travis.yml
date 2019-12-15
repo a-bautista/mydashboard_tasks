@@ -3,8 +3,8 @@ services:
   - docker
 
 script:
-  - docker build -t abautista/nginx ./nginx
-  - docker build -t abautista/mydashboard .
+  - docker build -t alexbr9007/nginx ./nginx
+  - docker build -t alexbr9007/mydashboard .
 
 after_success:
 
@@ -13,5 +13,5 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # Take your images to docker hub
-  - docker push abautista/nginx
-  - docker push abautista/mydashboard
+  - docker push alexbr9007/nginx  
+  - docker push alexbr9007/mydashboard
