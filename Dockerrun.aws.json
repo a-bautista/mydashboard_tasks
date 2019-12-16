@@ -23,7 +23,7 @@
       "portMappings": [
         {
           "hostPort": 80,
-          "containerPort": 8888
+          "containerPort": 80
         }
       ],
       "links": ["web","db"],
