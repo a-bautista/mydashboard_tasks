@@ -3,9 +3,9 @@ services:
   - docker
 
 script:
-  - docker build -t alexbr9007/nginx ./nginx
-  - docker build -t alexbr9007/mydashboard .
-  - docker build -t alexbr9007/db ./db
+  - docker build -t alexbr9007/nginx ./nginx # build the Dockerfile located in the nginx folder
+  - docker build -t alexbr9007/web .         # build the main Dockerfile that is located in the root folder
+  - docker build -t alexbr9007/db ./db       # build the Dockerfile located in the db folder
 
 after_success:
 
