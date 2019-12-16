@@ -243,15 +243,46 @@ After creating the database, you should be able to use all the CRUD operations.
 
 ### Working with nginx
 
-What nginx does is that instead of using Django as the server for displaying your app you will be using nginx. You need to create a separate folder with its Dockerfile
-and the nginx.conf file.
+What nginx does is that instead of using Django as the server for displaying your app, it  will be using nginx. You need to create a separate folder with its Dockerfile
+and the nginx.conf file. nginx is a server that can handle routing between server and client and other different services but for this app we won't touch into details
+about all these services.
 
 You can use `docker-compose up` to start running all your containers.
 
-### Deploying to AWS
-You need to create the Dockerrun.aws.json file to configure the containers that you want to run.
+### Deploying to .travis -> DockerHub -> AWS Elastic Bean Stalk
 
-    {
-          "hostPort": 80, <-- from your nginx map to the container port 8888
-          "containerPort": 8888
-        }
+The .travis file has the purpose to create the images of your containers, perform tests and push them to DockerHub, so AWS can use them to deploy your app.
+
+You need to create the Dockerrun.aws.json file to configure the containers that you want to run because for AWS, that's the equivalent to docker-compose.yml file.
+When you deploy an app through Amazon Elastic Bean Stalk, this one uses the Amazon Elastic Container Service (ECS) for running containers. The ECS have task definitions
+which contain instructions about how to run a single container.
+
+In AWS you have to create your Elastic Bean Stalk service to deploy your application but you need to create separate services such as the RDB configure the security groups,
+so you can connect your database container with the Amazon RDB service. When creating the EBS, you need to select the platform as multi container docker and then you click on the
+create environment. In your Amazon account there is something called the Default Virtual Private Cloud (VPC) which is used to contain all the services that you create. By default,
+ all the services you create are disconnected and the VPC is used to bundle them together so they can start talking to each other. VPC are assigned as default per region. When you
+ type VPC and then on Your VPCs you will find your default VPC. In order to connect your different services through the VPC, you need to configure the security group which are the rules
+ that describe which services can connect through the VPC (you can find the security groups created under the VPC service and then look for security groups).
+
+To create an RDS service you type RDS and then you select the postgresql service, then you click on next and you set the following points:
+
+DB instance id: telos-db
+DB name: postgres
+PORT: 5432
+engine version : 11.1 (because that's the same version of your container)
+disable the automatic backups
+master username: postgres
+password: (use the same as you defined in your settings file)
+
+In network and security, you select the Default VPC, in public accessibility you select NO, then you select the create VPC security group.
+Now you need to create the custom security group, then you click on VPC and then you look for Security groups and then you hit on the Create Security Group and you put the name such as the
+name of your app, then you select your default VPC. Then you click on the Inboud rules and then you click on Edit and you leave Custom TCP, then you put the ports
+range 5432 which belongs to postgres and for the source you selec the Group ID of your newly created security group.
+
+Now you you go back to the postgresql to add the security group. You select RDS, then you click on Instances and click on Modify then you go to Network and security and you add the security group
+you created previously. You click on apply immediately and then you click on Modify DB instance. You go back to the EBS and then you click on configuration and you select EC2 to select the security group
+you want to add in your EBS application.
+
+You set up the environment rules by going to configuration and under the software section you click on modify and you put all your postgresql variables.
+When you type the PGHOST you need to look for the instance of your RDS full value (us-west-2.rds.amazonaws.com)
+
