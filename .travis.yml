@@ -19,14 +19,14 @@ after_success:
   - docker push alexbr9007/web
   - docker push alexbr9007/db
 
-deploy:
-  provider: elasticbeanstalk
-  region: us-west-2
-  app: mydashboard
-  env: Mydashboard-env
-  bucket_name: elasticbeanstalk-us-west-2-401387916447
-  bucket_path: mydashboard
-  on:
-    branch: aws-container
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_SECRET_KEY
+#deploy:
+#  provider: elasticbeanstalk
+#  region: us-west-2
+#  app: mydashboard
+#  env: Mydashboard-env
+#  bucket_name: elasticbeanstalk-us-west-2-401387916447
+#  bucket_path: mydashboard
+#  on:
+#    branch: aws-container
+#  access_key_id: $AWS_ACCESS_KEY
+#  secret_access_key: $AWS_SECRET_KEY
