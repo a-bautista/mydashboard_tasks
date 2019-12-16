@@ -26,6 +26,7 @@
           "containerPort": 8888
         }
       ],
+      "links": ["nginx", "web"],
       "memory": 128
     }
   ]
