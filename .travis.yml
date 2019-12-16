@@ -5,6 +5,7 @@ services:
 script:
   - docker build -t alexbr9007/nginx ./nginx
   - docker build -t alexbr9007/mydashboard .
+  - docker build -t alexbr9007/db ./db
 
 after_success:
 
@@ -13,5 +14,7 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
   # Take your images to docker hub
-  - docker push alexbr9007/nginx  
-  - docker push alexbr9007/mydashboard
+  # docker push alexbr9007 is the name of your repo. I made the images to be the same as your repo name.
+  - docker push alexbr9007/nginx
+  - docker push alexbr9007/web
+  - docker push alexbr9007/db

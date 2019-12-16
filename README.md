@@ -245,3 +245,13 @@ After creating the database, you should be able to use all the CRUD operations.
 
 What nginx does is that instead of using Django as the server for displaying your app you will be using nginx. You need to create a separate folder with its Dockerfile
 and the nginx.conf file.
+
+You can use `docker-compose up` to start running all your containers.
+
+### Deploying to AWS
+You need to create the Dockerrun.aws.json file to configure the containers that you want to run.
+
+    {
+          "hostPort": 80, <-- from your nginx map to the container port 8888
+          "containerPort": 8888
+        }
