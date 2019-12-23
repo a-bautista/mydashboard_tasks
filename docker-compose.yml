@@ -9,6 +9,10 @@ services:
 
     depends_on: # this indicates to run the db before the web service
       - db
+    volumes:
+      # use the line from below when you want to include the virtual environments which are not necessary
+      #- /app/venv
+      - .:/app
 
   nginx: # this is the name of your second container that will be loaded as nginx_1
     build: ./nginx # build the Docker image from the ./nginx folder

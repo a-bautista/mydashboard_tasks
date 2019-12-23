@@ -1,13 +1,12 @@
 {% extends "base.html" %} {% load widget_tweaks %} {% block content %}
 <div class="content-header">
-  {{ request.resolver_match.url_name }}
-  {% if request.resolver_match_url_name == 'create_task' %}
+  {% if request.resolver_match.url_name == 'create_task' %}
     <h1>Create a new task</h1>
-  {% elif request.resolver_match_url_name == 'update_task' %}
-    <h1>Update task</h1>
-  {% else %}
-    <h1>I don't know!</h1>
   {% endif %}
+  {% if request.resolver_match.url_name == 'update_task' %}
+    <h1>Update task</h1>
+  {% endif %}
+
 </div>
 <div id="form-group">
   <form method="POST" action="." enctype="multipart/form-data">

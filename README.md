@@ -192,6 +192,11 @@ After you have created the db, you need to apply the migrations and create a sup
 
 ###Heroku with containerized docker
 
+## set the volumes
+
+    sudo docker run -p 3000:8888 -v$(pwd):/app  mydashboard_web
+
+
 ### 1. Type the following command to apply the `sudo heroku container:login` successfully. This command provides the login to connect into the Heroku Container Registry.
 
     `sudo apt install gnupg2 pass`
