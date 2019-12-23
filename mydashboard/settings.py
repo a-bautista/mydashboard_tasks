@@ -76,12 +76,25 @@ WSGI_APPLICATION = 'mydashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# If this app is deployed to Heroku, remove the comments from below
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# If this app is deployed to Heroku, add comments to this Databases section
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'postgres',
+#        'USER': 'postgres',
+#        'PASSWORD': 'postgres_password',
+#        'HOST': 'db',
+#        'PORT': 5432
+#    }
+#}
 
 import dj_database_url
 db_from_env = dj_database_url.config()

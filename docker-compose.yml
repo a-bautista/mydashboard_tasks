@@ -1,3 +1,8 @@
+'''
+  If you are deploying this docker app to Heroku then comment all the lines from below and erase the configuration settings from the db in the settings.py file
+  becaue it is not necessary.
+'''
+'''
 version: "3"
 
 services:
@@ -9,8 +14,8 @@ services:
 
     depends_on: # this indicates to run the db before the web service
       - db
-    volumes:
-      - mydashboard/venv
+    #volumes:
+      #- mydashboard/venv
       #- mydashboard/.:.
 
   db: # this is the name of your third container that will be loaded as db_1
@@ -22,4 +27,4 @@ services:
      - PGDATABASE=postgres
      - PGPASSWORD=postgres_password
      - PGPORT=5432
-
+'''
