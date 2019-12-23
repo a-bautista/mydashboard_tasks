@@ -1,6 +1,7 @@
 # Python Libraries
 from django.db import models
 from django.utils import timezone
+from datetime import date
 #from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
@@ -11,24 +12,26 @@ from django.utils import timezone
 class Task(models.Model):
 
     # ------------------------- Initial definitions -----------------------------
-    DATAVIEWS = 'Dataviews'
-    SOX_COMPLIANCE_ISSUES = 'SOX Compliance Issues'
-    TROUBLESHOOTING = 'Troubleshooting'
-    PROGRAMMING_SQL = 'Programming SQL'
-    AUTOMATION = 'Automation'
-    SYTELINE_TROUBLESHOOTING = 'SyteLine Troubleshooting'
+    PERSONAL_DEVELOPMENT = 'Personal Development'
+    LEISURE = 'Leisure'
+    HOME = 'Home'
+    JOB = 'Job'
+    HEALTH = 'Health'
+    FAMILY = 'Family'
+    STUDIES = 'Studies'
 
     ACTIVE = 'Active'
     CANCELLED = 'Cancelled'
     FINALIZED = 'Finalized'
 
-    CATEGORIES = [(DATAVIEWS, DATAVIEWS), (SOX_COMPLIANCE_ISSUES, SOX_COMPLIANCE_ISSUES), (TROUBLESHOOTING, TROUBLESHOOTING),
-                  (PROGRAMMING_SQL, PROGRAMMING_SQL), (AUTOMATION, AUTOMATION), (SYTELINE_TROUBLESHOOTING, SYTELINE_TROUBLESHOOTING)]
+    # -------------------------- Options in the dropdown menu ------------------------
+
+    CATEGORIES = [(PERSONAL_DEVELOPMENT, PERSONAL_DEVELOPMENT), (LEISURE, LEISURE), (HOME, HOME),
+                  (JOB, JOB), (HEALTH, HEALTH), (FAMILY, FAMILY), (STUDIES, STUDIES)]
 
     # ACTIVE will go to the current value of itself (Active) and use it for data storage
     # The second ACTIVE is the human readable name that goes in the dropdown menu
-    STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED),
-              (FINALIZED, FINALIZED)]
+    STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED), (FINALIZED, FINALIZED)]
 
     # ------------------------- Main fields --------------------------------------
     id = models.AutoField(primary_key=True)
@@ -38,8 +41,9 @@ class Task(models.Model):
         null=False, max_length=140)
 
     category = models.CharField(
-        max_length=24, choices=CATEGORIES, default=SYTELINE_TROUBLESHOOTING)
+        max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
 
+    initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
     initial_date = models.DateField(default=timezone.now(), null=False)
     ending_date = models.DateField(null=True)
