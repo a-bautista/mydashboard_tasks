@@ -189,3 +189,206 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku run python3 manage.py migrate -a djangodocker`
     `heroku run python3 manage.py makemigrations -a djangodocker`
     `heroku run python3 manage.py create superuser`
+
+###Heroku with containerized docker
+
+### 1. Type the following command to apply the `sudo heroku container:login` successfully. This command provides the login to connect into the Heroku Container Registry.
+
+    `sudo apt install gnupg2 pass`
+
+
+### 2. Create a new project and login into the Heroku Container Registry
+
+    `heroku login`
+
+    `heroku create telos-dashboard`
+
+    `sudo heroku container:login`
+
+### 3. Provide the PostgreSQL database for production
+
+    `heroku addons:create heroku-postgresql:hobby-dev -a djangodocker`
+
+### 4. Install the postgresql dependency
+
+    `pipenv install dj-database-url psycopg2`
+
+### 5. Update the Django Database Settings in the `settings.py`
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
+        }
+
+        # Heroku settings that need to be added
+        `import dj_database_url`
+        `db_from_env = dj_database_url.config()`
+        `DATABASES['default'].update(db_from_env)`
+        `DATABASES['default']['CONN_MAX_AGE'] = 500`
+
+### 6. Modify the `settings.py` to include the following line for rendering templates.
+
+    `TEMPLATES = [ ....`
+        `'DIRS': [os.path.join(BASE_DIR, 'templates')],`
+     `..]`
+
+### 7. Install the pipenv dependencies with the command pipenv install
+
+### 8. Run the following command at the same level of your manage.py file (you must have your virtual environment activated to run this command with the gunicorn library installed):
+
+    `gunicorn djangodocker.wsgi:application --bind 0.0.0.0:8888`
+
+## 9. There should be 2 Dockerfiles, one for heroku and the other one for local testing.
+
+    `Dockerfile.dev` - sudo docker build -t abautista/django-docker -f Dockerfile.dev .
+
+    `Dockerfile` - sudo docker build -t abautista/django-docker-heroku -f Dockerfile .
+
+For testing you image locally, you need to execute the command `sudo docker run -p 3000:8888 <image_id>`.
+
+### 11. Create the docker image that will be released in Heroku. Run the command at the same level of the Dockerfile.
+
+    `sudo docker build -t abautista/django-docker-heroku .`
+
+### 12. Push the image into Heroku (djangodocker is the name of your app)
+
+    `sudo heroku container:push web -a djangodocker`
+
+### 13. Release the image in heroku
+
+    `sudo heroku container:release web -a djangodocker`
+
+### 14. Open the heroku app to verify that it is working.
+
+    `heroku open -a djangodocker`
+
+### 15. Make the migrations in the Docker container after you have changed the configuration.
+
+
+    `heroku run python3 manage.py migrate -a djangodocker`
+    `heroku run python3 manage.py makemigrations -a djangodocker`
+    `heroku run python3 manage.py create superuser`
+
+    In case you cannot do it with the command from above use the following:
+
+    `heroku run bash -a djangodocker`
+    `cd src`
+    `python3 manage.py makemigrations`
+
+### Additional notes
+
+#### See the logs in Heroku in case something has failed.
+
+    `heroku logs -a djangodocker --tail`
+
+#### Log into the bash of the Heroku app.
+
+    `heroku run bash -a djangodocker`
+
+
+###Testing with AWS
+
+In order to run your app with AWS, we need to create each service (Django, Nginx and PostgreSQL) separately. For doing that we need to create the docker-compose.yml file
+and modify the settings.py to add the following lines:
+
+`settings.py`
+`DATABASES = {`
+    `'default': {`
+        `'ENGINE': 'django.db.backends.postgresql',`
+        `'NAME': 'postgres',`
+        `'USER': 'postgres',`
+        `'HOST': 'db',`
+        `'PORT': 5432`
+        `#If there is not any password set up then everyone can access to this db`
+    `}
+`}`
+
+`docker-compose.yml`
+
+`version: "3"`
+
+`services:``
+  `web: # this is the name of your first container`
+    `build: . # this is equivalent to sudo docker build . (executes the Dockerfile)`
+    `ports:`
+      `- "3000:8888" # map from your web browser port 3000 to container port 8888`
+
+    `depends_on: # this indicates to run the db before the web service`
+    `  - db`
+
+  `db: # this is the name of your second container`
+    `image: postgres:11`
+
+The ports that were setup in the web service are used to map your container to your web browser, so your port `localhost:3000` will redirect you to the port 8888
+of your container.
+
+The postgres container is created from the docker-compose.yml file and once it is running you can connect to the database  with:
+
+`sudo docker exec -it mydashboard_db_1 psql -U postgres` and then create your table task:
+
+You can see all your running container from the docker-compose with the command `docker-compose ps` and you can delete all those container with `docker-compose rm`.
+
+Then you insert the following command to create your table.
+
+`create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
+
+Every time you access to the container, the database will be already there but in case you encounter problems within it, you should destroy all the images with
+`sudo docker-compose rm`.
+
+After creating the database, you should be able to use all the CRUD operations.
+
+### Working with nginx
+
+What nginx does is that instead of using Django as the server for displaying your app, it  will be using nginx. You need to create a separate folder with its Dockerfile
+and the nginx.conf file. nginx is a server that can handle routing between server and client and other different services but for this app we won't touch into details
+about all these services.
+
+You can use `docker-compose up` to start running all your containers.
+
+### Deploying to .travis -> DockerHub -> AWS Elastic Bean Stalk
+
+The .travis file has the purpose to create the images of your containers, perform tests and push them to DockerHub, so AWS can use them to deploy your app.
+
+You need to create the Dockerrun.aws.json file to configure the containers that you want to run because for AWS, that's the equivalent to docker-compose.yml file.
+When you deploy an app through Amazon Elastic Bean Stalk, this one uses the Amazon Elastic Container Service (ECS) for running containers. The ECS have task definitions
+which contain instructions about how to run a single container.
+
+In AWS you have to create your Elastic Bean Stalk service to deploy your application but you need to create separate services such as the RDB configure the security groups,
+so you can connect your database container with the Amazon RDB service. When creating the EBS, you need to select the platform as multi container docker and then you click on the
+create environment.
+In your Amazon account there is something called the Default Virtual Private Cloud (VPC) which is used to contain all the services that you create. By default,
+all the services you create are disconnected and the VPC is used to bundle them together so they can start talking to each other. VPC are assigned as default per region.
+When you type VPC and then on Your VPCs you will find your default VPC. In order to connect your different services through the VPC, you need to configure the security
+group which are the rules that describe which services can connect through the VPC (you can find the security groups created under the VPC service and then look for security groups).
+
+To create an RDS service you type RDS and then you select the postgresql service, then you click on next and you set the following points:
+
+DB instance id: telos-db
+DB name or initial db name: postgres
+PORT: 5432
+engine version : 11.1 (because that's almost the same version of your container)
+disable the automatic backups
+master username: postgres
+password: (use the same as you defined in your settings file)
+
+In network and security, you select the Default VPC, in public accessibility you select NO, then you select the create VPC security group.
+Now you need to create the custom security group, then you click on VPC and then you look for Security groups and then you hit on the Create Security
+Group and you put the name such as the name of your app, then you select your default VPC. Then you click on the Inboud rules and then you click on
+Edit and you leave Custom TCP, then you put the ports range 5432 which belongs to postgres and for the source you selec the Group ID of your newly
+created security group.
+
+Now you you go back to the postgresql to add the security group. You select RDS, then you click on Instances and click on Modify then you go to Network and security and you add the security group
+you created previously. You click on apply immediately and then you click on Modify DB instance. You go back to the EBS and then you click on configuration and you select EC2 to select the security
+group you want to add in your EBS application.
+
+You go back to your elastic beanstalk, then you click on configuration and select your newly created security group in the EC2 menu.
+
+You set up the environment rules by going to configuration and under the software section you click on modify and you put all your postgresql variables that you defined on your docker-compose.yml file.
+When you type the PGHOST you need to look for the instance of your RDS full value (us-west-2.rds.amazonaws.com)
+
+Then you need to configure the IAM (User Access and Encryption keys) by selecting IAM from the main menu and then you create your new user, then you set your permissions by selecting
+attach existing policies directly and then on the search menu you type  beanstalk and you select all your permissions for now. You copy the access variables that are provided and you paste them
+in your travis-ci account under settings and then you create the protected variables for storing the keys.
+
