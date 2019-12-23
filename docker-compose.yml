@@ -14,9 +14,11 @@ services:
 
     depends_on: # this indicates to run the db before the web service
       - db
-    #volumes:
-      #- mydashboard/venv
-      #- mydashboard/.:.
+
+    volumes:
+      # use the line from below when you want to include the virtual environments which are not necessary
+      #- /app/venv
+      - .:/app
 
   db: # this is the name of your third container that will be loaded as db_1
     #build: ./db
