@@ -4,7 +4,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 from .forms import TaskModelForm, DropDownMenuForm
 from .models import Task
-import psycopg2
 import json
 
 
