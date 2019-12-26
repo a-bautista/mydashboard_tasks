@@ -31,10 +31,12 @@ class DropDownMenuForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task', 'category', 'status']
+        fields = ['task', 'category', 'status', 'ending_date', 'points']
 
     def __init__(self, *args, **kwargs):
         super(TaskModelForm, self).__init__(*args, **kwargs)
         # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
-        self.fields['status'].required = False
         self.fields['task'].required = True
+        self.fields['status'].required = False
+        self.fields['points'].required = False
+        self.fields['ending_date'].required = False
