@@ -10,21 +10,23 @@ from django.db.models.signals import post_save
 
 
 class Task(models.Model):
-
     # ------------------------- Initial definitions -----------------------------
-    DATAVIEWS = 'Dataviews'
-    SOX_COMPLIANCE_ISSUES = 'SOX Compliance Issues'
-    TROUBLESHOOTING = 'Troubleshooting'
-    PROGRAMMING_SQL = 'Programming SQL'
-    AUTOMATION = 'Automation'
-    SYTELINE_TROUBLESHOOTING = 'SyteLine Troubleshooting'
+    PERSONAL_DEVELOPMENT = 'Personal Development'
+    LEISURE = 'Leisure'
+    HOME = 'Home'
+    JOB = 'Job'
+    HEALTH = 'Health'
+    FAMILY = 'Family'
+    STUDIES = 'Studies'
 
     ACTIVE = 'Active'
     CANCELLED = 'Cancelled'
     FINALIZED = 'Finalized'
 
-    CATEGORIES = [(DATAVIEWS, DATAVIEWS), (SOX_COMPLIANCE_ISSUES, SOX_COMPLIANCE_ISSUES), (TROUBLESHOOTING, TROUBLESHOOTING),
-                  (PROGRAMMING_SQL, PROGRAMMING_SQL), (AUTOMATION, AUTOMATION), (SYTELINE_TROUBLESHOOTING, SYTELINE_TROUBLESHOOTING)]
+    # -------------------------- Options in the dropdown menu ------------------------
+
+    CATEGORIES = [(PERSONAL_DEVELOPMENT, PERSONAL_DEVELOPMENT), (LEISURE, LEISURE), (HOME, HOME),
+                  (JOB, JOB), (HEALTH, HEALTH), (FAMILY, FAMILY), (STUDIES, STUDIES)]
 
     # ACTIVE will go to the current value of itself (Active) and use it for data storage
     # The second ACTIVE is the human readable name that goes in the dropdown menu
