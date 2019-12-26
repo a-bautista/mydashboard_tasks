@@ -344,6 +344,16 @@ Every time you access to the container, the database will be already there but i
 
 After creating the database, you should be able to use all the CRUD operations.
 
+If for some reason you need to change a database column and you are already using docker-compose and you encounter this error
+`psql: could not translate host name "postgres" to address: Temporary failure in name resolution` then you can bypass it with the following command:
+
+`sudo docker exec -it mydashboard_db_1 psql -h 127.0.0.1 -p 5432 -U postgres` where mydashboard_db_1 is the name of you db container, -h 127.0.0.1 indicates
+to connect from the host and -p to use the port 5432 that belongs to the container.
+
+For altering a table to add a new column you use:
+
+`alter table task_task add column initial_week smallint;`
+
 ### Working with nginx
 
 What nginx does is that instead of using Django as the server for displaying your app, it  will be using nginx. You need to create a separate folder with its Dockerfile
