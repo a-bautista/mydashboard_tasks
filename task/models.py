@@ -1,6 +1,7 @@
 # Python Libraries
 from django.db import models
 from django.utils import timezone
+from datetime import date
 from django.db.models import Q, F
 from django.db.models.signals import post_save
 
@@ -62,7 +63,7 @@ def update_points(sender, instance, created, **kwargs):
     INCREASE_POINT = 5
 
     if created:
-        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+5)
+        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+INCREASE_POINT)
 
     # Get only the tasks that are active, then order them by id in descending order and show all of them except the first one
     #qs = Task.objects.filter(status='Active').order_by('-id')[1:]
