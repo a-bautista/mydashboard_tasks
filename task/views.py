@@ -4,7 +4,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 from .forms import TaskModelForm, DropDownMenuForm
 from .models import Task
-import psycopg2
 import json
 
 
@@ -24,10 +23,10 @@ def create_task(request):
         # obj = Task.objects.create(**form.cleaned_data) grabs all the fields from the forms and stores them in the Task
         obj = form_create.save()
         # The code from below allows us to do some intermediate steps to the data before storing them into the db
-        # obj = form_create.save(commit=False)
+        #obj = form_create.save(commit=False)
         # obj = Task.objects.create(**form.cleaned_data)
         # you can do intermediate steps with the class based models
-        # obj.responsible = form.cleaned_data.get('responsible') + "0"
+        #obj.points = form_create.cleaned_data.get('points')
         obj.save()
         # Clean the form
         form_create = TaskModelForm()
@@ -90,8 +89,6 @@ def view_previous_tasks(request):
         template_name = 'task/retrieval_results/previous_tasks.html'
         year = request.POST.get('select_year', None)
         week = request.POST.get('select_week', None)
-        values_graph = ""
-        keys_graph = ""
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date = get_start_end_date(year, week)[0]
