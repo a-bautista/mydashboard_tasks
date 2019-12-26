@@ -84,7 +84,8 @@ DATABASES = {
     }
 }
 
-# If this app is deployed to Heroku, add comments to this Databases section
+# If this app is deployed to Heroku, add comments to this Databases section. This section is used with the docker-compose.yml file
+# for connecting your postgres db. 
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql',

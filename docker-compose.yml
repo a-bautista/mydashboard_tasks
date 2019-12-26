@@ -1,6 +1,6 @@
 '''
-  If you are deploying this docker app to Heroku then comment all the lines from below and erase the configuration settings from the db in the settings.py file
-  becaue it is not necessary.
+  This file is used for testing purposes locally. If you are deploying this docker app to Heroku then comment all the
+  lines from below and comment some sections in the configuration settings (they are indicated).
 '''
 '''
 version: "3"
