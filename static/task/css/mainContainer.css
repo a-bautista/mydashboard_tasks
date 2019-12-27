@@ -65,6 +65,7 @@
   display: inline-block;
 }
 .sample-widget {max-width: 47%;}
+.sample-widget-extended { max-width: 95%; }
 .widget-box .fa-cog {
   float: right;
   color: #fff;
