@@ -18,11 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 
 #import the URLs from the main dashboard component
-from .views import home
-from task.views import (HomeView)
+#from .views import home
+from task.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HomeView.as_view(), name='home'),
-    path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls
+    #path('', home, name='home'),
+    #path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls
+    path('', include('task.urls')) # when you reach home, go directly to look for the urls from the Task application
 ]
