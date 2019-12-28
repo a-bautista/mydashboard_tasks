@@ -9,6 +9,10 @@ from django.db.models.signals import post_save
 # When you clone this repo run the following to apply the migrations correctly:  the python3 manager.py migrate --run-syncdb
 # to retrieve the objects in the shell you type from task.models import Task
 
+class User_Points(models.Model):
+    id = models.CharField(null=False, max_length=1, default=1, primary_key=True)
+    points = models.CharField(null=False, max_length=4)  # 9999 is the max value of points
+
 
 class Task(models.Model):
     # ------------------------- Initial definitions -----------------------------

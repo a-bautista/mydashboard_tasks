@@ -3,7 +3,7 @@ from datetime import date
 
 ######## Django libraries #######
 from django import forms
-from .models import Task
+from .models import Task, User_Points
 
 '''Declare the class to indicate the data that will be stored. '''
 
@@ -40,3 +40,8 @@ class TaskModelForm(forms.ModelForm):
         self.fields['status'].required = False
         self.fields['points'].required = False
         self.fields['ending_date'].required = False
+
+class User_PointsForm(forms.ModelForm):
+    class Meta:
+        model = User_Points
+        fields = ['id', 'points']
