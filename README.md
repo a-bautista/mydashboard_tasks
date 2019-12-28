@@ -187,7 +187,7 @@ create the table task based on the models.py file (notice the name must be task_
 # table for the user points
 `CREATE TABLE TASK_USER_POINTS(id serial, points text);`
 
-# insert the only user 
+# insert the only user
 `insert into Task_User_Points(id, points) values (1,0);`
 
 After you have created the db, you need to apply the migrations and create a super user:
