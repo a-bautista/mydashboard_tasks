@@ -10,6 +10,11 @@ from django.db.models import Q, F
 # When you clone this repo run the following to apply the migrations correctly:  the python3 manager.py migrate --run-syncdb
 # to retrieve the objects in the shell you type from task.models import Task
 
+class User_Points(models.Model):
+
+     id     = models.CharField(null=False, max_length=1, default=1, primary_key=True)
+     points = models.CharField(null=False, max_length=4) # 9999 is the max value of points
+
 class Task(models.Model):
 
     # ------------------------- Initial definitions -----------------------------
@@ -51,10 +56,6 @@ class Task(models.Model):
 
     # ------------------------- Post Save --------------------------------------
 
-    #@receiver(post_save, sender=Task)
-    #def update_points(sender, instance, created, **kwargs ):
-    #    if created:
-    #       print("Object created")
 
 def update_points(sender, instance, created, **kwargs):
     # Current value of increase points

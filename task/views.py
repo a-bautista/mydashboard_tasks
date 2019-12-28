@@ -2,16 +2,16 @@ from datetime import date, datetime, timedelta
 from django.views.generic import View
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
-from .forms import TaskModelForm, DropDownMenuForm
+from .forms import TaskModelForm, DropDownMenuForm, User_PointsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task
+from .models import Task, User_Points
 import json, calendar
 
 
 def home(request):
-    my_title = "Telos App"
-    context = {"title": my_title}
+    user_points = User_Points.objects.filter(id=1).values('points').values_list('points')[0][0] # get the current values of your db
+    context = { "points": user_points } # display the current points
     return render(request, 'task/home.html', context)
 
 class Dashboard_Categories_Month(APIView):
@@ -116,8 +116,11 @@ def retrieve_all(request):
 def update_task(request, id):
     '''Update a task'''
     task = Task.objects.get(pk=id)  # get the task id from the db
+    #user = User_Points.objects.get(pk=1)
     # overwrite the task, do not create a new one
     form = TaskModelForm(request.POST or None, instance=task)
+    #user_points = User_PointsForm(request.POST or None, instance=user)
+    user_points = User_Points.objects.filter(id=1) # get our only user from the db
 
     if request.method == "GET":
         template_name = 'task/formTask.html'
@@ -125,6 +128,10 @@ def update_task(request, id):
 
     elif request.method == "POST":
         if form.is_valid():
+            if request.POST.get('status', None) == 'Finalized':
+                # extract the values from the qs and convert it to int
+                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
+                user_points.update(points=holder+int(request.POST.get('points', None)))
             form.save()
         return redirect('/task/tasks/')
 
