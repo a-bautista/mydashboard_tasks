@@ -184,6 +184,9 @@ create the table task based on the models.py file (notice the name must be task_
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
+# table for the user points
+`CREATE TABLE TASK_USER_POINTS(id serial, points text);`
+
 After you have created the db, you need to apply the migrations and create a super user:
 
     `heroku run python3 manage.py migrate -a djangodocker`
