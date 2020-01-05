@@ -101,8 +101,11 @@ def create_task(request):
 def delete_task(request, id):
     '''Delete a task'''
     task = Task.objects.get(pk=id)
+    user_points = User_Points.objects.filter(id=1) # get our only user from the db
     if request.method == "POST":
-        task.delete()
+        holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0]) # get the current point of the task
+        user_points.update(points=holder-int(task.points)) # subtract the total points minus the subtracted points
+        task.delete() # delete the task from the db
     return redirect('/task/tasks/')
 
 
@@ -129,9 +132,13 @@ def update_task(request, id):
     elif request.method == "POST":
         if form.is_valid():
             if request.POST.get('status', None) == 'Finalized':
-                # extract the values from the qs and convert it to int
+                # extract the values from the qs and convert it to int, so you can add those values to the counter of points
                 holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
-                user_points.update(points=holder+int(request.POST.get('points', None)))
+                user_points.update(points=holder+int(request.POST.get('points', None))) # get the points of the form with section points
+            elif request.POST.get('status', None) == 'Cancelled':
+                # extract the values from the qs and convert it to int, so you can subtract those values to the counter of points
+                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
+                user_points.update(points=holder-int(request.POST.get('points', None))) # get the points of the form with section points
             form.save()
         return redirect('/task/tasks/')
 
@@ -214,3 +221,5 @@ def get_start_end_date_monthly(year, month):
     ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
 
     return initial_date, ending_date
+
+
