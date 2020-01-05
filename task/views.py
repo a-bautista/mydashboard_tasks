@@ -11,7 +11,8 @@ import json, calendar
 
 def home(request):
     user_points = User_Points.objects.filter(id=1).values('points').values_list('points')[0][0] # get the current values of your db
-    context = { "points": user_points } # display the current points
+    week = date.today().isocalendar()[1]
+    context = { "points": user_points, "month": datetime.now().strftime("%B"), "week": week } # display the current points, current month, current week
     return render(request, 'task/home.html', context)
 
 class Dashboard_Categories_Month(APIView):
@@ -57,18 +58,11 @@ class Dashboard_Tasks_Week(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         week = date.today().isocalendar()[1]
-        initial_date, ending_date = get_start_end_date(year, week)
 
-        qs = Task.objects.values(
-            'task','points').filter(initial_date__gte=initial_date, initial_date__lte=ending_date, status='Active')
+        qs = Task.objects.values('task','points').filter(status='Active')
 
         x_axis = list(qs.values_list('task'))
         y_axis = list(qs.values_list('points'))
-
-        #keys_graph = list(qs_group_by.values_list('points'))
-        #values_graph = list(qs_group_by.values_list('count'))
-        #print(keys_graph)
-        #print(values_graph)
 
         front_end_dictionary = {
             "labels_graph": x_axis,
@@ -221,5 +215,3 @@ def get_start_end_date_monthly(year, month):
     ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
 
     return initial_date, ending_date
-
-

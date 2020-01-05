@@ -6,13 +6,12 @@
 <h1>Current points: {{points}}</h1>
 </div>
 
-
 <!-- First graph -->
 <div class="widget-box sample-widget-extended">
       <div class="widget-header">
-            <h2>Tasks by points</h2>
+            <h2>Current week {{week}}</h2>
         </div>
-		<div class="widget-content">
+    <div class="widget-content">
             <canvas id="graph_points_week" width="700" height="200"></canvas>
         </div>
 </div>
@@ -20,9 +19,9 @@
 <!-- Second graph -->
 <div class="widget-box sample-widget">
         <div class="widget-header">
-            <h2>Categories of Tasks</h2>
+            <h2>Current month: {{month}}</h2>
         </div>
-		<div class="widget-content">
+    <div class="widget-content">
             <canvas id="graph_categories_month" width="800" height="700"></canvas>
         </div>
 </div>
@@ -30,9 +29,9 @@
 <!-- Third graph -->
 <div class="widget-box sample-widget">
       <div class="widget-header">
-            <h2>Status of Tasks</h2>
+            <h2>Current month: {{month}}</h2>
         </div>
-		<div class="widget-content">
+    <div class="widget-content">
             <canvas id="graph_status_month" width="800" height="700"></canvas>
         </div>
 </div>
@@ -45,35 +44,35 @@
 
     // First graph: Points in Tasks
 
-	var endpoint = 'dashboard_points_week' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
-	var labels_graph = []
-	var values_graph = []
-	$.ajax({
-		method: "GET",
-		url: endpoint,
-		dataType: 'json',
-		success: function(front_end_dictionary){
-				$.each(front_end_dictionary,function(key,val){
-					if (key == "labels_graph"){
-						labels_graph = val
-					}else if (key == "values_graph"){
-						values_graph = val
-					}
-				});
-				setGraphPoints()
-		},
-		  error: function(jqXHR, textStatus, errorThrown) {
+  var endpoint = 'dashboard_points_week' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var labels_graph = []
+  var values_graph = []
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    dataType: 'json',
+    success: function(front_end_dictionary){
+        $.each(front_end_dictionary,function(key,val){
+          if (key == "labels_graph"){
+            labels_graph = val
+          }else if (key == "values_graph"){
+            values_graph = val
+          }
+        });
+        setGraphPoints()
+    },
+      error: function(jqXHR, textStatus, errorThrown) {
           console.log(JSON.stringify(jqXHR));
           console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-		}
-	})
+    }
+  })
 
     // Define the chart for the third graph
-	function setGraphPoints()
-	{
-		var ctx_graph     = document.getElementById("graph_points_week")
-		var display_graph = new Chart(ctx_graph, {
-		type:'bar',
+  function setGraphPoints()
+  {
+    var ctx_graph     = document.getElementById("graph_points_week")
+    var display_graph = new Chart(ctx_graph, {
+    type:'bar',
         data: {
             labels: labels_graph,
             datasets :
@@ -105,40 +104,40 @@
           tooltipEvents: [],
           tooltipCaretSize: 0,
           scales: {
-								yAxes: [{
-									ticks: {
-										beginAtZero: true,
-										fontColor: '#000',
-										fontSize: 10
-									   },
-									gridLines: {
-										display: false,
-										color:'#000'
-										},
-									scaleLabel: {
-										display: true,
-										fontSize: 15,
-										labelString: 'Points in task',
-										fontColor: '#000'
-										}
-									}],
-								xAxes: [{
-									ticks: {
-										fontColor: '#000',
-										fontSize: 8
-										},
-									gridLines: {
-										display:false,
-										color:'#000'
-										},
-									scaleLabel: {
-										display: false,
-										fontSize: 30,
-										labelString: 'Current tasks',
-										fontColor: '#000'
-										}
-									}]
-								}, //end of scales
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                    fontColor: '#000',
+                    fontSize: 10
+                     },
+                  gridLines: {
+                    display: false,
+                    color:'#000'
+                    },
+                  scaleLabel: {
+                    display: true,
+                    fontSize: 15,
+                    labelString: 'Points in task',
+                    fontColor: '#000'
+                    }
+                  }],
+                xAxes: [{
+                  ticks: {
+                    fontColor: '#000',
+                    fontSize: 8
+                    },
+                  gridLines: {
+                    display:false,
+                    color:'#000'
+                    },
+                  scaleLabel: {
+                    display: false,
+                    fontSize: 30,
+                    labelString: 'Current tasks',
+                    fontColor: '#000'
+                    }
+                  }]
+                }, //end of scales
 
                 plugins: {
                     datalabels: {
@@ -170,58 +169,42 @@
                   bottom: 0,
                   top: 0
               }
-          },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
-          }// end of options
+            } // end of layout
+          } // end of options
         }); // end of display_graph variable
       }// end of function
 
     // Second graph: Category of Tasks
 
-	var endpoint = 'dashboard_categories_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
-	var labels_graph = []
-	var values_graph = []
-	$.ajax({
-		method: "GET",
-		url: endpoint,
-		dataType: 'json',
-		success: function(front_end_dictionary){
-				$.each(front_end_dictionary,function(key,val){
-					if (key == "labels_graph"){
-						labels_graph = val
-					}else if (key == "values_graph"){
-						values_graph = val
-					}
-				});
-				setGraphCategories()
-		},
-		  error: function(jqXHR, textStatus, errorThrown) {
+  var endpoint = 'dashboard_categories_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var labels_graph = []
+  var values_graph = []
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    dataType: 'json',
+    success: function(front_end_dictionary){
+        $.each(front_end_dictionary,function(key,val){
+          if (key == "labels_graph"){
+            labels_graph = val
+          }else if (key == "values_graph"){
+            values_graph = val
+          }
+        });
+        setGraphCategories()
+    },
+      error: function(jqXHR, textStatus, errorThrown) {
           console.log(JSON.stringify(jqXHR));
           console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-		}
-	})
+    }
+  })
 
     // Define the chart for the first graph
-	function setGraphCategories()
-	{
-		var ctx_graph     = document.getElementById("graph_categories_month")
-		var display_graph = new Chart(ctx_graph, {
-		type:'pie',
+  function setGraphCategories()
+  {
+    var ctx_graph     = document.getElementById("graph_categories_month")
+    var display_graph = new Chart(ctx_graph, {
+    type:'pie',
         data: {
             labels: labels_graph,
             datasets :
@@ -302,35 +285,35 @@
 
     // Third graph: Status of Tasks
     var endpoint = 'dashboard_status_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
-	var labels_graph = []
-	var values_graph = []
-	$.ajax({
-		method: "GET",
-		url: endpoint,
-		dataType: 'json',
-		success: function(front_end_dictionary){
-				$.each(front_end_dictionary,function(key,val){
-					if (key == "labels_graph"){
-						labels_graph = val
-					}else if (key == "values_graph"){
-						values_graph = val
-					}
-				});
-				setGraphStatus()
-		},
-		  error: function(jqXHR, textStatus, errorThrown) {
+  var labels_graph = []
+  var values_graph = []
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    dataType: 'json',
+    success: function(front_end_dictionary){
+        $.each(front_end_dictionary,function(key,val){
+          if (key == "labels_graph"){
+            labels_graph = val
+          }else if (key == "values_graph"){
+            values_graph = val
+          }
+        });
+        setGraphStatus()
+    },
+      error: function(jqXHR, textStatus, errorThrown) {
           console.log(JSON.stringify(jqXHR));
           console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
-		}
-	})
+    }
+  })
 
     // Define the chart for the second graph
 
-	function setGraphStatus()
-	{
-		var ctx_graph     = document.getElementById("graph_status_month")
-		var display_graph = new Chart(ctx_graph, {
-		type:'pie',
+  function setGraphStatus()
+  {
+    var ctx_graph     = document.getElementById("graph_status_month")
+    var display_graph = new Chart(ctx_graph, {
+    type:'pie',
         data: {
             labels: labels_graph,
             datasets :
@@ -410,4 +393,3 @@
 
 {% endblock %}
 </script>
-
