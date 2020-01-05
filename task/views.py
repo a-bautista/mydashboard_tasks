@@ -101,8 +101,11 @@ def create_task(request):
 def delete_task(request, id):
     '''Delete a task'''
     task = Task.objects.get(pk=id)
+    user_points = User_Points.objects.filter(id=1) # get our only user from the db
     if request.method == "POST":
-        task.delete()
+        holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0]) # get the current point of the task
+        user_points.update(points=holder-int(task.points)) # subtract the total points minus the subtracted points
+        task.delete() # delete the task from the db
     return redirect('/task/tasks/')
 
 
@@ -129,9 +132,13 @@ def update_task(request, id):
     elif request.method == "POST":
         if form.is_valid():
             if request.POST.get('status', None) == 'Finalized':
-                # extract the values from the qs and convert it to int
+                # extract the values from the qs and convert it to int, so you can add those values to the counter of points
                 holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
-                user_points.update(points=holder+int(request.POST.get('points', None)))
+                user_points.update(points=holder+int(request.POST.get('points', None))) # get the points of the form with section points
+            elif request.POST.get('status', None) == 'Cancelled':
+                # extract the values from the qs and convert it to int, so you can subtract those values to the counter of points
+                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
+                user_points.update(points=holder-int(request.POST.get('points', None))) # get the points of the form with section points
             form.save()
         return redirect('/task/tasks/')
 
@@ -181,28 +188,6 @@ def view_previous_tasks(request):
             front_end_dictionary, indent=4, sort_keys=True, default=str)}
 
         return render(request, template_name, converted_front_end_dictionary)
-
-
-# Might replace this later by converting the date values of the db to datetime values every time they are inserted
-# def conversion_date_to_datetime(initial_date):
-#
-#     beginning_year = str(initial_date).split("-")[0]
-#     beginning_month = str(initial_date).split("-")[1]
-#     beginning_day = str(initial_date).split("-")[2]
-#
-#     beginning_hour = 0
-#     beginning_minute = 0
-#     beginning_second = 0
-#
-#     # conversion from string to datetime
-#     beginning_datetime_format = datetime(int(beginning_year), int(beginning_month),
-#                                          int(beginning_day), int(
-#         beginning_hour),
-#         int(beginning_minute), int(beginning_second))
-#
-#     ending_datetime_format = beginning_datetime_format + timedelta(days=7)
-#
-#     return beginning_datetime_format, ending_datetime_format
 
 
 def get_start_end_date(year, week):
