@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -10,7 +9,7 @@
 <!-- First graph -->
 <div class="widget-box sample-widget-extended">
       <div class="widget-header">
-            <h2>Tasks by points</h2>
+            <h2>Current week {{week}}</h2>
         </div>
     <div class="widget-content">
             <canvas id="graph_points_week" width="700" height="200"></canvas>
@@ -20,7 +19,7 @@
 <!-- Second graph -->
 <div class="widget-box sample-widget">
         <div class="widget-header">
-            <h2>Categories of Tasks</h2>
+            <h2>Current month: {{month}}</h2>
         </div>
     <div class="widget-content">
             <canvas id="graph_categories_month" width="800" height="700"></canvas>
@@ -30,7 +29,7 @@
 <!-- Third graph -->
 <div class="widget-box sample-widget">
       <div class="widget-header">
-            <h2>Status of Tasks</h2>
+            <h2>Current month: {{month}}</h2>
         </div>
     <div class="widget-content">
             <canvas id="graph_status_month" width="800" height="700"></canvas>
@@ -170,24 +169,8 @@
                   bottom: 0,
                   top: 0
               }
-          },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
-          }// end of options
+            } // end of layout
+          } // end of options
         }); // end of display_graph variable
       }// end of function
 
