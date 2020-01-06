@@ -49,6 +49,7 @@ class Task(models.Model):
         max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
     points = models.IntegerField(default=5)
+    life_task = models.IntegerField(default=4) # each task has 4 weeks to be completed
 
     initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
     initial_date = models.DateField(default=timezone.now(), null=False)
