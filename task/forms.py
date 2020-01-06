@@ -22,6 +22,16 @@ class DropDownMenuForm(forms.Form):
         choices=[(x, x) for x in range(2019, 2022)], initial=date.today().year)
 
 
+class DropDownMenuMonthsForm(forms.Form):
+    months = ("1",'January'),("2",'February'),("3",'March'),("4",'April'),("5",'May'),("6",'June'),\
+             ("7",'July'), ("8",'August'),("9",'September'),("10",'October'),("11",'November'),("12",'December')
+
+    month = forms.ChoiceField(choices=[x for x in months], initial=date.today().month)
+    year = forms.ChoiceField(choices=[(x,x) for x in range (2016,2021)],initial=date.today().year)
+
+class DropDownMenuYearsForm(forms.Form):
+     year = forms.ChoiceField(choices=[(x, x) for x in range(2017, 2021)], initial=date.today().year)
+
 ''' 
     Instead of using the obj = Task.objects.create(**form.cleaned_data) in the view, you can
     declare a class based model that will insert all the fields into the right place of the model.  

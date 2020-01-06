@@ -1,7 +1,7 @@
 from django.urls import path
 # import the component task
 from .views import (create_task, delete_task, update_task,
-                    view_previous_tasks, retrieve_all, home,
+                    view_previous_tasks, view_previous_tasks_monthly, view_previous_tasks_yearly, retrieve_all, home,
                     Dashboard_Categories_Month, Dashboard_Status_Month,
                     Dashboard_Tasks_Week)
 
@@ -16,5 +16,7 @@ urlpatterns = [
     path('task/new/', create_task, name='create_task'),
     path('task/update/<int:id>/', update_task, name='update_task'),
     path('task/delete/<int:id>/', delete_task, name='delete_task'),
-    path('task/previous_tasks/', view_previous_tasks)
+    path('task/previous_tasks/', view_previous_tasks),
+    path('task/previous_tasks_monthly/', view_previous_tasks_monthly),
+    path('task/previous_tasks_yearly/', view_previous_tasks_yearly)
 ]
