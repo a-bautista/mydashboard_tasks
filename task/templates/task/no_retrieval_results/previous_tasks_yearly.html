@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-header">
+     <h1>Retrieve previous tasks by year<b/h1>
+</div>
+{% include "task/retrieval_yearly_form.html" with action='/task/previous_tasks_yearly/' %}
+
+{% endblock content %}

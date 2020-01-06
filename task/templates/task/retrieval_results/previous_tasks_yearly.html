@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+<script>
+  {% block jquery %}
+      data = {{converted_front_end_dictionary | safe}}
+
+      var year  = data.year
+      var table_results  = data.table_results
+      var labels = data.labels_graph
+      var values = data.values_graph
+
+      //console.log(values);
+      document.getElementById("display_year").innerHTML = year;
+
+      setChart();
+      $('#results').DataTable({
+          data: table_results
+      });
+
+      function setChart()
+      {
+
+        var graph = document.getElementById("graph")
+        var display_graph = new Chart(graph, {
+         type:'pie',
+        data: {
+            labels: labels,
+            datasets :
+                [{
+                  data: values,
+                  backgroundColor: [
+                      'rgba(237, 98, 18, 0.9)',
+                      'rgba(54, 162, 235, 0.9)',
+                      'rgba(255, 206, 86, 0.9)',
+                      'rgba(75, 192, 192, 0.9)',
+                      'rgba(153, 102, 255, 0.9)',
+                      'rgba(45, 154, 35, 0.9)',
+                      'rgba(154, 39, 35, 0.9)',
+                      ],
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                }]
+        },
+        options : {
+          responsive: true,
+          tooltipTemplate: "<%= value %>",
+          tooltipFillColor: "rgba(0,0,0,0)",
+          tooltipFontColor: "#444",
+          tooltipEvents: [],
+          tooltipCaretSize: 0,
+                plugins: {
+                    datalabels: {
+                          display: true,
+                          align: 'center',
+                          anchor: 'center',
+                          color: '#fff'
+                         }
+                      },
+                title: {
+                    display: true,
+                    text: 'Categories of problems',
+                    fontSize: 30,
+                    padding: 50,
+                    fontColor: '#000'
+                    },
+                legend: {
+                    position: 'right',
+                    display: true,
+                labels: {
+                    fontColor: '#000',
+                    fontSize: 15
+                  }
+              },
+          layout: {
+              padding: {
+                  left: 50,
+                  right: 0,
+                  bottom: 0,
+                  top: 0
+              }
+          },
+          tooltips: {
+                    callbacks: {
+                    label: function(tooltipItem, data) {
+                        var allData = data.datasets[tooltipItem.datasetIndex].data;
+                        var tooltipLabel = data.labels[tooltipItem.index];
+                        var tooltipData = allData[tooltipItem.index];
+                        var total = 0;
+                        for (var i in allData) {
+                            total +=  parseInt(allData[i]);
+                        }
+                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
+
+                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
+                              } //end of function
+                          } // end of callbacks
+                      } // end of tooltips
+          }// end of options
+        }); // end of display_graph variable
+      }// end of function
+
+  {% endblock %}
+</script>
+
+{% block content %}
+
+<div style="display:inline-block">
+  <h4 style="color:#000">Current year: <span id="display_year"></span></h4>
+</div>
+<br />
+<div class="col-sm-8">
+  <div><canvas id="graph" width="700" height="400"></canvas></div>
+</div>
+
+<div class="col-sm-14">
+  <table class="table table-borderless" id="results" style="width:100%">
+    <thead class="border-bottom font-weight-bold">
+      <tr>
+        <th bgcolor="#fff">ID</th>
+        <th bgcolor="#fff">Responsible</th>
+        <th bgcolor="#fff">Task</th>
+        <th bgcolor="#fff">Category</th>
+        <th bgcolor="#fff">Status</th>
+        <th bgcolor="#fff">Points</th>
+        <th bgcolor="#fff">Initial Week</th>
+        <th bgcolor="#fff">Initial Date</th>
+        <th bgcolor="#fff">End Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+{% endblock content %}
