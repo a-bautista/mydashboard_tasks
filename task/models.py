@@ -54,7 +54,7 @@ class Task(models.Model):
 
     initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
     initial_date = models.DateField(default=timezone.now(), null=False)
-    ending_date = models.DateField(null=True)
+    ending_date = models.DateField(default=timezone.now())
 
 # ------------------------- Post Save --------------------------------------
 
@@ -64,7 +64,7 @@ class Task(models.Model):
     #       print("Object created")
 
 def update_points(sender, instance, created, **kwargs):
-    # Current value of increase points
+    '''Every time a task is inserted, add 5 points to the previous task except the first one.'''
     INCREASE_POINT = 5
 
     if created:
