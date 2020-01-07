@@ -336,8 +336,6 @@ def get_start_end_date_monthly(year, month):
     return initial_date, ending_date
 
 
-<<<<<<< HEAD
-=======
 def get_start_end_date_yearly(year):
     
     initial_year  = str(year)
@@ -366,4 +364,3 @@ def get_start_end_date_yearly(year):
                                                 ending_hour, ending_minute, ending_second)
 
     return initial_date, ending_date
->>>>>>> f99b684... Telos 1.1.0: Added the feature to see tasks by months and years.
