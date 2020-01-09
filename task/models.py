@@ -2,19 +2,21 @@
 from django.db import models
 from django.utils import timezone
 from datetime import date
-from django.db.models import Q, F
 from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models import Q, F
 
 # Create your models here.
 # When you clone this repo run the following to apply the migrations correctly:  the python3 manager.py migrate --run-syncdb
 # to retrieve the objects in the shell you type from task.models import Task
 
 class User_Points(models.Model):
-    id = models.CharField(null=False, max_length=1, default=1, primary_key=True)
-    points = models.CharField(null=False, max_length=4)  # 9999 is the max value of points
 
+     id     = models.CharField(null=False, max_length=1, default=1, primary_key=True)
+     points = models.CharField(null=False, max_length=4) # 9999 is the max value of points
 
 class Task(models.Model):
+
     # ------------------------- Initial definitions -----------------------------
     PERSONAL_DEVELOPMENT = 'Personal Development'
     LEISURE = 'Leisure'
@@ -35,40 +37,33 @@ class Task(models.Model):
 
     # ACTIVE will go to the current value of itself (Active) and use it for data storage
     # The second ACTIVE is the human readable name that goes in the dropdown menu
-    STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED),
-              (FINALIZED, FINALIZED)]
+    STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED), (FINALIZED, FINALIZED)]
 
     # ------------------------- Main fields --------------------------------------
     id = models.AutoField(primary_key=True)
     responsible = models.CharField(
         null=False, max_length=120, default='Alejandro Bautista')
-    task = models.CharField(
-        null=False, max_length=140)
-
+    task = models.CharField(null=False, max_length=140)
 
     category = models.CharField(
         max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
-    points = models.IntegerField(default=5)
-    life_task = models.IntegerField(default=3) # each task has 4 weeks to be completed
+    points = models.FloatField(default=5)
+    life_task = models.IntegerField(default=3) # task have a life of 4 weeks to be completed
 
     initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
     initial_date = models.DateField(default=timezone.now(), null=False)
-    ending_date = models.DateField(default=timezone.now())
+    ending_date = models.DateField(default=timezone.now(), null=True)
 
-# ------------------------- Post Save --------------------------------------
+    # ------------------------- Post Save --------------------------------------
 
-    #@receiver(post_save, sender=Task)
-    #def update_points(sender, instance, created, **kwargs ):
-    #    if created:
-    #       print("Object created")
 
 def update_points(sender, instance, created, **kwargs):
     '''Every time a task is inserted, add 5 points to the previous task except the first one.'''
     INCREASE_POINT = 5
 
     if created:
-        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+INCREASE_POINT)
+        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+5)
 
     # Get only the tasks that are active, then order them by id in descending order and show all of them except the first one
     #qs = Task.objects.filter(status='Active').order_by('-id')[1:]
@@ -82,3 +77,5 @@ def update_points(sender, instance, created, **kwargs):
         #task.save()
 
 post_save.connect(update_points, sender=Task)
+
+
