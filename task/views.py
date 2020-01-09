@@ -78,13 +78,13 @@ class Dashboard_Tasks_Week(APIView):
             '''
         for task in qs:
             if (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=7) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=14) and task.life_task == 3:
-                task.points = task.points + task.points*standard_increase_points
+                task.points = task.points*standard_increase_points
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=14) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=21) and task.life_task == 2:
-                task.points = task.points + task.points*standard_increase_points
+                task.points = task.points*standard_increase_points
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=21) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=28) and task.life_task == 1:
-                task.points = task.points + task.points*last_increase_points
+                task.points = task.points*last_increase_points
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
                 # remove the task
