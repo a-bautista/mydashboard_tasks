@@ -89,6 +89,8 @@ class Dashboard_Tasks_Week(APIView):
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
                 # remove the task
                 task.status='Cancelled'
+                # set the ending date of the task
+                task.ending_date = datetime.now()
                 # decrease the points from the general counter
                 user_points = User_Points.objects.filter(id=1) # get our only user from the db
                 holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
