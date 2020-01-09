@@ -59,54 +59,42 @@ class Dashboard_Tasks_Week(APIView):
         task = Task.objects.all()
         year = date.today().year
         week = date.today().isocalendar()[1]
+        standard_increase_points = 1.25
+        last_increase_points = 1.50
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
-
-        qs = Task.objects.values('task','points').filter(status='Active')
         
-        id = list(qs.values_list('id'))
-        points = list(qs.values_list('points'))
-        initial_dates = list(qs.values_list('initial_date'))
-
-        #set a flag to indicate that the task has been already updated
-        # update the points based on the number of days that each task has been active
-        '''
-        for index, value in enumerate(initial_dates):
-            if (datetime.combine(value[0],time())+ timedelta(days=7)) - datetime.combine(value[0],time()) == 7:
-                points[index][0] = (points[index][0])* 1.25
-                print("was it here?")
-            elif (datetime.combine(value[0],time())+ timedelta(days=14)) - datetime.combine(value[0],time()) == 14:
-                points[index][0] = (points[index][0])* 1.25
-                print("was it here?")
-            elif (datetime.combine(value[0],time())+ timedelta(days=21)) - datetime.combine(value[0],time()) == 21:
-                points[index][0] = (points[index][0])* 1.25
-                print("was it here?")
-            elif (datetime.combine(value[0],time())+ timedelta(days=28)) - datetime.combine(value[0],time()) == 28:
-                points[index][0] = (points[index][0])* 1.50
-                print("was it here?")
-            elif (datetime.combine(value[0],time())+ timedelta(days=28)) - datetime.combine(value[0],time()) == 35:
-                # deactivate task and subtract all the points 
-                points[index][0] = (points[index][0])* 1.50
-                print("was it here?")
-        
-        for index, value in enumerate(id):
-            task = Task.objects.filter(id=value[0])
-            task.update(points=points[index][0])
-        '''
-
-        # get all the active tasks
-        # if current task week < (current task week + 1 week)
-            # increase points by 25%
-        # else if current task week < (current task week + 2 weeks)
-            # increase points by another 25%
-        # else if current task week < (current task week + 3 weeks)
-            # increase points by another 25%
-        # else if current task week < (current task week + 4 weeks)
-            # increase points by another 50%
-        # else if current task week < (current task week + 5 weeks)
-            # update the status of the task to cancelled and decrease the total points from the total score
-
+        qs = Task.objects.filter(status='Active')
+        '''The following is the system that increases the points of tasks based on the amount of time they have been in your stack of tasks.
+            
+            Each task has 4 lives and for every week that has passed, a task loses points. 
+            The amount of time a task has been in the queue is based on the current date - the initial date a task was first created.
+            1 to 7 days   - A task has 4 lives and no increase of points are done.
+            8 to 14 days  - A task has 3 lives and there's an increase of points of 25%.
+            15 to 21 days - A task has 2 lives and there's an increase of points of 25%.
+            22 to 28 days - A task has 1 life and there's an increase of points of 50%.
+            Over 28 days, tasks are cancelled and you lose the points that were accrued on those tasks. 
+            '''
+        for task in qs:
+            if (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=7) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=14) and task.life_task == 3:
+                task.points = task.points + task.points*standard_increase_points
+                task.life_task = task.life_task - 1
+            elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=14) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=21) and task.life_task == 2:
+                task.points = task.points + task.points*standard_increase_points
+                task.life_task = task.life_task - 1
+            elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=21) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=28) and task.life_task == 1:
+                task.points = task.points + task.points*last_increase_points
+                task.life_task = task.life_task - 1
+            elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
+                # remove the task
+                task.status='Cancelled'
+                # decrease the points from the general counter
+                user_points = User_Points.objects.filter(id=1) # get our only user from the db
+                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
+                user_points.update(points=holder-int(task.points)) # get the points of the form with section points
+            task.save()
+  
         x_axis = list(qs.values_list('task'))
         y_axis = list(qs.values_list('points'))
 
@@ -122,13 +110,7 @@ def create_task(request):
     form_create = TaskModelForm(request.POST or None)
     if form_create.is_valid():
         # print(form.cleaned_data)
-        # obj = Task.objects.create(**form.cleaned_data) grabs all the fields from the forms and stores them in the Task
         obj = form_create.save()
-        # The code from below allows us to do some intermediate steps to the data before storing them into the db
-        #obj = form_create.save(commit=False)
-        # obj = Task.objects.create(**form.cleaned_data)
-        # you can do intermediate steps with the class based models
-        #obj.points = form_create.cleaned_data.get('points')
         obj.save()
         # Clean the form
         form_create = TaskModelForm()
