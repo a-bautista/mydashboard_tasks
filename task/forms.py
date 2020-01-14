@@ -47,6 +47,7 @@ class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['task', 'category', 'status', 'ending_date', 'points']
+        # this is necessary for the calendar
         widgets = {
             'ending_date': DateInput(),
         }
@@ -59,7 +60,7 @@ class TaskModelForm(forms.ModelForm):
         self.fields['status'].required = False
         self.fields['points'].required = False
         self.fields['ending_date'].required = False
-        
+
 
 class User_PointsForm(forms.ModelForm):
     class Meta:
