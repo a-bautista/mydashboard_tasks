@@ -7,28 +7,45 @@
   {% if request.resolver_match.url_name == 'update_task' %}
     <h1>Update task</h1>
   {% endif %}
-
 </div>
-<div id="form-group">
-  <form method="POST" action="." enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="tweet-composer">
-      <label>Insert your task</label>
-      {{ form.task|add_class:"card js-keeper-editor" }}
-    </div>
-    <label>Select your category</label>
-    {{ form.category|add_class:"card" }}
 
-    {% if request.resolver_match.url_name == 'update_task' %}
-      <label>What's the status of the task?</label>
-        {{ form.status|add_class:"card" }}
-      <label>Current points:</label>
-        {{ form.points|add_class:"card" }}
-      <label>Finalized date:</label>
-        {{ form.ending_date|add_class:"card" }}
-    {% endif %}
-    <button type="submit" class="btn btn-success">Send</button>
-  </form>
-</div>
+<body onload="makeReadOnly();">
+  <div id="form-group">
+    <form method="POST" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+          <div class="tweet-composer">
+            <label>Insert your task</label>
+              {{ form.task|add_class:"card js-keeper-editor" }}
+          </div>
+         <label>Select your category</label>
+          {{ form.category|add_class:"card" }}
+          {% if request.resolver_match.url_name == 'update_task' %}
+            <label>What's the status of the task?</label>
+              {{ form.status|add_class:"card" }}
+            <label>Current points:</label>
+              {{ form.points|add_class:"card" }}
+            <label>Finalized date:</label>
+              {{ form.ending_date|add_class:"card" }}
+          {% endif %}
+        <button type="submit" class="btn btn-success">Send</button>
+    </form>
+  </div>
+</body>
 
 {% endblock content %}
+<script type="text/javascript">
+{% block jquery %}
+  function makeReadOnly(){
+    if (document.getElementById('id_status').value == 'Finalized' || document.getElementById('id_status').value == 'Cancelled'){
+      document.getElementById('id_task').readOnly=true;
+      document.getElementById('id_category').readOnly=true;
+      document.getElementById('id_points').readOnly=true;
+    }else if (document.getElementById('id_status').value == 'Active'){
+      document.getElementById('id_task').readOnly=false;
+      document.getElementById('id_category').readOnly=false;
+      document.getElementById('id_points').readOnly=false;
+    }
+  }
+  document.getElementById('id_status').addEventListener('change', makeReadOnly);
+{% endblock %}
+</script>
