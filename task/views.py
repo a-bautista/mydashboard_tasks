@@ -15,6 +15,7 @@ def home(request):
     context = { "points": user_points, "month": datetime.now().strftime("%B"), "week": week } # display the current points, current month, current week
     return render(request, 'task/home.html', context)
 
+
 class Dashboard_Categories_Month(APIView):
 
     def get(self, request, *args, **kwargs):

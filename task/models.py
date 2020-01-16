@@ -63,18 +63,14 @@ def update_points(sender, instance, created, **kwargs):
     INCREASE_POINT = 5
 
     if created:
-        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+5)
+        Task.objects.filter(~Q(pk=instance.pk), status='Active').update(points=F('points')+INCREASE_POINT)
 
     # Get only the tasks that are active, then order them by id in descending order and show all of them except the first one
-    #qs = Task.objects.filter(status='Active').order_by('-id')[1:]
+    # qs = Task.objects.filter(status='Active').order_by('-id')[1:]
 
     # Another approach to do the same from above but that will involve changing the DateField to DateTimeField
     # qs = Task.objects.filter(status='Active').exclude(initial_date=Task.objects.all().aggregate(Max('initial_date'))['initial_date__max'])
 
-    # Increase the points of all the previous active tasks by 5
-    #for task in qs:
-    #    task.points = task.points + INCREASE_POINT
-        #task.save()
 
 post_save.connect(update_points, sender=Task)
 
