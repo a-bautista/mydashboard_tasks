@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+'''
 def home(request):
     # Basic function based view
     my_title = "Priority App"
@@ -7,3 +8,4 @@ def home(request):
     template_name = 'mydashboard/home.html'
     context = {"title": my_title}
     return render(request, template_name, context)
+'''
