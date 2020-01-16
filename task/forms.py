@@ -32,11 +32,11 @@ class DropDownMenuMonthsForm(forms.Form):
              ("7",'July'), ("8",'August'),("9",'September'),("10",'October'),("11",'November'),("12",'December')
 
     month = forms.ChoiceField(choices=[x for x in months], initial=date.today().month)
-    year = forms.ChoiceField(choices=[(x,x) for x in range (2016,2021)],initial=date.today().year)
+    year = forms.ChoiceField(choices=[(x,x) for x in range (2019,2025)],initial=date.today().year)
 
 
 class DropDownMenuYearsForm(forms.Form):
-     year = forms.ChoiceField(choices=[(x, x) for x in range(2017, 2021)], initial=date.today().year)
+     year = forms.ChoiceField(choices=[(x, x) for x in range(2019, 2025)], initial=date.today().year)
 
 ''' 
     Instead of using the obj = Task.objects.create(**form.cleaned_data) in the view, you can
