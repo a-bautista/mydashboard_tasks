@@ -85,6 +85,11 @@
     height: 40px;
     background: #ddd;
 }
+
+.wrap .content .bottom-bar {
+    color: #000;
+    text-align: center;
+}
 .wrap .content .content-inner {
     padding: 0;
     margin: 0;
@@ -178,6 +183,12 @@
     float: right;
     margin: 11px 7px 8px 14px;
     color: #fff;
+}
+
+@media screen and (max-width: 900px){
+    .wrap #side-menu {
+        height: 1200px;
+    }
 }
 
 @media screen and (max-width: 768px) {

@@ -8,27 +8,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- Load the CSS files -->
-    <!-- Load the CSS mainContainer component that holds all the graphs in the main page -->
-    <link href="{% static 'task/css/graphContainerHome.css' %}" type="text/css" rel="stylesheet" />
-    
-    <!-- Load the CSS formCreate component for creating a new task -->
-    <link href="{% static 'task/css/formTask.css' %}" type="text/css" rel="stylesheet" />
+      <!-- Load the CSS mainContainer component that holds all the graphs in the main page -->
+      <link href="{% static 'task/css/graphContainerHome.css' %}" type="text/css" rel="stylesheet" />
+      
+      <!-- Load the CSS formCreate component for creating a new task -->
+      <link href="{% static 'task/css/formTask.css' %}" type="text/css" rel="stylesheet" />
 
-    <!-- Load the CSS leftAndNav component -->
-    <link href="{% static 'task/css/navbarAndLeftSidebar.css' %}" type="text/css" rel="stylesheet" />
-    
-    <!-- Modified CSS Bootstrap -->
-    <link href="{% static 'task/css/bootstrap.css' %}" type="text/css" rel="stylesheet" />
+      <!-- Load the CSS leftAndNav component -->
+      <link href="{% static 'task/css/navbarAndLeftSidebar.css' %}" type="text/css" rel="stylesheet" />
+      
+      <!-- Modified CSS Bootstrap -->
+      <link href="{% static 'task/css/bootstrap.css' %}" type="text/css" rel="stylesheet" />
 
-    <!--Use font awesome icons-->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.0/css/all.css" />
+      <!--Use font awesome icons-->
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.0/css/all.css" />
   
   </head>
   
-  <body class="app">
+  <body>
     <div class="wrap">
       {% include 'navbarAndLeftSidebar.html' %}  
-      <!---- Inside content ---->
+      <!---- Inside content for the graphs ---->
       <div class="content">
         <div class="top-bar">       
           <a href="#menu" class="side-menu-link burger"> 
@@ -38,37 +38,43 @@
           </a>      
         </div>        
         <section class="content-inner">
-          {% block content %}{% endblock %}
+          {% block content %}{% endblock %} 
         </section>
+        <div class="bottom-bar">
+          <p>&copy; Telos App 2019</p>
+        </div>
       </div><!---- End of inside content ---->  
     </div><!---- End of wrap ---->
   </body>
 
-  <footer>
-    <div class="container-fluid">
-      <p align="center" ; style="color:#000">&copy; Telos App 2019</p>
-    </div>
-  </footer>
+  <!--
+    <footer>
+      <div class="wrap">
+        <p>&copy; Telos App 2019</p>
+      </div>
+    </footer>
+  -->
 
   <!--------------------------------- Mandatory JavaScript ---------------------------------->
-  <!--------------------------------- External dependencies ---------------------------------->
+    <!--------------------------------- External dependencies ---------------------------------->
 
-  <!-- This makes the chart js to work correctly -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <!-- This makes the internal front end animations to work correctly-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-  <!-- This makes the datatables to work properly -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-  
-  <!-- This makes the internal front end animations to work correctly-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <!-- This makes the chart js to work correctly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-  <!--------------------------------- Internal dependencies ---------------------------------->
-  <!-- Animate the dropdown menus from the sidebar -->
-  <script src="{% static 'task/js/navbarAndLeftSidebar.js' %}"></script>
+
+    <!-- This makes the datatables to work properly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+    <!--------------------------------- Internal dependencies ---------------------------------->
+    <!-- Animate the dropdown menus from the sidebar -->
+    <script src="{% static 'task/js/navbarAndLeftSidebar.js' %}"></script>
   
 
   <!--------------------- Script that is used in the results templates ------------------------------>
