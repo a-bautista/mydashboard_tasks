@@ -5,7 +5,7 @@ from datetime import date
 from django import forms
 #from django.forms.fields import DateField
 #from django.contrib.admin.widgets import AdminDateWidget
-from .models import Task, User_Points
+from .models import Task
 
 '''Declare the class to indicate the data that will be stored. '''
 
@@ -46,7 +46,7 @@ class DropDownMenuYearsForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task', 'category', 'status', 'ending_date', 'points']
+        fields = ['username','task', 'category', 'status', 'ending_date', 'points']
         # this is necessary for the calendar
         widgets = {
             'ending_date': DateInput(),
@@ -55,16 +55,11 @@ class TaskModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskModelForm, self).__init__(*args, **kwargs)
-        # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
-        self.fields['task'].required = True
-        self.fields['status'].required = False
-        self.fields['points'].required = False
-        self.fields['ending_date'].required = False
+        self.fields['username'].required = False    # This field is mandatory, so you can insert the username_id in the task table.
+        self.fields['task'].required   = True 
+        self.fields['status'].required = False      # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
+        self.fields['points'].required = False      # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
+        self.fields['ending_date'].required = False # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
 
-
-class User_PointsForm(forms.ModelForm):
-    class Meta:
-        model = User_Points
-        fields = ['id', 'points']
         
 

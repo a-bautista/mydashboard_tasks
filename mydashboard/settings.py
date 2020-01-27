@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
     'task',
+    'accounts',
     'widget_tweaks'
 ]
 
@@ -69,6 +71,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# this overwrites the default behavior for the User model and use the custom model
+AUTH_USER_MODEL = 'accounts.Account'
 
 WSGI_APPLICATION = 'mydashboard.wsgi.application'
 
@@ -136,3 +141,7 @@ MEDIA_URL = '/media/'
 
 # Media files for running your app in Live
 MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
+
+# when logged in successfully, log in to the main dashboard
+LOGIN_REDIRECT_URL = 'main_dashboard'
+LOGIN_URL = 'login'

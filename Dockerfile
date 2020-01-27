@@ -19,7 +19,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # $PORT is set by Heroku
 ENV PORT=8888
 
-# Install system dependencies with OpenCV
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         tzdata \
         python3-setuptools \
@@ -28,8 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-venv \
         git \
         && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        apt-get clean && \
+        rm -rf /var/lib/apt/lists/*
 
 
 # install environment dependencies

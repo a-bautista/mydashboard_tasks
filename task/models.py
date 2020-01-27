@@ -1,19 +1,24 @@
 # Python Libraries
+from datetime import date
+
+# Django Libraries
 from django.db import models
 from django.utils import timezone
-from datetime import date
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Q, F
 
+from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized
+
+'''We will be using the customized User model from Django to store all our users which will be stored in a postgresql db.'''
+User = get_user_model()
+
+#from django.conf import settings
+#User = settings.AUTH_USER_MODEL
+
 # Create your models here.
 # When you clone this repo run the following to apply the migrations correctly:  the python3 manager.py migrate --run-syncdb
 # to retrieve the objects in the shell you type from task.models import Task
-
-class User_Points(models.Model):
-
-     id     = models.CharField(null=False, max_length=1, default=1, primary_key=True)
-     points = models.CharField(null=False, max_length=4) # 9999 is the max value of points
 
 class Task(models.Model):
 
@@ -40,20 +45,22 @@ class Task(models.Model):
     STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED), (FINALIZED, FINALIZED)]
 
     # ------------------------- Main fields --------------------------------------
-    id = models.AutoField(primary_key=True)
-    responsible = models.CharField(
-        null=False, max_length=120, default='Alejandro Bautista')
-    task = models.CharField(null=False, max_length=140)
+    id           = models.AutoField(primary_key=True)
+    username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
+    #responsible  = models.ForeignKey(User, on_delete=models.CASCADE) #on_delete=models.SET_DEFAULT
+    task         = models.CharField(null=False, max_length=140)
 
-    category = models.CharField(
-        max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
-    status = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
-    points = models.FloatField(default=5)
-    life_task = models.IntegerField(default=3) # task have a life of 4 weeks to be completed
+    category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
+    status       = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
+    points       = models.FloatField(default=5)
+    life_task    = models.IntegerField(default=3) # task has a life of 4 weeks (3,2,1,0) to be completed
 
     initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
     initial_date = models.DateField(default=timezone.now(), null=False)
-    ending_date = models.DateField(default=timezone.now(), null=True)
+    ending_date  = models.DateField(default=timezone.now(), null=True)
+
+    class Meta:
+        ordering = ['initial_date']
 
     # ------------------------- Post Save --------------------------------------
 

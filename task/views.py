@@ -1,19 +1,28 @@
 from datetime import date, datetime, timedelta, time
 from django.views.generic import View
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Count
-from .forms import TaskModelForm, DropDownMenuForm, User_PointsForm, DropDownMenuMonthsForm, DropDownMenuYearsForm
+from django.db.models import Count, TextField
+from django.db.models.functions import Cast
+from django.contrib.auth.decorators import login_required
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task, User_Points
+from .models import Task
 import json, calendar
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-def home(request):
-    user_points = User_Points.objects.filter(id=1).values('points').values_list('points')[0][0] # get the current values of your db
+
+@login_required
+def main_dashboard(request):
+    username = None
+    if request.user.get_username():
+        username = request.user.username
+    user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
     week = date.today().isocalendar()[1]
-    context = { "points": user_points, "month": datetime.now().strftime("%B"), "week": week } # display the current points, current month, current week
-    return render(request, 'task/home.html', context)
+    context = { "points": user, "month": datetime.now().strftime("%B"), "week": week } # display the current points, current month, current week
+    return render(request, 'task/mainDashboard.html', context)
 
 
 class Dashboard_Categories_Month(APIView):
@@ -24,7 +33,7 @@ class Dashboard_Categories_Month(APIView):
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date)
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -42,9 +51,10 @@ class Dashboard_Status_Month(APIView):
         month = date.today().month
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
+        # there's an error when you start having different tasks, they are not counting
         qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date)
-
+            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+  
         keys_graph = list(qs_group_by.values_list('status'))
         values_graph = list(qs_group_by.values_list('count'))
         front_end_dictionary = {
@@ -57,7 +67,8 @@ class Dashboard_Status_Month(APIView):
 class Dashboard_Tasks_Week(APIView):
 
     def get(self, request, *args, **kwargs):
-        task = Task.objects.all()
+
+        '''Show only the results of the logged in user'''
         year = date.today().year
         week = date.today().isocalendar()[1]
         standard_increase_points = 1.25
@@ -66,7 +77,9 @@ class Dashboard_Tasks_Week(APIView):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
         
-        qs = Task.objects.filter(status='Active')
+        qs = Task.objects.filter(username_id=Cast(request.user.id, TextField()), status='Active')
+        # qs = Task.objects.filter(status='Active').values() # when you add values, you convert the queryset into a dictionary
+
         '''The following is the system that increases the points of tasks based on the amount of time they have been in your stack of tasks.
             
             Each task has 4 lives and for every week that has passed, a task loses points. 
@@ -88,14 +101,18 @@ class Dashboard_Tasks_Week(APIView):
                 task.points = task.points*last_increase_points
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
-                # remove the task
+                
+                # cancel the task
                 task.status='Cancelled'
-                # set the ending date of the task
+                # insert the task date when the task gets cancelled
                 task.ending_date = datetime.now()
                 # decrease the points from the general counter
-                user_points = User_Points.objects.filter(id=1) # get our only user from the db
-                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
-                user_points.update(points=holder-int(task.points)) # get the points of the form with section points
+                
+                #user_points = User_Points.objects.filter(id=1) # get our only user from the db
+                #holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
+                #holder = int(list(User.objects.filter(username_id=Cast(request.user.id, TextField())).values('score').values_list('score'))[0][0])
+                holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the points of the form with section points
+                User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the points from the general score
             task.save()
   
         x_axis = list(qs.values_list('task'))
@@ -107,67 +124,74 @@ class Dashboard_Tasks_Week(APIView):
         }
         return Response(front_end_dictionary)
 
-
+@login_required
 def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
+    username_id = None
+    if request.user.get_username():    
+        username_id = User.objects.get(id=request.user.id)
+    
     if form_create.is_valid():
-        # print(form.cleaned_data)
-        obj = form_create.save()
-        obj.save()
+        obj = form_create.save(commit=False)
+        obj.username = username_id # save the username_id in the task_task table
+        obj.save() 
         # Clean the form
         form_create = TaskModelForm()
+        return redirect('/tasks/')
+        
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
     context = {'form': form_create}
     return render(request, template_name, context)
 
-
+@login_required
 def delete_task(request, id):
     '''Delete a task'''
-    task = Task.objects.get(pk=id)
-    user_points = User_Points.objects.filter(id=1) # get our only user from the db
+    task = Task.objects.get(pk=id) # get the current points of the task
     if request.method == "POST":
-        holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0]) # get the current point of the task
-        user_points.update(points=holder-int(task.points)) # subtract the total points minus the subtracted points
+        holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
+        User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the total points minus the subtracted points
         task.delete() # delete the task from the db
-    return redirect('/task/tasks/')
+    return redirect('/tasks/')
 
-
+@login_required
 def retrieve_all(request):
     '''Get the list of all tasks'''
     template_name = 'task/formRetrieval.html'
-    form = {'task_list': Task.objects.all()}
+    form = {'task_list': Task.objects.filter(username_id=Cast(request.user.id, TextField()))}
     return render(request, template_name, form)
 
-
+@login_required
 def update_task(request, id):
     '''Update a task'''
     task = Task.objects.get(pk=id)  # get the task id from the db
-    #user = User_Points.objects.get(pk=1)
-    # overwrite the task, do not create a new one
-    form = TaskModelForm(request.POST or None, instance=task)
-    #user_points = User_PointsForm(request.POST or None, instance=user)
-    user_points = User_Points.objects.filter(id=1) # get our only user from the db
+    form = TaskModelForm(request.POST or None, instance=task) # overwrite the task, do not create a new one
 
     if request.method == "GET":
         template_name = 'task/formTask.html'
         return render(request, template_name, {'form': form})
 
+    # when the forms gets updated, the task disappears from the db
     elif request.method == "POST":
         if form.is_valid():
+            holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
             if request.POST.get('status', None) == 'Finalized':
-                # extract the values from the qs and convert it to int, so you can add those values to the counter of points
-                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
-                user_points.update(points=holder+int(request.POST.get('points', None))) # get the points of the form with section points
+                User.objects.filter(id=request.user.id).update(score=holder+int(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
-                # extract the values from the qs and convert it to int, so you can subtract those values to the counter of points
-                holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
-                user_points.update(points=holder-int(request.POST.get('points', None))) # get the points of the form with section points
+                User.objects.filter(id=request.user.id).update(score=holder-int(request.POST.get('points', None))) # get the points of the form with section points
+            #form.cleaned_data['username'] = request.user.id # doesn't work this line
             form.save()
-        return redirect('/task/tasks/')
+            '''Below you need to update the username.id in the task_task table because if the task gets updated or cancelled then the username.id
+               is erased because in the form there's no visible field to get the username id. The solution is not the cleanest but it works.'''
+            
+            '''The reason for the error django.model object has no attribute 'update' is that .get() returns an individual object and .update() only works on querysets, 
+                such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
+            task.username=User.objects.get(id=request.user.id)
+            task.save()
+        return redirect('/tasks/')
 
-
+@login_required
 def view_previous_tasks(request):
     if request.method == "GET":
         template_name = 'task/no_retrieval_results/previous_tasks.html'
@@ -181,16 +205,14 @@ def view_previous_tasks(request):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date(year, week)
-        #ending_date = initial_date + timedelta(days=6)
-        #print(ending_date)
 
         # Filter the data based on the initial date and active tasks
         # This qs cannot be commented because of the values_to_display_table
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date)
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date)
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -211,6 +233,7 @@ def view_previous_tasks(request):
 
         return render(request, template_name, converted_front_end_dictionary)
 
+@login_required
 def view_previous_tasks_monthly(request):
     if request.method == "GET":
         template_name = 'task/no_retrieval_results/previous_tasks_monthly.html'
@@ -224,15 +247,15 @@ def view_previous_tasks_monthly(request):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
+
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date)
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date)
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
-
 
         values_to_display_table = list(qs.values_list())
 
@@ -250,6 +273,7 @@ def view_previous_tasks_monthly(request):
 
         return render(request, template_name, converted_front_end_dictionary)
 
+@login_required
 def view_previous_tasks_yearly(request):
     if request.method == "GET":
         template_name = 'task/no_retrieval_results/previous_tasks_yearly.html'
@@ -262,15 +286,15 @@ def view_previous_tasks_yearly(request):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_yearly(year)
+        
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date)
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date)
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
-
 
         values_to_display_table = list(qs.values_list())
 

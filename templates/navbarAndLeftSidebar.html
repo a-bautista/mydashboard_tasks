@@ -2,20 +2,20 @@
     <!----- Navbar ---->
     <nav class="nav-bar navbar-inverse" role="navigation">
         <div id ="top-menu" class="container-fluid active">
-            <a class="navbar-brand" href="/">Telos</a>
+            <a class="navbar-brand" href="/tasks">Telos</a>
             <ul class="nav navbar-nav">        
                 <li class="dropdown movable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">    
                         <div class="nav-profile-image">
                             <img src="https://i.stack.imgur.com/b6c2l.jpg?s=328&amp;g=1" alt="" width="164" height="164" class="bar-sm avatar-user">
-                            <div class="nav-profile-name">Alejandro Ramos<i class="fa fa-caret-down"></i></div>
+                            <div class="nav-profile-name">{{ user.username }}<i class="fa fa-caret-down"></i></div>
                         </div>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#"><span class="fa fa-user"></span>My Profile</a></li>
+                        <li><a href="/profile"><span class="fa fa-user"></span>My Profile</a></li>
                         <li><a href="#"><span class="fa fa-cog"></span>Settings</a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><span class="fa fa-power-off"></span>Logout</a></li>
+                        <li><a href="/logout"><span class="fa fa-power-off"></span>Logout</a></li>
                     </ul>
                 </li>
                 
@@ -28,11 +28,11 @@
     <aside id="side-menu" class="aside" role="navigation">           
           <ul class="nav nav-list accordion">                    
             
-            <li class="nav-header">
-                <a href="/">
+            <!--<li class="nav-header">
+                <a href="/dashboard">
                     <div class="link"><i class="fa fa-tachometer-alt"></i>My Performance</div>
                 </a>
-            </li>
+            </li>-->
 
             <li class="nav-header">
                 <a href="#">
@@ -42,19 +42,19 @@
             <li class="nav-header">
               <div class="link"><i class="fas fa-tasks"></i>Tasks<i class="fa fa-chevron-down"></i></div>
               <ul class="submenu">
-                <li><a href="/task/previous_tasks">Weeks</a></li>
-                <li><a href="/task/previous_tasks_monthly">Months</a></li>
-                <li><a href="/task/previous_tasks_yearly">Years</a></li>
+                <li><a href="/tasks/previous_tasks/">Weeks</a></li>
+                <li><a href="/tasks/previous_tasks_monthly/">Months</a></li>
+                <li><a href="/tasks/previous_tasks_yearly/">Years</a></li>
               </ul>
             </li>
             
             <li class="nav-header">
-                <a href="/task/new">
+                <a href="/tasks/new/">
                     <div class="link"><i class="fas fa-calendar-plus"></i> New Task</div></a>
             </li>  
             
             <li class="nav-header">
-                <a href="/task/tasks">
+                <a href="/tasks/list/">
                     <div class="link"><i class="fas fa-pencil-alt"></i>Update/Delete Tasks</div></a>
             </li>
 

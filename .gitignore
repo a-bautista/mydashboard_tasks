@@ -17,14 +17,18 @@ mydashboard/__pycache__/urls.cpython-36.pyc
 mydashboard/wsgi.pyc
 mydashboard/__pycache__/__init__.cpython-36.pyc
 task/__pycache__/*
+home/__pycache__/*
+accounts/__pycache__/*
+
 
 
 # Migrations
 mydashboard/task/migrations/__pycache__/*
 mydashboard/task/migrations/*
-
+accounts/migrations/*
 task/migrations
 live-static/*
+home/migrations/*
 
 # Other folders
 .idea/

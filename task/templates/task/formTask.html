@@ -18,8 +18,9 @@
               {{ form.task|add_class:"card js-keeper-editor" }}
           </div>
          <label>Select your category</label>
-          {{ form.category|add_class:"card" }}
-          {% if request.resolver_match.url_name == 'update_task' %}
+            {{ form.category|add_class:"card" }}
+          
+            {% if request.resolver_match.url_name == 'update_task' %}
             <label>What's the status of the task?</label>
               {{ form.status|add_class:"card" }}
             <label>Current points:</label>
@@ -27,6 +28,7 @@
             <label>Finalized date:</label>
               {{ form.ending_date|add_class:"card" }}
           {% endif %}
+          
         <button type="submit" class="btn btn-success">Send</button>
     </form>
   </div>
