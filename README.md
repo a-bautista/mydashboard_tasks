@@ -180,7 +180,7 @@ to connect to your database. In order to connect to the db, you should type a co
 
 There is NO need to type in the credentials of your db in the django app because heroku manages this automatically (this applies for creating an app with a container and via Git).
 
-create the table task based on the models.py file (notice the name must be task_task to make this working):
+# create the table task based on the models.py file (notice the name must be task_task to make this working):
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
@@ -191,11 +191,16 @@ create the table task based on the models.py file (notice the name must be task_
 
 `CREATE TABLE ACCOUNTS_ACCOUNT(EMAIL TEXT, USERNAME TEXT, FIRST_NAME TEXT, LAST_NAME TEXT, SCORE FLOAT, PASSWORD varchar, LAST_LOGIN TIMESTAMP, DATE_JOINED TIMESTAMP, IS_ADMIN BOOLEAN, IS_ACTIVE BOOLEAN, IS_STAFF BOOLEAN, IS_SUPERUSER BOOLEAN, ID SERIAL);`
 
+# alter the table task_task for changing the responsible to username
+
+`ALTER TABLE TASK_TASK`
+`RENAME COLUMN responsible TO username_id;`
+
 After you have created the db, you need to apply the migrations and create a super user:
 
     `heroku run python3 manage.py migrate -a djangodocker`
     `heroku run python3 manage.py makemigrations -a djangodocker`
-    `heroku run python3 manage.py create superuser`
+    `heroku run python3 manage.py createsuperuser -a djangodocker`
 
 ###Heroku with containerized docker
 
