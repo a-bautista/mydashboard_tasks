@@ -7,22 +7,22 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class MyAccountManager(BaseUserManager):
      
-     def create_user(self, email, username, first_name, last_name, score, password=None):
+     def create_user(self, email, username, score, password=None):
         
           if not email:
                raise ValueError("User must have an email address.")
           if not username:
                raise ValueError("User must have a username.")
-          if not first_name:
-               raise ValueError("User must have a first name.")
-          if not last_name:
-               raise ValueError("User must have a last name.")
+          #if not first_name:
+          #     raise ValueError("User must have a first name.")
+          #if not last_name:
+          #     raise ValueError("User must have a last name.")
           
 
           user = self.model(email=self.normalize_email(email),
                  username=username,
-                 first_name = first_name,
-                 last_name = last_name,
+                 #first_name = first_name,
+                 #last_name = last_name,
                  score = score,
           )
 
@@ -30,12 +30,10 @@ class MyAccountManager(BaseUserManager):
           user.save(using=self._db)
           return user
 
-     def create_superuser(self, email, username, first_name, last_name, score, password):
+     def create_superuser(self, email, username, score, password):
           
           user = self.create_user(email=self.normalize_email(email),
                username=username,
-               first_name = first_name,
-               last_name = last_name,
                score = score,
                password=password, 
           )

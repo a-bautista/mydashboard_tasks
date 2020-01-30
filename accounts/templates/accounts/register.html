@@ -1,21 +1,48 @@
 {% extends "base_home.html" %} {% load widget_tweaks %} 
 
 {% block content %}
-    <div class="content-section">
-        <form method="POST"> {% csrf_token %}
+
+{% load static %}
+<div class="container"> 
+    <form method="POST"> {% csrf_token %}
+        <div class="wrap-login">
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Join Today</legend>
-                {{ form.as_p }}
             </fieldset>
+            
+            <div class="bar">
+                Email <br />
+                {{form.email}}
+            </div>
+            <br />
+            
+            <div class="bar">
+                Username <br />
+                {{form.username}}
+            </div>
+            <br />
+            
+            <div class="bar">
+                Password <br />
+                {{form.password1}}
+            </div>
+            <br />
+           
+            <div class="bar">
+                Password confirmation <br />
+                {{form.password2}}
+            </div>
+            <br />
+
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Sign Up</button>
             </div>
-        </form>
-        <div class="border-top pt-3">
+            
             <small class="text-muted">
                 Already have an account?<a class="ml-2" href="/login">Log In</a>
             </small>
         </div>
-    </div>
+    </form>
+</div>
 
 {% endblock content %}
