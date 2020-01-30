@@ -6,21 +6,35 @@
         {{ message }}
     {% endfor %}
 {% endif %}
-    <div class="content-section">
-        <form method="POST"> {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Log In </legend>
-                {{ form.as_p }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Log In</button>
-            </div>
-        </form>
-        <div class="border-top pt-3">
-            <small class="text-muted">
-                Need an account?<a class="ml-2" href="/register">Sign Up Now</a>
-            </small>
-        </div>
-    </div>
 
+{% load static %}
+<div class="container"> 
+    <form method="POST"> {% csrf_token %}
+        <div class="wrap-login">
+            <legend class="border-bottom mb-4">Log into your Telos account</legend>
+            <div class="avatar-login">
+                <img src="{% static 'accounts/img/avatar.png' %}" alt="avatar_pic">
+            </div>
+            <br />
+            <div class="bar">
+                Email <br />
+                {{form.username}}
+            </div>
+            <br />
+            <div class="bar">
+                Password <br />
+                {{form.password}}
+            </div>
+            <br />
+            <a href="" class="forgot_link">Forgot password?</a><br />
+            <br />
+            <button type="submit">Log In</button>
+            <div class="border-top pt-3">
+                <small class="text-muted">
+                    Need an account?<a class="ml-2" href="/register">Sign Up Now</a>
+                </small>
+            </div>
+        </div>
+    </form>       
+</div>
 {% endblock content %}
