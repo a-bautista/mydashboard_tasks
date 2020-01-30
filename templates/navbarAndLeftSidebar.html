@@ -1,4 +1,4 @@
-
+    {% load static %}
     <!----- Navbar ---->
     <nav class="nav-bar navbar-inverse" role="navigation">
         <div id ="top-menu" class="container-fluid active">
@@ -7,7 +7,9 @@
                 <li class="dropdown movable">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">    
                         <div class="nav-profile-image">
-                            <img src="https://i.stack.imgur.com/b6c2l.jpg?s=328&amp;g=1" alt="" width="164" height="164" class="bar-sm avatar-user">
+                            
+                            <!--<img src="https://i.stack.imgur.com/b6c2l.jpg?s=328&amp;g=1" alt="" width="164" height="164" class="bar-sm avatar-user">-->
+                            <img src="{% static 'accounts/img/avatar.png' %}" alt="avatar_pic" width="164" height="164" class="bar-sm avatar-user">
                             <div class="nav-profile-name">{{ user.username }}<i class="fa fa-caret-down"></i></div>
                         </div>
                     </a>
@@ -65,6 +67,8 @@
         </ul>
     </aside>
     <!---- End Left Sidebar ---->
+
+
 
     
   
