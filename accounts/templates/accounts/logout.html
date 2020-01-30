@@ -1,11 +1,24 @@
 {% extends "base_home.html" %} {% load widget_tweaks %} 
 
 {% block content %}
-    <h2>You have been logged out</h2>
-        <div class="border-top pt-3">
+<div class="container">
+    <div class="wrap-login mb-5">
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-5">You have successfully logged out.</legend>
+        </fieldset>  
+        <br />
+        <div class="bar mb-5">
             <small class="text-muted">
                 <a class="ml-2" href="/login">Log In Again</a>
             </small>
         </div>
+        <div class="bar mb-5">
+            <small class="text-muted">
+                <a class="ml-2" href="/">Return to the main site</a>
+            </small>
+            
+        </div>
+    </div>  
+</div>
 
 {% endblock content %}
