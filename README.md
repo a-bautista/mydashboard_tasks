@@ -419,3 +419,27 @@ Then you need to configure the IAM (User Access and Encryption keys) by selectin
 attach existing policies directly and then on the search menu you type  beanstalk and you select all your permissions for now. You copy the access variables that are provided and you paste them
 in your travis-ci account under settings and then you create the protected variables for storing the keys.
 
+What is Kubernetes?
+
+Kubernetes is a system for running many different containers over multiple machines, i.e., let's say we have a docker container of a server and we need a new instance of it. What we do is to create a virtual machine with that specific container instead of creating a new virtual machine with all the containers. When working with Kubernetes you have a development version which uses minikube whereas in production you use the Google Cloud Kubernetes Engine (GKE). You also need to use the Kubectl CLI to manage the containers in the Kubernetes nodes. 
+
+In order to work with Kubernetes you need to:
+
+1. Install virtual box from https://www.virtualbox.org/wiki/Linux_Downloads .
+2. Check that your installtion worked correctly: VBoxmanage -version
+3. Install kubectl with:
+    `curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl`
+
+4. Change the permissions with: 
+    `chmod +x ./kubectl`
+5. Move the folder with: 
+    `sudo mv ./kubectl /usr/local/bin/kubectl`
+6. Check your kubectl installation:
+    `kubectl version`
+7. Install minikube with:
+    `curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube`
+    `sudo install minikube /usr/local/bin`
+8. Check the minikube version:
+    `minikube version`
+9. Start minikube with:
+    `minikube start`
