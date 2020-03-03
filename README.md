@@ -443,3 +443,18 @@ In order to work with Kubernetes you need to:
     `minikube version`
 9. Start minikube with:
     `minikube start`
+10. Check the status with;
+    `minikube status`
+11. check the kubectl info with;
+    `kubectl cluster-info`
+
+Instead of using a docker-compose.yml file, we use multiple configuration files for the Kubernetes application. The config file is used to create objects (StatefulSet, ReplicaController, Pod and Service). Pods have the purpose to run containers, Service are used to create ports. A Pod can run 1 or several containers and usually these containers are strongly related to each other. The object type Services has 4 values: ClusterIP, NodePort (only for dev purposes), LoadBalancer and Ingress. NodePorts are between 30,000 and 32767 ports.
+
+In order to create the pods and services we use the following commands:
+    `kubectl apply -f web-pod.yaml`
+    `kubectl apply -f web-node-port.yaml`
+
+In order to get all the created pods and services we use:
+    `kubectl get pods`
+    `kubectl get services`
+        
