@@ -33,7 +33,7 @@ class Dashboard_Categories_Month(APIView):
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -53,7 +53,7 @@ class Dashboard_Status_Month(APIView):
 
         # there's an error when you start having different tasks, they are not counting
         qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
   
         keys_graph = list(qs_group_by.values_list('status'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -77,7 +77,7 @@ class Dashboard_Tasks_Week(APIView):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
         
-        qs = Task.objects.filter(username_id=Cast(request.user.id, TextField()), status='Active')
+        qs = Task.objects.filter(username_id=request.user.id, status='Active')
         # qs = Task.objects.filter(status='Active').values() # when you add values, you convert the queryset into a dictionary
 
         '''The following is the system that increases the points of tasks based on the amount of time they have been in your stack of tasks.
@@ -159,7 +159,7 @@ def delete_task(request, id):
 def retrieve_all(request):
     '''Get the list of all tasks'''
     template_name = 'task/formRetrieval.html'
-    form = {'task_list': Task.objects.filter(username_id=Cast(request.user.id, TextField()))}
+    form = {'task_list': Task.objects.filter(username_id=request.user.id)}
     return render(request, template_name, form)
 
 @login_required
@@ -209,10 +209,10 @@ def view_previous_tasks(request):
         # Filter the data based on the initial date and active tasks
         # This qs cannot be commented because of the values_to_display_table
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id)
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -249,10 +249,10 @@ def view_previous_tasks_monthly(request):
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id)
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -288,10 +288,10 @@ def view_previous_tasks_yearly(request):
         initial_date, ending_date = get_start_end_date_yearly(year)
         
         qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id)
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
