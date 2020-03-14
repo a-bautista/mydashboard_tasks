@@ -6,8 +6,14 @@ from django import forms
 #from django.forms.fields import DateField
 #from django.contrib.admin.widgets import AdminDateWidget
 from .models import Task
+from goal.models import Goal
 
 '''Declare the class to indicate the data that will be stored. '''
+
+
+class DropDownMenuGoals(forms.Form):
+    pass
+
 
 class TaskForm(forms.Form):
     task = forms.CharField()

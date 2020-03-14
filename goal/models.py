@@ -38,7 +38,7 @@ class Goal(models.Model):
     status           = models.CharField(max_length=24, choices=STATUS, default=IN_PROGRESS)
     comments         = models.CharField(max_length=200)
     final_notes      = models.CharField(max_length=200)
-
+    accounts         = models.ManyToManyField(User)
     #users            = models.ManyToManyField(User, through='UserToGoal', through_fields=('user','goal'), related_name='goals')
     
     class Meta:
