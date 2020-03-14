@@ -7,11 +7,13 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Q, F
-
 from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized
+
+#from accounts.models import User # Import the User model for FK
 
 '''We will be using the customized User model from Django to store all our users which will be stored in a postgresql db.'''
 User = get_user_model()
+#Goal = get_user_model()
 
 #from django.conf import settings
 #User = settings.AUTH_USER_MODEL
@@ -44,12 +46,24 @@ class Task(models.Model):
     # The second ACTIVE is the human readable name that goes in the dropdown menu
     STATUS = [(ACTIVE, ACTIVE), (CANCELLED, CANCELLED), (FINALIZED, FINALIZED)]
 
+
     # ------------------------- Main fields --------------------------------------
     id           = models.AutoField(primary_key=True)
-    username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
-    #responsible  = models.ForeignKey(User, on_delete=models.CASCADE) #on_delete=models.SET_DEFAULT
-    task         = models.CharField(null=False, max_length=140)
+    
+    # ------------------------- Foreign keys for the User and Goals --------------
+    # These two columns will be used from the User and Goal tables. 
+    # You have to add these two columns in the task_task table as username_id and goal_id. 
+    # Not necessarily, I found some issues in the structure of the table. 
 
+    # https://stackoverflow.com/questions/2606194/django-error-message-add-a-related-name-argument-to-the-definition
+    # seems like the foreign key needed additional help
+    #username     = models.ForeignKey(User, related_name='user_content_type', on_delete=models.CASCADE) 
+    username      = models.ManyToManyField(User, related_name='user_content_type') 
+    #username     = models.CharField(max_length=24, null=False)
+    #goal         = models.ForeignKey(Goal, on_delete=models.CASCADE) 
+    #goal         = models.ManyToManyField(Goal) 
+
+    task         = models.CharField(null=False, max_length=140)
     category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status       = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
     points       = models.FloatField(default=5)
@@ -61,6 +75,7 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['initial_date']
+        #db_table = 'task_table' # this is the name that will be used when the table gets created when migrations are applied
 
     # ------------------------- Post Save --------------------------------------
 

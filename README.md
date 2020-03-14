@@ -184,8 +184,6 @@ There is NO need to type in the credentials of your db in the django app because
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
-# table for the user points
-`CREATE TABLE TASK_USER_POINTS(id serial, points text);`
 
 # table for the customized User model
 
@@ -195,6 +193,8 @@ There is NO need to type in the credentials of your db in the django app because
 
 `ALTER TABLE TASK_TASK`
 `RENAME COLUMN responsible TO username_id;`
+
+It's better to apply the migrations with `python manage.py makemigrations` and `python manage.py migrate` instead of creating the tables manually.
 
 After you have created the db, you need to apply the migrations and create a super user:
 
@@ -365,6 +365,13 @@ to connect from the host and -p to use the port 5432 that belongs to the contain
 For altering a table to add a new column you use:
 
 `alter table task_task add column initial_week smallint;`
+
+How to check all data type columns in your PostgreSQL database
+
+`select column_name, data_type from information_schema.columns where table_schema='public' and table_name='task_task';`
+
+
+
 
 ### Working with nginx
 

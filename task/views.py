@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task
@@ -129,12 +129,19 @@ def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
     username_id = None
+    goals_dropdownmenu = DropDownMenuGoalsForm()
+
+    #goal = Goal.objects.all()
+    # do not uncomment the print goals_dropdownmenu because it's going to give you the django error cursor not found
+    #print(goals_dropdownmenu)
+    
     if request.user.get_username():    
         username_id = User.objects.get(id=request.user.id)
     
     if form_create.is_valid():
         obj = form_create.save(commit=False)
         obj.username = username_id # save the username_id in the task_task table
+                                   # save the goal_id into the task
         obj.save() 
         # Clean the form
         form_create = TaskModelForm()
@@ -142,7 +149,9 @@ def create_task(request):
         
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
-    context = {'form': form_create}
+    context = {'form': form_create, 
+               'goal': goals_dropdownmenu # render the goals into the task app
+              }
     return render(request, template_name, context)
 
 @login_required

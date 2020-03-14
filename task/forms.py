@@ -3,11 +3,18 @@ from datetime import date
 
 ######## Django libraries #######
 from django import forms
-#from django.forms.fields import DateField
+from django.forms import ModelChoiceField
+from django.apps import apps
 #from django.contrib.admin.widgets import AdminDateWidget
 from .models import Task
+# Import the model from the app goal into the task app.
+Goal = apps.get_model('goal', 'Goal') # app_name and model_name
+
 
 '''Declare the class to indicate the data that will be stored. '''
+class DropDownMenuGoalsForm(forms.Form):
+    #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
+    pass
 
 class TaskForm(forms.Form):
     task = forms.CharField()
@@ -15,6 +22,7 @@ class TaskForm(forms.Form):
         choices=[(x, x) for x in range(len(Task.CATEGORIES))])
 
 
+# this is necessary for the calendar
 class DateInput(forms.DateInput):
     input_type = 'date'
 
@@ -46,7 +54,9 @@ class DropDownMenuYearsForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['username','task', 'category', 'status', 'ending_date', 'points']
+        # below are the fields that will be used in our task form when a user creates a new task
+        fields = ['username','task', 'category', 'status', 'points', 'ending_date']
+
         # this is necessary for the calendar
         widgets = {
             'ending_date': DateInput(),

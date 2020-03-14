@@ -8,6 +8,7 @@ services:
     #  - "3000:8888" # map from your web browser port 3000 to container port 8888 (8888 was created by gunicorn)
 
     depends_on: # this indicates to run the db before the web service
+      #- db_simple
       - db
     volumes:
       # use the line from below when you want to include the virtual environments which are not necessary

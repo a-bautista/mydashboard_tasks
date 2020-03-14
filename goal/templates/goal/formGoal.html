@@ -1,11 +1,11 @@
 {% extends "base.html" %} {% load widget_tweaks %} 
 {% block content %}
 <div class="content-header">
-  {% if request.resolver_match.url_name == 'create_task' %}
-    <h1>Create a new task</h1>
+  {% if request.resolver_match.url_name == 'create_goal' %}
+    <h1>Create a new goal</h1>
   {% endif %}
-  {% if request.resolver_match.url_name == 'update_task' %}
-    <h1>Update task</h1>
+  {% if request.resolver_match.url_name == 'update_goal' %}
+    <h1>Update a goal</h1>
   {% endif %}
 </div>
 
@@ -14,37 +14,39 @@
     <form method="POST" action="." enctype="multipart/form-data">
         {% csrf_token %}
           <div class="tweet-composer">
-            <label>Insert your task</label>
-              {{ form.task|add_class:"card js-keeper-editor" }}
+            <label>Insert your goal</label>
+              {{ form.goal|add_class:"card js-keeper-editor" }}
           </div>
-          <br />
 
-          <label>Select your category</label>
-            {{ form.category|add_class:"card" }}
           <br />
           <br />
-          
-          <label>To which goal goes your task?</label>
-            {{ goal.goal|add_class:"card" }}
-          <br />
-          <br />
+            <label>Initial date</label>
+              {{ form.initial_date|add_class:"card" }}
 
-            {% if request.resolver_match.url_name == 'update_task' %}
-            <label>What's the status of the task?</label>
+            <br />
+            <br />
+            <label>Expiration date</label>
+              {{ form.expiration_date|add_class:"card" }}  
+
+            <br />
+            <br />  
+            <label>List of goals</label>
+              {{ goals_dropdownmenu.goal|add_class:"card" }} 
+
+            {% if request.resolver_match.url_name == 'update_goal' %}
+            
+            
+            <label>What's the status of the goal?</label>
               {{ form.status|add_class:"card" }}
 
-            <br />
-            <br />
-            <label>Current points:</label>
-              {{ form.points|add_class:"card" }}
+            <label>Comments</label>
+              {{ form.comments|add_class:"card" }}
+            
+            <label>Final notes</label>
+              {{ form.final_notes|add_class:"card" }}  
 
-            <br />
-            <br />
             <label>Finalized date:</label>
               {{ form.ending_date|add_class:"card" }}
-
-            <br />
-            <br />
           {% endif %}
           
         <button type="submit" class="btn btn-success">Send</button>
@@ -55,6 +57,8 @@
 {% endblock content %}
 <script type="text/javascript">
 {% block jquery %}
+
+/*
   function makeReadOnly(){
     if (document.getElementById('id_status').value == 'Finalized' || document.getElementById('id_status').value == 'Cancelled'){
       document.getElementById('id_task').readOnly=true;
@@ -66,6 +70,8 @@
       document.getElementById('id_points').readOnly=false;
     }
   }
-  document.getElementById('id_status').addEventListener('change', makeReadOnly);
+  document.getElementById('id_status').addEventListener('change', makeReadOnly);\
+*/
+
 {% endblock %}
 </script>

@@ -6568,8 +6568,17 @@ button.bg-danger:focus {
   background-color: #bd2130 !important;
 }
 
+/* To modify */
 .bg-light {
   background-color: #e3e7ec !important;
+}
+
+.bg-testimonial {
+  background-color: #fff !important;
+}
+
+.bg-footer {
+  background-color: #343a40 !important;
 }
 
 a.bg-light:hover, a.bg-light:focus,
