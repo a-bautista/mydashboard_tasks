@@ -38,16 +38,22 @@
 <script type="text/javascript">
 {% block jquery %}
   function makeReadOnly(){
-    if (document.getElementById('id_status').value == 'Finalized' || document.getElementById('id_status').value == 'Cancelled'){
-      document.getElementById('id_task').readOnly=true;
-      document.getElementById('id_category').readOnly=true;
-      document.getElementById('id_points').readOnly=true;
-    }else if (document.getElementById('id_status').value == 'Active'){
-      document.getElementById('id_task').readOnly=false;
-      document.getElementById('id_category').readOnly=false;
-      document.getElementById('id_points').readOnly=false;
+    if (document.getElementById('id_status') === null){
+      // null value detected
     }
-  }
-  document.getElementById('id_status').addEventListener('change', makeReadOnly);
+    else{
+      document.getElementById('id_status').addEventListener('change', makeReadOnly);
+      if (document.getElementById('id_status').value === 'Finalized' || document.getElementById('id_status').value === 'Cancelled'){
+        document.getElementById('id_task').readOnly=true;
+        document.getElementById('id_category').readOnly=true;
+        document.getElementById('id_points').readOnly=true;
+      }else if (document.getElementById('id_status').value === 'Active'){
+        document.getElementById('id_task').readOnly=false;
+        document.getElementById('id_category').readOnly=false;
+        document.getElementById('id_points').readOnly=false;
+      }
+    }    
+}
+  
 {% endblock %}
 </script>
