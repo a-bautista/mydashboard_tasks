@@ -61,7 +61,7 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['initial_date']
-        #table_name = 'task_task'
+        db_table = 'task_table'
 
     # ------------------------- Post Save --------------------------------------
 
