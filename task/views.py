@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task
+from .models import Task, Goal
 import json, calendar
 
 from django.contrib.auth import get_user_model
@@ -130,15 +130,29 @@ def create_task(request):
     form_create = TaskModelForm(request.POST or None)
     goal = DropDownMenuGoalsForm(id = request.user.id)
 
+    #Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
+
     #print(goals_dropdownmenu)
-    username_id = None
-    if request.user.get_username():    
-        username_id = User.objects.get(id=request.user.id)
+    #username_id = None
+    #if request.user.get_username():    
+    #    username_id = User.objects.get(id=request.user.id)
+
+    # Messy code but it works
+    select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
+
+    #user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
+    
+    #select_goal_id = Goal.objects.filter(goal=request.POST.get('goal', None)).values('id').values_list('id',flat=True)[0][0]
+    #new_val = select_goal_id[0]
+
+    for value in select_goal_id:
+        new_val = value
+
     
     if form_create.is_valid():
         task = form_create.save(commit=True) # save the first task
-        task.username.add(username_id)  # associate the task with the user
-        
+        task.goal.add(new_val)  # associate the task with the goal by the id
+
         #obj.username = username_id # save the username_id in the task_task table
         task.save() 
         # Clean the form

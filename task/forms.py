@@ -69,7 +69,7 @@ class DropDownMenuYearsForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['username','task', 'category', 'status', 'ending_date', 'points']
+        fields = ['task', 'category', 'status', 'ending_date', 'points']
         # this is necessary for the calendar
         widgets = {
             'ending_date': DateInput(),
@@ -78,7 +78,7 @@ class TaskModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TaskModelForm, self).__init__(*args, **kwargs)
-        self.fields['username'].required = False    # This field is mandatory, so you can insert the username_id in the task table.
+        #self.fields['username'].required = False    # This field is mandatory, so you can insert the username_id in the task table.
         self.fields['task'].required   = True 
         self.fields['status'].required = False      # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
         self.fields['points'].required = False      # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
