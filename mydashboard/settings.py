@@ -89,7 +89,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'postgres_password',
         #'HOST': 'db',
-        'HOST': 'db_simple',
+        'HOST': 'db_simple_2',
         'PORT': 5432
     }
 }

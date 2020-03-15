@@ -39,7 +39,7 @@ class Goal(models.Model):
     comments         = models.CharField(max_length=200)
     final_notes      = models.CharField(max_length=200)
     accounts         = models.ManyToManyField(User)
-    
+    #registry         = models.ManyToManyField(GeneralRegistry, through_fields=id)
     
     class Meta:
         ordering = ['initial_date']

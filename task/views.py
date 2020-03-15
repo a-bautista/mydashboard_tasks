@@ -136,9 +136,11 @@ def create_task(request):
         username_id = User.objects.get(id=request.user.id)
     
     if form_create.is_valid():
-        obj = form_create.save(commit=False)
-        obj.username = username_id # save the username_id in the task_task table
-        obj.save() 
+        task = form_create.save(commit=True) # save the first task
+        task.username.add(username_id)  # associate the task with the user
+        
+        #obj.username = username_id # save the username_id in the task_task table
+        task.save() 
         # Clean the form
         form_create = TaskModelForm()
         return redirect('/tasks/')
