@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task

@@ -6,24 +6,26 @@ from django import forms
 #from django.forms.fields import DateField
 #from django.contrib.admin.widgets import AdminDateWidget
 from .models import Task
+from django.apps import apps
 #from goal.models import Goal
 
 '''Declare the class to indicate the data that will be stored. '''
 Goal = apps.get_model('goal', 'Goal') # app_name and model_name
-
+User = apps.get_model('accounts', 'Account')
 
 '''Declare the class to indicate the data that will be stored. 
     I want the goals of the logged in user who are in progress.
 '''
 
-from django.conf import settings
-User = settings.AUTH_USER_MODEL
+#from django.conf import settings
+#User = settings.AUTH_USER_MODEL
 
 # user1.goal_set.all()
 
 class DropDownMenuGoalsForm(forms.Form):
     goal = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=request.user.id),status='In Progress')
     #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
+    
 
 
 class TaskForm(forms.Form):
