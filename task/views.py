@@ -128,6 +128,9 @@ class Dashboard_Tasks_Week(APIView):
 def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
+    goal = DropDownMenuGoalsForm(id = request.user.id)
+
+    #print(goals_dropdownmenu)
     username_id = None
     if request.user.get_username():    
         username_id = User.objects.get(id=request.user.id)
@@ -142,8 +145,11 @@ def create_task(request):
         
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
-    context = {'form': form_create}
+    context = {'form': form_create,
+               'goal': goal
+               }
     return render(request, template_name, context)
+
 
 @login_required
 def delete_task(request, id):

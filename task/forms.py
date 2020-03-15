@@ -23,7 +23,11 @@ User = apps.get_model('accounts', 'Account')
 # user1.goal_set.all()
 
 class DropDownMenuGoalsForm(forms.Form):
-    goal = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=request.user.id),status='In Progress')
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('id')
+        super(DropDownMenuGoalsForm, self).__init__(*args, **kwargs)
+        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
+        #queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress')
     #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
     
 

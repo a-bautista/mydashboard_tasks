@@ -19,7 +19,11 @@
           </div>
          <label>Select your category</label>
             {{ form.category|add_class:"card" }}
-          
+          <br />
+          <br />
+            <label>To which goal goes your task?</label>
+            {{ goal.goal|add_class:"card" }}
+
             {% if request.resolver_match.url_name == 'update_task' %}
             <label>What's the status of the task?</label>
               {{ form.status|add_class:"card" }}

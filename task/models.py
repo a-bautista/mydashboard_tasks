@@ -46,10 +46,11 @@ class Task(models.Model):
 
     # ------------------------- Main fields --------------------------------------
     id           = models.AutoField(primary_key=True)
+    #username     = models.ManyToManyField(User)
     username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
+    
     #responsible  = models.ForeignKey(User, on_delete=models.CASCADE) #on_delete=models.SET_DEFAULT
     task         = models.CharField(null=False, max_length=140)
-
     category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status       = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
     points       = models.FloatField(default=5)

@@ -54,7 +54,7 @@ class Account(AbstractBaseUser):
      #last_name    = models.CharField(max_length=25)
      score        = models.FloatField(default=100)
      #image        = models.ImageField(default='default.jpg', upload_to='profile_pics')
-     #goals        = models.ManyToManyField(Goal)
+     
 
      # The following fields are required for every customer User model
      last_login   = models.DateTimeField(verbose_name='last login', auto_now=True)
