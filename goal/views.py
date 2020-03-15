@@ -18,8 +18,8 @@ def create_goal(request):
 
     
     if form_create.is_valid():
-        goal = form_create.save(commit=True)
-        goal.accounts.add(username_id) # save the goal in the goal and in the users table and in the goal_user_table
+        goal = form_create.save(commit=True) #save the goal
+        goal.accounts.add(username_id) # relate the goal  users table and the goal_user_table
         goal.save() 
         # Clean the form
         form_create = GoalModelForm()

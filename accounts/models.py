@@ -4,7 +4,6 @@ from datetime import date
 # Django Libraries
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
 from goal.models import Goal
 
 class MyAccountManager(BaseUserManager):
