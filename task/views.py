@@ -32,8 +32,16 @@ class Dashboard_Categories_Month(APIView):
         month = date.today().month
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -51,9 +59,17 @@ class Dashboard_Status_Month(APIView):
         month = date.today().month
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+
         # there's an error when you start having different tasks, they are not counting
         qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = request.user.id).order_by('count')
+            'status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
   
         keys_graph = list(qs_group_by.values_list('status'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -76,8 +92,14 @@ class Dashboard_Tasks_Week(APIView):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
-        
-        qs = Task.objects.filter(username_id=request.user.id, status='Active')
+
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+        qs = Task.objects.filter(goal__in=goal_ids, status='Active')
         # qs = Task.objects.filter(status='Active').values() # when you add values, you convert the queryset into a dictionary
 
         '''The following is the system that increases the points of tasks based on the amount of time they have been in your stack of tasks.
@@ -140,10 +162,11 @@ def create_task(request):
     # Messy code but it works
     select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
 
+    # task[0].task
     #user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
     
     #select_goal_id = Goal.objects.filter(goal=request.POST.get('goal', None)).values('id').values_list('id',flat=True)[0][0]
-    #new_val = select_goal_id[0]
+    #new_val = select_goal_id[0].id
 
     for value in select_goal_id:
         new_val = value
@@ -181,7 +204,18 @@ def delete_task(request, id):
 def retrieve_all(request):
     '''Get the list of all tasks'''
     template_name = 'task/formRetrieval.html'
-    form = {'task_list': Task.objects.filter(username_id=request.user.id)}
+    
+    goal_ids = []
+    #user -> goal
+    qs_current_user_goals = Goal.objects.filter(initial_date__gte='2020-03-15', initial_date__lte='2020-03-31', 
+                            accounts=request.user.id).values('id').values_list('id')
+
+    for value in qs_current_user_goals:
+        goal_ids.append(value)
+    
+    # tasks ->  goals
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids)}
+    
     return render(request, template_name, form)
 
 @login_required

@@ -6,6 +6,9 @@ from .models import Goal
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+# see your goals
+#goals = Goal.objects.filter(initial_date__gte='2020-03-15', initial_date__lte='2020-03-31', accounts=2)
+
 @login_required
 def create_goal(request):
     '''You are passing the form GoalModel into the template, so it can render it.'''
