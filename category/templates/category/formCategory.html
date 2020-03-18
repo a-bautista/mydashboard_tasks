@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% load widget_tweaks %} 
+{% block content %}
+<div class="content-header">
+  {% if request.resolver_match.url_name == 'create_category' %}
+    <h1>Create a new category</h1>
+  {% endif %}
+  {% if request.resolver_match.url_name == 'update_category' %}
+    <h1>Update a category</h1>
+  {% endif %}
+</div>
+
+<body onload="makeReadOnly();">
+  <div id="form-group">
+    <form method="POST" action="." enctype="multipart/form-data">
+        {% csrf_token %}
+            <label>What's your new category?</label>
+              {{ form.category|add_class:"card" }}
+          <br />
+          <br />
+            
+            <label>Comments about your category?</label>
+              {{ form.comments|add_class:"card js-keeper-editor" }}  
+
+            <br />
+            <br />  
+          
+        <button type="submit" class="btn btn-success">Send</button>
+    </form>
+  </div>
+</body>
+
+{% endblock content %}
+<script type="text/javascript">
+{% block jquery %}
+
+
+{% endblock %}
+</script>

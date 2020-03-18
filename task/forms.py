@@ -12,6 +12,7 @@ from django.apps import apps
 '''Declare the class to indicate the data that will be stored. '''
 Goal = apps.get_model('goal', 'Goal') # app_name and model_name
 User = apps.get_model('accounts', 'Account')
+#Category = apps.get_model('category', 'Category')
 
 '''Declare the class to indicate the data that will be stored. 
     I want the goals of the logged in user who are in progress.
@@ -30,6 +31,12 @@ class DropDownMenuGoalsForm(forms.Form):
         #queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress')
     #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
     
+
+#class DropDownMenuCategoriesForm(forms.Form):
+#    def __init__(self, *args, **kwargs):
+#        user_id = kwargs.pop('id')
+#        super(DropDownMenuCategoriesForm, self).__init__(*args, **kwargs)
+#        self.fields['category'] = forms.ModelChoiceField(queryset = Category.objects.values_list('category',flat=True).filter(accounts=User.objects.get(id=user_id)))
 
 
 class TaskForm(forms.Form):

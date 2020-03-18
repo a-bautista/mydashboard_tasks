@@ -5,6 +5,7 @@ from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
 from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
+#DropDownMenuCategoriesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task, Goal
@@ -153,6 +154,7 @@ def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
     goal = DropDownMenuGoalsForm(id = request.user.id)
+    #category = DropDownMenuCategoriesForm(id = request.user.id)
 
     #Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
 
@@ -161,7 +163,7 @@ def create_task(request):
     #if request.user.get_username():    
     #    username_id = User.objects.get(id=request.user.id)
 
-    # Messy code but it works
+    # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
     select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
 
     # task[0].task
@@ -173,6 +175,10 @@ def create_task(request):
     for value in select_goal_id:
         new_val = value
 
+    #select_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category',None))
+
+    #for value in select_category_id:
+    #    selected_category = value
     
     if form_create.is_valid():
         task = form_create.save(commit=True) # save the first task
@@ -187,6 +193,7 @@ def create_task(request):
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
     context = {'form': form_create,
+               #'category': category,
                'goal': goal
                }
     return render(request, template_name, context)
