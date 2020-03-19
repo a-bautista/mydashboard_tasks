@@ -21,7 +21,7 @@ home/__pycache__/*
 accounts/__pycache__/*
 accounts/migrations/*
 
-
+goal/migrations/__pycache__/*
 
 # Migrations
 mydashboard/task/migrations/__pycache__/*
