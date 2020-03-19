@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'home',
     'task',
     'accounts',
+    'goal',
     'widget_tweaks'
 ]
 

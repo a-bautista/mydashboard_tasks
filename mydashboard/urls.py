@@ -34,7 +34,9 @@ urlpatterns = [
     path('profile/', user_views.profile, name='profile'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logout.html'), name='logout'), # template view for logout
-    path('tasks/', include('task.urls')) # when you reach dashboard, go directly to look for the urls from the Task application
+    path('tasks/', include('task.urls')), # when you reach dashboard, go directly to look for the urls from the Task application
+    path('goals/', include('goal.urls')),
+    #path('category/', include('category.urls'))
     #path('', include('task.urls')) # when you reach home, go directly to look for the urls from the Task application
     #path('', HomeView.as_view(), name='home'),
     #path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls   
