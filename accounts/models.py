@@ -4,6 +4,7 @@ from datetime import date
 # Django Libraries
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from goal.models import Goal
 
 class MyAccountManager(BaseUserManager):
      
@@ -46,12 +47,14 @@ class MyAccountManager(BaseUserManager):
 
 
 class Account(AbstractBaseUser):
+     id           = models.AutoField(primary_key=True)
      email        = models.EmailField(verbose_name="email", max_length=60, unique=True)
      username     = models.CharField(max_length=30, unique=True)
-     first_name   = models.CharField(max_length=25)
-     last_name    = models.CharField(max_length=25)
+     #first_name   = models.CharField(max_length=25)
+     #last_name    = models.CharField(max_length=25)
      score        = models.FloatField(default=100)
      #image        = models.ImageField(default='default.jpg', upload_to='profile_pics')
+     
 
      # The following fields are required for every customer User model
      last_login   = models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -62,7 +65,10 @@ class Account(AbstractBaseUser):
      is_superuser = models.BooleanField(default=False)
 
      USERNAME_FIELD = 'email' 
-     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'score']
+     REQUIRED_FIELDS = ['username', 
+                        #'first_name', 
+                        #'last_name', 
+                        'score']
 
      objects = MyAccountManager()
 

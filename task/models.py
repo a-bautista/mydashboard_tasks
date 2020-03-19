@@ -10,8 +10,11 @@ from django.db.models import Q, F
 
 from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized
 
+from goal.models import Goal
+#from category.models import Category
+
 '''We will be using the customized User model from Django to store all our users which will be stored in a postgresql db.'''
-User = get_user_model()
+#User = get_user_model()
 
 #from django.conf import settings
 #User = settings.AUTH_USER_MODEL
@@ -46,10 +49,11 @@ class Task(models.Model):
 
     # ------------------------- Main fields --------------------------------------
     id           = models.AutoField(primary_key=True)
-    username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
-    #responsible  = models.ForeignKey(User, on_delete=models.CASCADE) #on_delete=models.SET_DEFAULT
+    #username     = models.ManyToManyField(User)
+    #username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
+    goal         = models.ManyToManyField(Goal)
     task         = models.CharField(null=False, max_length=140)
-
+    #category     = models.ManyToManyField(Category)
     category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status       = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
     points       = models.FloatField(default=5)
@@ -61,6 +65,7 @@ class Task(models.Model):
 
     class Meta:
         ordering = ['initial_date']
+        db_table = 'task_table'
 
     # ------------------------- Post Save --------------------------------------
 
