@@ -4,10 +4,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
+#DropDownMenuCategoriesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task
+from .models import Task, Goal
 import json, calendar
 
 from django.contrib.auth import get_user_model
@@ -32,8 +33,16 @@ class Dashboard_Categories_Month(APIView):
         month = date.today().month
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -51,9 +60,17 @@ class Dashboard_Status_Month(APIView):
         month = date.today().month
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+
         # there's an error when you start having different tasks, they are not counting
         qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
   
         keys_graph = list(qs_group_by.values_list('status'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -76,8 +93,16 @@ class Dashboard_Tasks_Week(APIView):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
-        
-        qs = Task.objects.filter(username_id=Cast(request.user.id, TextField()), status='Active')
+
+        goal_ids = []   
+        # goals -> users
+        qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+        # tasks -> goals
+        qs = Task.objects.filter(goal__in=goal_ids, status='Active')
         # qs = Task.objects.filter(status='Active').values() # when you add values, you convert the queryset into a dictionary
 
         '''The following is the system that increases the points of tasks based on the amount of time they have been in your stack of tasks.
@@ -128,22 +153,51 @@ class Dashboard_Tasks_Week(APIView):
 def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
-    username_id = None
-    if request.user.get_username():    
-        username_id = User.objects.get(id=request.user.id)
+    goal = DropDownMenuGoalsForm(id = request.user.id)
+    #category = DropDownMenuCategoriesForm(id = request.user.id)
+
+    #Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
+
+    #print(goals_dropdownmenu)
+    #username_id = None
+    #if request.user.get_username():    
+    #    username_id = User.objects.get(id=request.user.id)
+
+    # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
+    select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
+
+    # task[0].task
+    #user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
+    
+    #select_goal_id = Goal.objects.filter(goal=request.POST.get('goal', None)).values('id').values_list('id',flat=True)[0][0]
+    #new_val = select_goal_id[0].id
+
+    for value in select_goal_id:
+        new_val = value
+
+    #select_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category',None))
+
+    #for value in select_category_id:
+    #    selected_category = value
     
     if form_create.is_valid():
-        obj = form_create.save(commit=False)
-        obj.username = username_id # save the username_id in the task_task table
-        obj.save() 
+        task = form_create.save(commit=True) # save the first task
+        task.goal.add(new_val)  # associate the task with the goal by the id
+
+        #obj.username = username_id # save the username_id in the task_task table
+        task.save() 
         # Clean the form
         form_create = TaskModelForm()
         return redirect('/tasks/')
         
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
-    context = {'form': form_create}
+    context = {'form': form_create,
+               #'category': category,
+               'goal': goal
+               }
     return render(request, template_name, context)
+
 
 @login_required
 def delete_task(request, id):
@@ -151,7 +205,7 @@ def delete_task(request, id):
     task = Task.objects.get(pk=id) # get the current points of the task
     if request.method == "POST":
         holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-        User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the total points minus the subtracted points
+        User.objects.filter(id=request.user.id).update(score=holder-float(task.points)) # subtract the total points minus the subtracted points
         task.delete() # delete the task from the db
     return redirect('/tasks/')
 
@@ -159,7 +213,18 @@ def delete_task(request, id):
 def retrieve_all(request):
     '''Get the list of all tasks'''
     template_name = 'task/formRetrieval.html'
-    form = {'task_list': Task.objects.filter(username_id=Cast(request.user.id, TextField()))}
+    
+    goal_ids = []
+    #user -> goal
+    qs_current_user_goals = Goal.objects.filter(initial_date__gte='2020-03-15', initial_date__lte='2020-03-31', 
+                            accounts=request.user.id).values('id').values_list('id')
+
+    for value in qs_current_user_goals:
+        goal_ids.append(value)
+    
+    # tasks ->  goals
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids)}
+    
     return render(request, template_name, form)
 
 @login_required
@@ -177,9 +242,9 @@ def update_task(request, id):
         if form.is_valid():
             holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
             if request.POST.get('status', None) == 'Finalized':
-                User.objects.filter(id=request.user.id).update(score=holder+int(request.POST.get('points', None))) # get the points of the form with section points
+                User.objects.filter(id=request.user.id).update(score=holder+float(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
-                User.objects.filter(id=request.user.id).update(score=holder-int(request.POST.get('points', None))) # get the points of the form with section points
+                User.objects.filter(id=request.user.id).update(score=holder-float(request.POST.get('points', None))) # get the points of the form with section points
             #form.cleaned_data['username'] = request.user.id # doesn't work this line
             form.save()
             '''Below you need to update the username.id in the task_task table because if the task gets updated or cancelled then the username.id
@@ -206,13 +271,22 @@ def view_previous_tasks(request):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date(year, week)
 
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
         # Filter the data based on the initial date and active tasks
         # This qs cannot be commented because of the values_to_display_table
-        qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+        qs = Task.objects.filter(goal__in = goal_ids)
+
+
+        # there's an error when you start having different tasks, they are not counting
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -248,11 +322,21 @@ def view_previous_tasks_monthly(request):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
-        qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+        # Filter the data based on the initial date and active tasks
+        # This qs cannot be commented because of the values_to_display_table
+        qs = Task.objects.filter(goal__in = goal_ids)
+
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
@@ -287,11 +371,21 @@ def view_previous_tasks_yearly(request):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_yearly(year)
         
-        qs = Task.objects.filter(
-            initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField()))
+        goal_ids = []   
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value)
+
+        # Filter the data based on the initial date and active tasks
+        # This qs cannot be commented because of the values_to_display_table
+        qs = Task.objects.filter(goal__in = goal_ids)
+
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(initial_date__gte=initial_date, initial_date__lte=ending_date, username_id = Cast(request.user.id, TextField())).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
+
 
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
