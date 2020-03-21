@@ -68,10 +68,11 @@ class Dashboard_Status_Month(APIView):
             goal_ids.append(value)
 
 
-        # there's an error when you start having different tasks, they are not counting
+        # there's an error when you start having different tasks, they are not counting, really?
         qs_group_by = Task.objects.values(
             'status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
-  
+
+
         keys_graph = list(qs_group_by.values_list('status'))
         values_graph = list(qs_group_by.values_list('count'))
         front_end_dictionary = {
@@ -148,6 +149,159 @@ class Dashboard_Tasks_Week(APIView):
             "values_graph": y_axis
         }
         return Response(front_end_dictionary)
+
+
+class Dashboard_Goals_Quarter(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        '''Show only the results of the logged in user'''
+        year  = date.today().year
+        month = date.today().month
+        quarter   = (month-1)//3+1
+        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+
+        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
+        #initial_date, ending_date = get_start_end_date(year, week)
+
+        goal_task_finalized = {}
+        #goal_task_cancelled = {}
+        #goal_task_active    = {}
+        goal_task_total     = {}
+
+        finalized_task_goal_count = {}
+        total_task_goal_count     = {}
+        percentages_task_goals    = {}
+
+
+        goal_ids = []   
+        # goals -> users
+        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
+                                                            initial_date__gte=initialDayQuarter, 
+                                                            initial_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
+
+        for id, value in enumerate(qs_current_user_goals_quarter):
+            goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
+            goal_task_total[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
+
+        finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
+        total_goals,     qs_total     = zip(*goal_task_total.items())
+
+        
+        for goal in finalized_goals:
+            for element in goal_task_finalized[goal]:
+                finalized_task_goal_count[goal] = element['task_goal_count']
+
+        for goal in total_goals:
+            for element in goal_task_total[goal]:
+                total_task_goal_count[goal] = element['task_goal_count']
+
+        print(total_task_goal_count,finalized_task_goal_count)
+        # error when there's no task completed for any goal
+        for goal in total_goals:
+            try:
+                percentages_task_goals[goal] = (finalized_task_goal_count[goal]*100)/total_task_goal_count[goal]
+            except:
+                print("Key not found")
+
+        print(percentages_task_goals)
+        x_axis, y_axis = zip(*percentages_task_goals.items())
+
+        #qs_current_user_goals_quarter = Goal.objects.filter(accounts=1, 
+        #                                                    initial_date__gte=initialDayQuarter, 
+        #                                                    initial_date__lte=lastDayQuarter).values('id').values_list('id')
+
+
+        # draft 
+        #
+        # Task.objects.values('goal')
+        # for id in goal_ids:
+        #    goal_task[id[0]] = Task.objects.values('task').annotate(count=Count('task')).filter(id=id[0])
+        #
+        # total_tasks = Task.objects.all().values_list('goal',flat=True).filter(goal=2) # tasks related to goal 2
+        # 
+        #
+        
+        # for id in qs_current_user_goals_quarter:
+        #     goal_task[id[0]] = Task.objects.all().values_list('goal',flat=True).filter(goal=id[0])
+
+
+        '''
+        goal_task_finalized = {}
+        goal_task_cancelled = {}
+        goal_task_active    = {}
+        goal_task_total     = {}
+
+        qs_current_user_goals_quarter = Goal.objects.filter(accounts=1, 
+                        initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter)
+                        .values('id','goal').values_list('id','goal')
+
+        for id, value in enumerate(qs_current_user_goals_quarter):
+            goal_task_active[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
+
+        goal, qs = zip(*goal_task_active.items())
+
+        #for element in qs:
+        #    for object in element:
+        #        print(object)
+        
+        # get the count of values in a dictionary
+        task_goal_count_values ={}
+        for key_goal in goal:
+            for element in goal_task_active[key_goal]:
+                task_goal_count_values[key_goal] = element['task_goal_count']
+
+
+        goal_task_active
+        {'Finish the front end part of Telos': <QuerySet []>, 'A sample goal': <QuerySet [{'goal': 2, 'task_goal_count': 2}]>, 'Test for A1': <QuerySet []>}
+        goal_task_finalized
+        {'Finish the front end part of Telos': <QuerySet [{'goal': 1, 'task_goal_count': 3}]>, 'A sample goal': <QuerySet []>, 'Test for A1': <QuerySet []>}
+        goal_task_total
+        {'Finish the front end part of Telos': <QuerySet [{'goal': 1, 'task_goal_count': 3}]>, 'A sample goal': <QuerySet [{'goal': 2, 'task_goal_count': 2}]>, 'Test for A1': <QuerySet []>}
+        finalized_goals, qs = zip(*goal_task_finalized.items())
+        finalized_goals
+        ('Finish the front end part of Telos', 'A sample goal', 'Test for A1')
+
+        finalized_task_goal_count = {}
+        for goal in finalized_goals:
+        for element in goal_task_finalized[goal]:
+        finalized_task_goal_count[goal] = element['task_goal_count']
+        finalized_task_goal_count
+        {'Finish the front end part of Telos': 3}
+
+
+        total_goals, qs_total = zip(*goal_task_total.items())
+        total_goals
+        ('Finish the front end part of Telos', 'A sample goal', 'Test for A1')
+        qs_total
+        (<QuerySet [{'goal': 1, 'task_goal_count': 3}]>, <QuerySet [{'goal': 2, 'task_goal_count': 2}]>, <QuerySet []>)
+        total_task_goal_count = {}
+        for goal in total_goals:
+        for element in goal_task_total[goal]:
+        total_task_goal_count[goal] = element['task_goal_count']
+        print(total_task_goal_count)
+        print(finalized_task_goal_count)
+
+        percentages_task_goals = {}
+        for goal in total_goals:
+        try:
+             percentages_task_goals[goal] = (finalized_task_goal_count[goal]*100)/total_task_goal_count[goal]
+        except:
+             print("Key not found")
+        '''
+        #x_axis = list(qs_current_user_goals_quarter.values_list('goal')) #name of the goals to be displayed in the x axis
+
+        print(x_axis, y_axis)
+        # tasks -> goals
+        #qs = Task.objects.filter(goal__in=goal_ids)
+        # qs = Task.objects.filter(status='A
+        front_end_dictionary = {
+            "labels_graph": x_axis,
+            "values_graph": y_axis
+        }
+        return Response(front_end_dictionary)
+
 
 @login_required
 def create_task(request):
@@ -437,6 +591,7 @@ def get_start_end_date_monthly(year, month):
     ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
 
     return initial_date, ending_date
+
 
 
 def get_start_end_date_yearly(year):
