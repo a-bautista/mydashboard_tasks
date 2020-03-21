@@ -35,3 +35,4 @@ home/migrations/*
 # Other folders
 .idea/
 mydashboard/live-static/static-root/*
+.vscode/*

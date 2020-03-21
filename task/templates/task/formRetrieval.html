@@ -6,6 +6,7 @@
   <thead class="border-bottom font-weight-bold">
     <tr>
       <td>Task</td>
+      <td>Goal</td>
       <td>Status</td>
       <td>Category</td>
       <td>Points</td>
@@ -19,6 +20,7 @@
     {% for task in task_list %}
     <tr>
       <td>{{task.task}}</td>
+      <td>{{task.goal}}</td>
       <td>{{task.status}}</td>
       <td>{{task.category}}</td>
       <td>{{task.points}}</td>

@@ -20,9 +20,18 @@ def main_dashboard(request):
     username = None
     if request.user.get_username():
         username = request.user.username
+    
     user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
     week = date.today().isocalendar()[1]
-    context = { "points": user, "month": datetime.now().strftime("%B"), "week": week } # display the current points, current month, current week
+    month = datetime.today().month
+    year  = datetime.today().year
+    quarter   = (month-1)//3+1
+    
+    initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+    lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+
+    context = { "points": user, "month": datetime.now().strftime("%B"), "week": week, 
+                "initial_date_quarter": initialDayQuarter, "lastDayQuarter":lastDayQuarter } # display the current points, current month, current week
     return render(request, 'task/mainDashboard.html', context)
 
 
@@ -152,7 +161,7 @@ class Dashboard_Tasks_Week(APIView):
 
 
 class Dashboard_Goals_Quarter(APIView):
-
+    ''' Display all the goals and indicate the % of progress in each one once they have been finalized. '''
     def get(self, request, *args, **kwargs):
 
         '''Show only the results of the logged in user'''
@@ -198,12 +207,13 @@ class Dashboard_Goals_Quarter(APIView):
                 total_task_goal_count[goal] = element['task_goal_count']
 
         print(total_task_goal_count,finalized_task_goal_count)
-        # error when there's no task completed for any goal
+        
         for goal in total_goals:
             try:
                 percentages_task_goals[goal] = (finalized_task_goal_count[goal]*100)/total_task_goal_count[goal]
             except:
-                print("Key not found")
+                # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
+                percentages_task_goals[goal] = 0
 
         print(percentages_task_goals)
         x_axis, y_axis = zip(*percentages_task_goals.items())
@@ -296,6 +306,8 @@ class Dashboard_Goals_Quarter(APIView):
         # tasks -> goals
         #qs = Task.objects.filter(goal__in=goal_ids)
         # qs = Task.objects.filter(status='A
+
+        # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
             "labels_graph": x_axis,
             "values_graph": y_axis
