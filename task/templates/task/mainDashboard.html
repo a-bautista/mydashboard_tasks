@@ -16,6 +16,16 @@
   </div>
 </div>
 
+<div class="widget-box sample-widget">
+  <div class="widget-header">
+    <h2> Current date: {{current_date}} </h2>
+  </div>
+  <div class="widget-content">
+    <canvas id="graph_points_year" width="700" height="400"></canvas>
+  </div>
+</div>
+
+
 <!-- Second graph (points in task) -->
 <div class="widget-box sample-widget">
     <div class="widget-header">
@@ -58,7 +68,7 @@
 
    // First graph: Goals in quarter
 
-   var endpoint = 'dashboard_goals_quarter' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var endpoint = 'dashboard_goals_quarter' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
   var labels_graph = []
   var values_graph = []
   $.ajax({
@@ -199,6 +209,135 @@
           }// end of options
         }); // end of display_graph variable
       }// end of function
+
+
+  var endpoint = 'dashboard_goals_year' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var labels_graph = []
+  var values_graph = []
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    dataType: 'json',
+    success: function(front_end_dictionary){
+        $.each(front_end_dictionary,function(key,val){
+          if (key == "labels_graph"){
+            labels_graph = val
+          }else if (key == "values_graph"){
+            values_graph = val
+          }
+        });
+        setGoalsYear()
+    },
+      error: function(jqXHR, textStatus, errorThrown) {
+          console.log(JSON.stringify(jqXHR));
+          console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+    }
+  })
+
+  // Define the chart for the first graph
+  function setGoalsYear()
+  {
+    var ctx_graph     = document.getElementById("graph_points_year")
+    var display_graph = new Chart(ctx_graph, {
+      type:'bar',
+        data: {
+            labels: labels_graph,
+            datasets :
+                [{
+                  data: values_graph,
+                  backgroundColor: [
+                      'rgba(237, 98, 18, 0.9)',
+                      'rgba(54, 162, 235, 0.9)',
+                      'rgba(255, 206, 86, 0.9)',
+                      'rgba(75, 192, 192, 0.9)',
+                      'rgba(153, 102, 255, 0.9)',
+                      'rgba(45, 154, 35, 0.9)',
+                      'rgba(154, 39, 35, 0.9)',
+                      ],
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                }]
+        },
+        options : {
+          responsive: true,
+          tooltipTemplate: "<%= value %>",
+          tooltipFillColor: "rgba(0,0,0,0)",
+          tooltipFontColor: "#444",
+          tooltipEvents: [],
+          tooltipCaretSize: 0,
+          scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                    fontColor: '#000',
+                    fontSize: 10
+                     },
+                  gridLines: {
+                    display: false,
+                    color:'#000'
+                    },
+                  scaleLabel: {
+                    display: true,
+                    fontSize: 15,
+                    labelString: 'Progress %',
+                    fontColor: '#000'
+                    }
+                  }],
+                xAxes: [{
+                  ticks: {
+                    fontColor: '#000',
+                    fontSize: 10
+                    },
+                  gridLines: {
+                    display:false,
+                    color:'#000'
+                    },
+                  scaleLabel: {
+                    display: false,
+                    fontSize: 30,
+                    labelString: 'Current tasks',
+                    fontColor: '#000'
+                    }
+                  }]
+                }, //end of scales
+                plugins: {
+                    datalabels: {
+                          display: true,
+                          align: 'center',
+                          anchor: 'center',
+                          color: '#fff'
+                         }
+                      },
+                title: {
+                    display: true,
+                    text: 'Current goals',
+                    fontSize: 25,
+                    padding: 50,
+                    fontColor: '#000'
+                    },
+                legend: {
+                    position: 'right',
+                    display: false,
+                labels: {
+                    fontColor: '#000',
+                    fontSize: 15
+                  }
+              },
+          layout: {
+              padding: {
+                  left: 50,
+                  right: 0,
+                  bottom: 0,
+                  top: 0
+              }
+          },
+          }// end of options
+        }); // end of display_graph variable
+      }// end of function
+
+
 
     // Second graph: Points in Tasks
 
@@ -526,8 +665,6 @@
     }
   })
 
-    
-
-
 {% endblock %}
 </script>
+
