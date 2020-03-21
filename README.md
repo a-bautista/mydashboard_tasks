@@ -272,10 +272,12 @@ For testing you image locally, you need to execute the command `sudo docker run 
 ### 12. Push the image into Heroku (djangodocker is the name of your app)
 
     `sudo heroku container:push web -a djangodocker`
+    `sudo heroku container:push web -a telos-dashboard-container`
 
 ### 13. Release the image in heroku
 
     `sudo heroku container:release web -a djangodocker`
+    `sudo heroku container:release web -a telos-dashboard-container`
 
 ### 14. Open the heroku app to verify that it is working.
 
