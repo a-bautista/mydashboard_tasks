@@ -189,8 +189,9 @@ class Dashboard_Goals_Quarter(APIView):
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initialDayQuarter, 
-                                                            initial_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
-
+                                                            expiration_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
+        print("Current goals quarter")
+        print(qs_current_user_goals_quarter)
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
             goal_task_total[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
@@ -261,7 +262,7 @@ class Dashboard_Goals_Year(APIView):
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initial_date, 
-                                                            initial_date__lte=ending_date).values('id','goal').values_list('id','goal')
+                                                            expiration_date__lte=ending_date).values('id','goal').values_list('id','goal')
 
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
