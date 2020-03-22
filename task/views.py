@@ -4,8 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm
-#DropDownMenuCategoriesForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task, Goal
@@ -235,7 +234,129 @@ class Dashboard_Goals_Quarter(APIView):
         # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
             "labels_graph": x_axis,
-            "values_graph": y_axis
+            "values_graph": y_axis,
+            "legend":['Active','Finalized','Cancelled']
+        }
+        return Response(front_end_dictionary)
+
+
+class Dashboard_Goals_Status_Task(APIView):
+    ''' Display all the quarterly goals and indicate the % of progress in each one once they have been finalized. '''
+    def get(self, request, *args, **kwargs):
+
+        '''Show only the results of the logged in user'''
+        year  = date.today().year
+        month = date.today().month
+        quarter   = (month-1)//3+1
+        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+
+        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
+        #initial_date, ending_date = get_start_end_date(year, week)
+
+        goal_task_finalized = {}
+        goal_task_cancelled = {}
+        goal_task_active    = {}
+        goal_task_total     = {}
+
+        finalized_task_goal_count = {}
+        cancelled_task_goal_count = {}
+        active_task_goal_count    = {}
+
+        total_task_goal_count     = {}
+        percentages_task_goals    = {}
+        goal_status_count         = {}
+
+
+        goal_ids = []   
+        # goals -> users
+        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
+                                                            initial_date__gte=initialDayQuarter, 
+                                                            expiration_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
+        
+        print(qs_current_user_goals_quarter)
+        for id, value in enumerate(qs_current_user_goals_quarter):
+            goal_task_total[value[1]]     = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
+            goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
+            goal_task_active[value[1]]    = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Active')
+            goal_task_cancelled[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Cancelled')   
+
+        finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
+        active_goals,    qs_active    = zip(*goal_task_active.items())
+        cancelled_goals, qs_active    = zip(*goal_task_cancelled.items())  
+        total_goals,     qs_total     = zip(*goal_task_total.items())
+
+        
+        for goal in finalized_goals:
+            for element in goal_task_finalized[goal]:
+                finalized_task_goal_count[goal] = element['task_goal_count']
+
+        
+        for goal in active_goals:
+            for element in goal_task_active[goal]:
+                active_task_goal_count[goal] = element['task_goal_count']
+
+        for goal in cancelled_goals:
+            for element in goal_task_cancelled[goal]:
+                cancelled_task_goal_count[goal] = element['task_goal_count']
+
+        # populate the dictionary with empty lists to store the count of active, cancelled and finalized goals
+        for goal in total_goals:
+            goal_status_count[goal]=goal_status_count.get(goal,[])
+
+        #for goal in total_goals:
+        #    for element in goal_task_total[goal]:
+        #        total_task_goal_count[goal] = element['task_goal_count']
+
+        print(active_task_goal_count,finalized_task_goal_count, cancelled_task_goal_count)
+        
+        for goal in total_goals:
+            try:
+                goal_status_count[goal].append(finalized_task_goal_count[goal])
+                #goal_status_count[goal].append(active_task_goal_count[goal])
+                #goal_status_count[goal].append(cancelled_task_goal_count[goal])
+            except:
+                # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
+                goal_status_count[goal].append(0)
+
+        for goal in total_goals:
+            try:
+                #goal_status_count[goal].append(finalized_task_goal_count[goal])
+                goal_status_count[goal].append(active_task_goal_count[goal])
+                #goal_status_count[goal].append(cancelled_task_goal_count[goal])
+            except:
+                # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
+                goal_status_count[goal].append(0)
+        
+        for goal in total_goals:
+            try:
+                #goal_status_count[goal].append(finalized_task_goal_count[goal])
+                #goal_status_count[goal].append(active_task_goal_count[goal])
+                goal_status_count[goal].append(cancelled_task_goal_count[goal])
+            except:
+                # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
+                goal_status_count[goal].append(0)
+
+        #print(percentages_task_goals)
+        x_axis, y_axis = zip(*goal_status_count.items())
+
+        #qs_current_user_goals_quarter = Goal.objects.filter(accounts=1, 
+        #                                                    initial_date__gte=initialDayQuarter, 
+        #                                                    initial_date__lte=lastDayQuarter).values('id').values_list('id')
+
+        
+        #x_axis = list(qs_current_user_goals_quarter.values_list('goal')) #name of the goals to be displayed in the x axis
+
+        #print(x_axis, y_axis)
+        # tasks -> goals
+        #qs = Task.objects.filter(goal__in=goal_ids)
+        # qs = Task.objects.filter(status='A
+
+        # only the goals with finalized tasks are being displayed, fix this
+        front_end_dictionary = {
+            "labels_graph": x_axis,
+            "values_graph": y_axis,
+            "legend": ['Active','Finalized','Cancelled']
         }
         return Response(front_end_dictionary)
 
@@ -368,19 +489,24 @@ def delete_task(request, id):
 
 @login_required
 def retrieve_all(request):
-    '''Get the list of all tasks'''
+    '''Get the list of all tasks created during the year'''
     template_name = 'task/formRetrieval.html'
     
+    year = date.today().year
+    initial_date, ending_date = get_start_end_date_yearly(year)
+
     goal_ids = []
     #user -> goal
-    qs_current_user_goals = Goal.objects.filter(initial_date__gte='2020-03-15', initial_date__lte='2020-03-31', 
+    qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
                             accounts=request.user.id).values('id').values_list('id')
+
+    # qs = Goal.objects.values_list('goal',flat=True).filter(task=Task.objects.get(id=9))
 
     for value in qs_current_user_goals:
         goal_ids.append(value)
     
     # tasks ->  goals
-    form = {'task_list': Task.objects.filter(goal__in=goal_ids)}
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids), 'year':year}
     
     return render(request, template_name, form)
 
@@ -388,28 +514,55 @@ def retrieve_all(request):
 def update_task(request, id):
     '''Update a task'''
     task = Task.objects.get(pk=id)  # get the task id from the db
+    #print(task)
     form = TaskModelForm(request.POST or None, instance=task) # overwrite the task, do not create a new one
+    goal = DropDownMenuGoalsForm(id = request.user.id)
+
+    # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
+    select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
+
+    for value in select_goal_id:
+        new_val = value
 
     if request.method == "GET":
         template_name = 'task/formTask.html'
-        return render(request, template_name, {'form': form})
+        return render(request, template_name, {'form': form, 'goal': goal})
 
     # when the forms gets updated, the task disappears from the db
     elif request.method == "POST":
         if form.is_valid():
             holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
+
+            
+            
+            #u.today_ref_viewed_ips.set(today_ref_objs, clear=True)
+
+            #Task.objects.filter(id=task.id).update(goal=new_val) # get the points of the form with section points
+            #task.goal.add(new_val)  # associate the task with the goal by the id but you need to update
+            
             if request.POST.get('status', None) == 'Finalized':
                 User.objects.filter(id=request.user.id).update(score=holder+float(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
                 User.objects.filter(id=request.user.id).update(score=holder-float(request.POST.get('points', None))) # get the points of the form with section points
             #form.cleaned_data['username'] = request.user.id # doesn't work this line
+            
+            #print(task.goal)
+            #task.goal.set(new_val, clear=True) # int object is not iterable
+
+            #for u in MyUser.objects.all():
+            #    u.today_ref_viewed_ips.clear()
+
+            #today_ref_objs = [obj1, obj2, obj3]
+            #u = MyUser.objects.get(pk=1)
+            #u.today_ref_viewed_ips.set(today_ref_objs, clear=True)
+
             form.save()
             '''Below you need to update the username.id in the task_task table because if the task gets updated or cancelled then the username.id
                is erased because in the form there's no visible field to get the username id. The solution is not the cleanest but it works.'''
             
             '''The reason for the error django.model object has no attribute 'update' is that .get() returns an individual object and .update() only works on querysets, 
                 such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
-            task.username=User.objects.get(id=request.user.id)
+            #task.username=User.objects.get(id=request.user.id)
             task.save()
         return redirect('/tasks/')
 

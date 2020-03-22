@@ -13,10 +13,9 @@
   <div id="form-group">
     <form method="POST" action="." enctype="multipart/form-data">
         {% csrf_token %}
-          <div class="tweet-composer">
-            <label>Insert your goal</label>
-              {{ form.goal|add_class:"card js-keeper-editor" }}
-          </div>
+          
+          <label>Insert your goal</label>
+            {{ form.goal|add_class:"card" }}
 
           <br />
           <br />
@@ -37,16 +36,31 @@
             <label>What's the status of the goal?</label>
               {{ form.status|add_class:"card" }}
 
-            <label>Comments</label>
-              {{ form.comments|add_class:"card" }}
-            
-            <label>Final notes</label>
-              {{ form.final_notes|add_class:"card" }}  
+            <br />
+            <br />
+
+            <div class="tweet-composer">
+              <label>Comments</label>
+                {{ form.comments|add_class:"card js-keeper-editor" }}
+            </div>
+
+            <br />
+            <br />
+
+            <div class="tweet-composer">
+              <label>Final notes</label>
+                {{ form.final_notes|add_class:"card  js-keeper-editor" }}  
+            </div>
+
+            <br />
+            <br />
 
             <label>Finalized date:</label>
               {{ form.ending_date|add_class:"card" }}
           {% endif %}
           
+          <br />
+          <br />
         <button type="submit" class="btn btn-success">Send</button>
     </form>
   </div>
