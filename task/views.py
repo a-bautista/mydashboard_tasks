@@ -341,11 +341,10 @@ class Dashboard_Goals_Status_Task(APIView):
                     finalized.append(inner_list[i])
         
         y_axis = []
-        y_axis.append(finalized)
-        y_axis.append(active)
         y_axis.append(cancelled)
-
-        
+        y_axis.append(active)
+        y_axis.append(finalized)
+       
         # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
             "labels_graph": x_axis,
