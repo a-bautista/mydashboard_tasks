@@ -6,13 +6,23 @@
   <h1>Current points: {{points}}</h1>
 </div>
 
+
+<div class="widget-box sample-widget">
+  <div class="widget-header">
+    <h2> Quarter: {{initial_date_quarter}} to {{lastDayQuarter}} </h2>
+  </div>
+  <div class="widget-content">
+    <canvas id="graph_goals_status_task" width="700" height="390"></canvas>
+  </div>
+</div>
+
 <!-- First graph (quarterly goals) -->
 <div class="widget-box sample-widget">
   <div class="widget-header">
     <h2> Quarter: {{initial_date_quarter}} to {{lastDayQuarter}} </h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_points_quarter" width="700" height="400"></canvas>
+    <canvas id="graph_goals_quarter" width="700" height="400"></canvas>
   </div>
 </div>
 
@@ -65,6 +75,155 @@
 <script>
 {% block jquery %}
 
+ var endpoint = 'dashboard_goals_status_task' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var labels_graph = []
+  var values_graph = []
+  var legend       = []
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    dataType: 'json',
+    success: function(front_end_dictionary){
+        $.each(front_end_dictionary,function(key,val){
+          if (key == "labels_graph"){
+            labels_graph = val
+          }else if (key == "values_graph"){
+            values_graph = val
+          }else if (key=="legend"){
+            legend = val
+          }
+        });
+        setGoalsStatusTaskQuarter()
+    },
+      error: function(jqXHR, textStatus, errorThrown) {
+          console.log(JSON.stringify(jqXHR));
+          console.log("AJAX error: " + textStatus + ' : ' + errorThrown);
+    }
+  })
+
+    // Define the chart for the first graph
+  function setGoalsStatusTaskQuarter()
+  {
+    var ctx_graph     = document.getElementById("graph_goals_status_task")
+    var display_graph = new Chart(ctx_graph, {
+      type:'bar',
+        data: {
+            labels: labels_graph,
+            datasets :
+                [{
+                  label: legend[0],
+					        data: values_graph[0],
+                  backgroundColor: 'rgba(251, 95, 4, 0.9)',
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                },
+
+                {
+                  label: legend[1],
+					        data: values_graph[1],
+                  backgroundColor: 'rgba(202, 28, 28, 0.9)',
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                },
+
+                {
+                  label: legend[2],
+					        data: values_graph[2],
+                  backgroundColor: 'rgba(251, 235, 4, 0.9)',
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                },
+                ]
+                  
+        },
+        options : {
+		        responsive: true,
+		        tooltipTemplate: "<%= value %>",
+		        tooltipFillColor: "rgba(0,0,0,0)",
+		        tooltipFontColor: "#444",
+		        tooltipEvents: [],
+		        tooltipCaretSize: 0,
+                tooltips: {mode: 'label'},
+                scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                fontColor: '#000',
+                                fontSize: 10,
+                                },
+                            gridLines: {
+                                display: false,
+                                color:'#000'
+                                },
+                            scaleLabel: {
+                                display: true,
+                                fontSize: 15,
+                                labelString: 'Number of tasks in goals',
+                                fontColor: '#000'
+                                },
+                                stacked: true
+                            }],
+                        xAxes: [{
+                            ticks: {
+                                fontColor: '#000',
+                                fontSize: 10
+                            },
+                            gridLines: {
+                                display:false,
+                                color:'#000'
+                            },
+                            scaleLabel: {
+                                display: false,
+                                fontSize: 30,
+                                labelString: 'Current days',
+                                fontColor: '#fff'
+                            },
+                            stacked: true
+                        }]
+                },//end of scales
+                plugins: {
+                         datalabels: {
+                            display: true,
+                            align: 'center',
+                            anchor: 'center',
+                            color: '#fff'
+                         }
+                      },
+
+                title: {
+                        display: true,
+                        text: 'Status of Tasks in Goals',
+                        fontSize: 30,
+                        padding: 50,
+                        fontColor: '#000'
+                        },
+
+                legend: {
+                        position: 'right',
+                        display: true,
+                        labels: {
+                            fontColor: '#000'
+                        }
+		            },
+		        layout: {
+		            padding: {
+		                left: 50,
+		                right: 0,
+		                bottom: 0,
+		                top: 0
+		            }
+		        },
+	        }// end of options
+    }); // end of display_graph variable
+}// end of function
+
+
 
    // First graph: Goals in quarter
 
@@ -94,7 +253,7 @@
     // Define the chart for the first graph
   function setGoalsQuarter()
   {
-    var ctx_graph     = document.getElementById("graph_points_quarter")
+    var ctx_graph     = document.getElementById("graph_goals_quarter")
     var display_graph = new Chart(ctx_graph, {
       type:'bar',
         data: {
@@ -169,7 +328,7 @@
                       },
                 title: {
                     display: true,
-                    text: 'Current goals',
+                    text: 'Goals in current Quarter',
                     fontSize: 25,
                     padding: 50,
                     fontColor: '#000'

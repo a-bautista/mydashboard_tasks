@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import GoalModelForm
 from .models import Goal
+from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -32,7 +33,83 @@ def create_goal(request):
         
     template_name = 'goal/formGoal.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
-    context = {'form': form_create
-    
-     }
+    context = {'form': form_create}
     return render(request, template_name, context)
+
+
+@login_required
+def retrieve_all(request):
+    '''Get the list of all goals during the year'''
+    template_name = 'goal/formRetrieval.html'
+    
+    year = date.today().year
+    initial_date, ending_date = get_start_end_date_yearly(year)
+
+    goal_ids = []
+    #user -> goal
+    qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, expiration_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+    for value in qs_current_user_goals:
+        goal_ids.append(value[0])
+    
+    # current goals
+    form = {'goal_list': Goal.objects.filter(id__in=goal_ids), 'year':year}
+    
+    return render(request, template_name, form)
+
+
+@login_required
+def update_goal(request, id):
+    '''Update a goal'''
+    goal = Goal.objects.get(pk=id)  # get the task id from the db
+    form = GoalModelForm(request.POST or None, instance=goal) # overwrite the task, do not create a new one
+
+    if request.method == "GET":
+        template_name = 'goal/formGoal.html'
+        return render(request, template_name, {'form': form})
+
+    # when the forms gets updated, the task disappears from the db
+    elif request.method == "POST":
+        if form.is_valid():
+            form.save()
+        return redirect('/tasks/')
+
+
+@login_required
+def delete_goal(request, id):
+    '''Delete a task'''
+    goal = Goal.objects.get(pk=id) # get the current points of the task
+    if request.method == "POST":
+        goal.delete() # delete the task from the db
+    return redirect('/tasks/')
+
+
+def get_start_end_date_yearly(year):
+    
+    initial_year  = str(year)
+    initial_month = str("01") #first month of the year
+    initial_day   = str("01")  # first day of month as a zero padded decimal number
+
+    ending_year   = str(year)
+    ending_month  = str("12") #last month of the year
+    ending_day    = str("31")  # get the last day of the month
+
+    # Default time values
+    beginning_hour   = 00
+    beginning_minute = 00
+    beginning_second = 00
+
+    # Default time values
+    ending_hour   = 23
+    ending_minute = 59
+    ending_second = 59
+
+
+    initial_date  = datetime(int(initial_year), int(initial_month), int(initial_day),
+                                              beginning_hour, beginning_minute, beginning_second)
+
+    ending_date   = datetime(int(ending_year), int(ending_month), int(ending_day),
+                                                ending_hour, ending_minute, ending_second)
+
+    return initial_date, ending_date

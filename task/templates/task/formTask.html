@@ -25,10 +25,20 @@
             {{ goal.goal|add_class:"card" }}
 
             {% if request.resolver_match.url_name == 'update_task' %}
+            <br />
+            <br />
+
             <label>What's the status of the task?</label>
               {{ form.status|add_class:"card" }}
+
+            <br />
+            <br />
             <label>Current points:</label>
               {{ form.points|add_class:"card" }}
+
+            <br />
+            <br />
+            
             <label>Finalized date:</label>
               {{ form.ending_date|add_class:"card" }}
           {% endif %}

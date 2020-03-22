@@ -30,7 +30,14 @@ class DropDownMenuGoalsForm(forms.Form):
         self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
         #queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress')
     #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
-    
+
+class DropDownMenuSelectedGoalsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        task_id = kwargs.pop('id')
+        super(DropDownMenuSelectedGoalsForm, self).__init__(*args, **kwargs)
+        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(task=Task.objects.get(id=task_id)))
+        
+        # self.fields['goal'] = forms.ModelChoiceField(queryset = Task.objects.values_list('goal',flat=True).filter(goal=Goal.objects.get(id=task_id)))
 
 #class DropDownMenuCategoriesForm(forms.Form):
 #    def __init__(self, *args, **kwargs):
