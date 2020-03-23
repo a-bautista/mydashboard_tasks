@@ -40,19 +40,23 @@ class Dashboard_Categories_Month(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         month = date.today().month
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
                             accounts=request.user.id).values('id').values_list('id')
+
 
         for value in qs_current_user_goals:
             goal_ids.append(value)
 
 
         qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids, 
+            initial_date__gte=initial_date, initial_date__lte=ending_date).order_by('count')
 
+        
         keys_graph = list(qs_group_by.values_list('category'))
         values_graph = list(qs_group_by.values_list('count'))
         front_end_dictionary = {
@@ -67,11 +71,13 @@ class Dashboard_Status_Month(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         month = date.today().month
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
                             accounts=request.user.id).values('id').values_list('id')
+
 
         for value in qs_current_user_goals:
             goal_ids.append(value)
