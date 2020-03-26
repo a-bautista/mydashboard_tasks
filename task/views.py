@@ -194,7 +194,8 @@ class Dashboard_Goals_Quarter(APIView):
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initialDayQuarter, 
-                                                            expiration_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
+                                                            expiration_date__lte=lastDayQuarter,
+                                                            status='In Progress').values('id','goal').values_list('id','goal')
         
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
@@ -277,7 +278,8 @@ class Dashboard_Goals_Status_Task(APIView):
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initialDayQuarter, 
-                                                            expiration_date__lte=lastDayQuarter).values('id','goal').values_list('id','goal')
+                                                            expiration_date__lte=lastDayQuarter,
+                                                            status='In Progress').values('id','goal').values_list('id','goal')
         
         #print(qs_current_user_goals_quarter)
         for id, value in enumerate(qs_current_user_goals_quarter):
