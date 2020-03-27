@@ -421,3 +421,15 @@ Then you need to configure the IAM (User Access and Encryption keys) by selectin
 attach existing policies directly and then on the search menu you type  beanstalk and you select all your permissions for now. You copy the access variables that are provided and you paste them
 in your travis-ci account under settings and then you create the protected variables for storing the keys.
 
+
+#### Adding a domain with Heroku and GoDaddy
+
+
+You need to apply the following command `heroku domains:add www.telos-app.xyz -a telos-dashboard-container`
+
+add a wildcard for your app `heroku domains:add *.telos-app.xyz -a telos-dashboard-container`
+
+In Godaddy, look for the DNS management and add the CNAME www and * and insert the values that you have from the settings
+in your Heroku configuration.
+
+Activate the forwarding domain and put the name of your app. 
