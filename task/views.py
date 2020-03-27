@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
 from django.db.models.functions import Cast
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm
 from rest_framework.views import APIView
@@ -384,7 +385,7 @@ class Dashboard_Goals_Year(APIView):
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initial_date, 
-                                                            expiration_date__lte=ending_date).values('id','goal').values_list('id','goal')
+                                                            expiration_date__lte=ending_date).exclude(status='Cancelled').values('id','goal').values_list('id','goal')
 
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
