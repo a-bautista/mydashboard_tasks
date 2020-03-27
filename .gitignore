@@ -1,5 +1,7 @@
 # Distribution and packages
 
+.vscode/*
+
 # Virtual environments
 venv/
 
@@ -19,6 +21,8 @@ mydashboard/__pycache__/__init__.cpython-36.pyc
 task/__pycache__/*
 home/__pycache__/*
 accounts/__pycache__/*
+goal/migrations/*
+
 
 
 
