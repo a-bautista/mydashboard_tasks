@@ -4,8 +4,8 @@ from .views import (
                         create_goal, 
                         update_goal,
                         delete_goal,
-                        #view_previous_goals_quarter, 
-                        #view_previous_goals_yearly, 
+                        view_previous_goals_quarterly, 
+                        view_previous_goals_yearly, 
                         retrieve_all, 
                         #main_dashboard
                     )
@@ -19,6 +19,7 @@ urlpatterns = [
     path('new/', create_goal, name='create_goal'),
     path('update/<int:id>/', update_goal, name='update_goal'),
     path('delete/<int:id>/', delete_goal, name='delete_goal'),
-    #path('previous_goals_quarterly/', view_previous_goals_quarterly),
-    #path('previous_goals_yearly/', view_previous_goals_yearly)
+    path('previous_goals_yearly/', view_previous_goals_yearly),
+    path('previous_goals_quarterly/', view_previous_goals_quarterly),
+    
 ]

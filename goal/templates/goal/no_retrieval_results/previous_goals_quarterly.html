@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-header">
+     <h1>Retrieve previous goals by quarter and year</h1>
+</div>
+{% include "goal/retrieval_quarterly_form.html" with action='/goals/previous_goals_quarterly/' %}
+
+{% endblock content %}

@@ -8,6 +8,19 @@ from .models import Goal
 class DateInput(forms.DateInput):
     input_type = 'date'
 
+class DropDownMenuForm(forms.Form):
+    # start the current week in Monday and end in Sunday
+    week = forms.ChoiceField(choices=[(x, x) for x in range(
+        1, 53)], initial=date.today().isocalendar()[1])
+    year = forms.ChoiceField(
+        choices=[(x, x) for x in range(2019, 2022)], initial=date.today().year)
+
+class DropDownMenuQuarterlyForm(forms.Form):
+    quarters = ['Q1','Q2','Q3','Q4']
+    quarter = forms.ChoiceField(choices=[(x,x) for x in range(len(quarters))])
+    year = forms.ChoiceField(
+        choices=[(x, x) for x in range(2019, 2022)], initial=date.today().year)
+
 class GoalModelForm(forms.ModelForm):
     class Meta:
         model = Goal

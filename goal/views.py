@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import GoalModelForm
 from .models import Goal
 from datetime import date, datetime
+from .forms import DropDownMenuForm, DropDownMenuQuarterlyForm
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -83,6 +84,69 @@ def delete_goal(request, id):
     if request.method == "POST":
         goal.delete() # delete the task from the db
     return redirect('/tasks/')
+
+
+@login_required
+def view_previous_goals_quarterly(request):
+    if request.method == "GET":
+        template_name = 'goal/no_retrieval_results/previous_goals_quarterly.html'
+        form = DropDownMenuQuarterlyForm()
+        return render(request, template_name, {'form': form})
+
+    elif request.method == "POST":
+        template_name = 'goal/retrieval_results/previous_goals_quarterly.html'
+        year = request.POST.get('select_year', None)
+
+         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
+        initial_date, ending_date = get_start_end_date_yearly(year)
+        
+        goal_ids = []
+        #user -> goal
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, expiration_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value[0])
+    
+        for value in qs_current_user_goals:
+            goal_ids.append(value[0])
+    
+        # current goals
+        form = {'goal_list': Goal.objects.filter(id__in=goal_ids), 'year':year}
+    
+        return render(request, template_name, form)
+
+
+
+@login_required
+def view_previous_goals_yearly(request):
+    if request.method == "GET":
+        template_name = 'goal/no_retrieval_results/previous_goals_yearly.html'
+        form = DropDownMenuForm()
+        return render(request, template_name, {'form': form})
+
+    elif request.method == "POST":
+        template_name = 'goal/retrieval_results/previous_goals_yearly.html'
+        year = request.POST.get('select_year', None)
+
+         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
+        initial_date, ending_date = get_start_end_date_yearly(year)
+        
+        goal_ids = []
+        #user -> goal
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, expiration_date__lte=ending_date, 
+                            accounts=request.user.id).values('id').values_list('id')
+
+        for value in qs_current_user_goals:
+            goal_ids.append(value[0])
+    
+        for value in qs_current_user_goals:
+            goal_ids.append(value[0])
+    
+        # current goals
+        form = {'goal_list': Goal.objects.filter(id__in=goal_ids), 'year':year}
+    
+        return render(request, template_name, form)
 
 
 def get_start_end_date_yearly(year):
