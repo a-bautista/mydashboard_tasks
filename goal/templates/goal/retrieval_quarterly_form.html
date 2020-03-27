@@ -11,6 +11,13 @@
   {% csrf_token %}
 
   <div style="display:inline-block">
+    <h4 style="color:#000">Select quarter</h4>
+    <select name="select_quarter">
+      <option value="{{ form.quarter }}"></option>
+    </select>
+  </div>
+
+  <div style="display:inline-block">
     <h4 style="color:#000">Select year</h4>
     <select name="select_year">
       <option value="{{ form.year }}"></option>
