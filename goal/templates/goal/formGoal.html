@@ -30,6 +30,12 @@
             <br />
             <br />  
 
+            <label>Type</label>
+              {{ form.goal_type|add_class:"card" }}  
+
+            <br />
+            <br />  
+
             {% if request.resolver_match.url_name == 'update_goal' %}
             
             

@@ -31,8 +31,13 @@ class Goal(models.Model):
     CANCELLED = 'Cancelled'
     IN_PROGRESS = 'In Progress'
 
+    LONG = 'Long'
+    MEDIUM = 'Medium'
+    SHORT = 'Short'
+
     # -------------------------- Options in the dropdown menu ---------------------
     STATUS = [(COMPLETED, COMPLETED), (NOT_COMPLETED, NOT_COMPLETED), (CANCELLED, CANCELLED), (IN_PROGRESS, IN_PROGRESS)]
+    TYPE   = [(LONG, LONG), (MEDIUM, MEDIUM), (SHORT,SHORT)]
 
      # ------------------------- Main fields --------------------------------------
     id               = models.AutoField(primary_key=True)
@@ -42,6 +47,7 @@ class Goal(models.Model):
     initial_date     = models.DateField(default=timezone.now(), null=False)
     expiration_date  = models.DateField()
     status           = models.CharField(max_length=24, choices=STATUS, default=IN_PROGRESS)
+    goal_type        = models.CharField(max_length=10, choices=TYPE, default=SHORT)
     comments         = models.CharField(max_length=200)
     final_notes      = models.CharField(max_length=200)
     accounts         = models.ManyToManyField(User)

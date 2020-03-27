@@ -2,7 +2,7 @@
 
 <div id="form-group">
   <h4 style="color:#000">
-    Please, select the year and month to retrieve the data.
+    Please, select the month and year to retrieve the data.
   </h4>
 </div>
 <br />
@@ -10,10 +10,11 @@
 <form id="search_dates" method="POST" action="{{ action }}">
   {% csrf_token %}
 
+
   <div style="display:inline-block">
-    <h4 style="color:#000">Select year</h4>
-    <select name="select_year">
-      <option value="{{ form.year }}"></option>
+    <h4 style="color:#000">Select month</h4>
+    <select name="select_month">
+      <option value="{{ form.month }}"></option>
     </select>
   </div>
 
@@ -21,9 +22,9 @@
   <div style="display:inline-block"></div>
 
   <div style="display:inline-block">
-    <h4 style="color:#000">Select month</h4>
-    <select name="select_month">
-      <option value="{{ form.month }}"></option>
+    <h4 style="color:#000">Select year</h4>
+    <select name="select_year">
+      <option value="{{ form.year }}"></option>
     </select>
   </div>
 

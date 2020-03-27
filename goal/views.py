@@ -96,9 +96,23 @@ def view_previous_goals_quarterly(request):
     elif request.method == "POST":
         template_name = 'goal/retrieval_results/previous_goals_quarterly.html'
         year = request.POST.get('select_year', None)
+        quarter = request.POST.get('select_quarter', None)
 
-         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
-        initial_date, ending_date = get_start_end_date_yearly(year)
+        initial_date = ''
+        ending_date = ''
+
+        if quarter == '1':
+            initial_date = date(int(year), 1, 1) 
+            ending_date  = date(int(year), 3, 31)
+        elif quarter == '2':
+            initial_date = date(int(year), 4, 1) 
+            ending_date  = date(int(year), 6, 30)
+        elif quarter == '3':
+            initial_date = date(int(year), 7, 1) 
+            ending_date  = date(int(year), 9, 30)
+        elif quarter == '4':
+            initial_date = date(int(year), 10, 1) 
+            ending_date  = date(int(year), 12, 31)
         
         goal_ids = []
         #user -> goal
@@ -115,7 +129,6 @@ def view_previous_goals_quarterly(request):
         form = {'goal_list': Goal.objects.filter(id__in=goal_ids), 'year':year}
     
         return render(request, template_name, form)
-
 
 
 @login_required
