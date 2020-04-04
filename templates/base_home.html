@@ -16,7 +16,7 @@
 
       <link href="{% static 'accounts/css/login.css' %}" type="text/css" rel="stylesheet" />
 
-      <link href="{% static 'home/css/all.min.css' %}" rel="stylesheet">
+      <!--<link href="{% static 'home/css/all.min.css' %}" rel="stylesheet">-->
       <link href="{% static 'home/css/simple-line-icons.css' %}" rel="stylesheet" type="text/css">
 
       <!-- Custom fonts -->
@@ -31,12 +31,14 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <!--Make the bg-dark to #000-->
     <div class="container">
+
       <a class="navbar-brand" href="/">Telos</a> <button aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarResponsive" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
+      
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             {% if user.is_authenticated %}
-              <a class="btn btn-secondary" href="/dashboard">Main</a>
+              <a class="btn btn-secondary" href="/tasks">Main</a>
               <a class="btn btn-secondary" href="/logout">Log Out</a>
             {% else %}
               <a class="btn btn-primary" href="/register">Register</a>

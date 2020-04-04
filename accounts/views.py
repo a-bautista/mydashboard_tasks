@@ -1,24 +1,26 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from .forms import UserRegisterForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 
+
 def register(request):
+    form = UserRegisterForm(request.POST) # this UserRegisterForm is based on the UserCreationForm which has custom fields
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST) # this UserRegisterForm is based on the UserCreationForm which has custom fields
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Your account {username} has been successfully created!')
-            #login(request, username)
             return redirect('login')
-            #return redirect('/')
-    else:    
+        else:
+            # display the errors when trying to submit your request
+            #return render_to_response('accounts/register.html', {'form':form})
+            return render(request, 'accounts/register.html', {'form':form})
+    elif request.method == 'GET':    
         form = UserRegisterForm()
-        #messages.error(request, f'{messages}: {form.error_messages}')
     return render(request, 'accounts/register.html', {'form': form})
-
+    
 
 #def login(request):
 #    form = AuthenticationForm(request.POST)
@@ -27,3 +29,14 @@ def register(request):
 @login_required
 def profile(request):
     return render(request, 'accounts/profile.html')
+
+# messages.debug
+# messages.info
+# messages.success
+# messages.warning
+# messages.error
+
+
+ 
+#<django.contrib.messages.storage.fallback.FallbackStorage object at 0x7f1da8ac3978>
+#Your account a5 has been successfully created!
