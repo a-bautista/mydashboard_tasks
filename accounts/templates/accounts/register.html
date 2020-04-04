@@ -2,7 +2,23 @@
 
 {% block content %}
 
+
+{% if form.errors %}
+    <br />
+    {% for field in form %}
+        {% for error in field.errors %}
+            <br />
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        
+        {% endfor %}
+    {% endfor %}
+
+{% endif %}
+
 {% load static %}
+
 <div class="container"> 
     <form method="POST"> {% csrf_token %}
         <div class="wrap-login">
@@ -10,26 +26,27 @@
                 <legend class="border-bottom mb-4">Join Today</legend>
             </fieldset>
             
-            <div class="bar">
-                Email <br />
+            <div class="bar" >
+                Email * <br />
                 {{form.email}}
             </div>
+            <!--<div class="help-block">{{ form.email.errors }}</div>-->
             <br />
             
             <div class="bar">
-                Username <br />
+                Username * <br />
                 {{form.username}}
             </div>
             <br />
             
             <div class="bar">
-                Password <br />
+                Password * <br />
                 {{form.password1}}
             </div>
             <br />
            
             <div class="bar">
-                Password confirmation <br />
+                Password confirmation * <br />
                 {{form.password2}}
             </div>
             <br />
