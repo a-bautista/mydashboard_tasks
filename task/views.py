@@ -42,20 +42,22 @@ class Dashboard_Categories_Month(APIView):
         year = date.today().year
         month = date.today().month
         initial_date_year, ending_date_year = get_start_end_date_yearly(year)
-        initial_date, ending_date = get_start_end_date_monthly(year, month)
+        #initial_date, ending_date = get_start_end_date_monthly(year, month)
+
+        quarter   = (month-1)//3+1
+        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         goal_ids = []   
         qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
                             accounts=request.user.id).values('id').values_list('id')
 
-
         for value in qs_current_user_goals:
             goal_ids.append(value)
 
-
         qs_group_by = Task.objects.values(
             'category').annotate(count=Count('category')).filter(goal__in = goal_ids, 
-            initial_date__gte=initial_date, initial_date__lte=ending_date).order_by('count')
+            initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
 
         
         keys_graph = list(qs_group_by.values_list('category'))
@@ -73,7 +75,11 @@ class Dashboard_Status_Month(APIView):
         year = date.today().year
         month = date.today().month
         initial_date_year, ending_date_year = get_start_end_date_yearly(year)
-        initial_date, ending_date = get_start_end_date_monthly(year, month)
+        #initial_date, ending_date = get_start_end_date_monthly(year, month)
+        
+        quarter   = (month-1)//3+1
+        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         goal_ids = []   
         qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
@@ -86,7 +92,8 @@ class Dashboard_Status_Month(APIView):
 
         # there's an error when you start having different tasks, they are not counting, really?
         qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
+            'status').annotate(count=Count('status')).filter(goal__in = goal_ids, 
+            initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
 
 
         keys_graph = list(qs_group_by.values_list('status'))
@@ -381,11 +388,12 @@ class Dashboard_Goals_Year(APIView):
         percentages_task_goals    = {}
 
 
+        status_to_exclude = ['Cancelled','Not completed']
         goal_ids = []   
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
                                                             initial_date__gte=initial_date, 
-                                                            expiration_date__lte=ending_date).exclude(status='Cancelled').values('id','goal').values_list('id','goal')
+                                                            expiration_date__lte=ending_date).exclude(status__in=status_to_exclude).values('id','goal').values_list('id','goal')
 
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')

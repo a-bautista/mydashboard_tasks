@@ -39,7 +39,7 @@
 <!-- Second graph (points in task) -->
 <div class="widget-box sample-widget">
     <div class="widget-header">
-      <h2>Current week {{week}}</h2>
+      <h2>Current week: {{week}} | Date: {{current_date}} </h2>
     </div>
     <div class="widget-content">
       <canvas id="graph_points_week" width="700" height="400"></canvas>
@@ -49,7 +49,7 @@
 <!-- Fourth graph (tasks by status) -->
 <div class="widget-box sample-widget">
   <div class="widget-header">
-    <h2>Current month: {{month}}</h2>
+    <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
   </div>
   <div class="widget-content">
     <canvas id="graph_status_month" width="700" height="400"></canvas>
@@ -60,7 +60,7 @@
 <!-- Third graph (tasks by categories in months) -->
 <div class="widget-box sample-widget">
     <div class="widget-header">
-      <h2>Current month: {{month}}</h2>
+      <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
     </div>
     <div class="widget-content">
       <canvas id="graph_categories_month" width="700" height="400"></canvas>
@@ -632,88 +632,6 @@
   })
 
 
-// Define the chart for the second graph
-
-  function setGraphStatus()
-  {
-    var ctx_graph     = document.getElementById("graph_status_month")
-    var display_graph = new Chart(ctx_graph, {
-    type:'pie',
-        data: {
-            labels: labels_graph,
-            datasets :
-                [{
-                  data: values_graph,
-                  backgroundColor: [
-                      'rgba(228, 17, 17, 0.9)',
-                      'rgba(228, 196, 17, 0.9)',
-                      'rgba(14, 152, 11, 0.9)',
-                      ],
-                  borderColor: '#000',
-                  borderWidth: 2,
-                  hoverBorderWidth: 3,
-                  hoverBorderColor: '#000'
-                }]
-        },
-        options : {
-          responsive: true,
-          tooltipTemplate: "<%= value %>",
-          tooltipFillColor: "rgba(0,0,0,0)",
-          tooltipFontColor: "#444",
-          tooltipEvents: [],
-          tooltipCaretSize: 0,
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Status of Tasks',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: true,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
-              },
-          layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
-              }
-          },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
-          }// end of options
-        }); // end of display_graph variable
-      }// end of function
-
-
     // Define the chart for the first graph
   function setGraphCategories()
   {
@@ -757,7 +675,7 @@
                       },
                 title: {
                     display: true,
-                    text: 'Categories of Tasks',
+                    text: 'Categories of Tasks by Quarter',
                     fontSize: 25,
                     padding: 50,
                     fontColor: '#000'
@@ -799,7 +717,7 @@
       }// end of function
 
       
-  // Third graph: Status of Tasks
+  
   var endpoint = 'dashboard_status_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
   var labels_graph = []
   var values_graph = []
@@ -823,7 +741,86 @@
     }
   })
 
-    
+    // Define the chart for the second graph
+
+  function setGraphStatus()
+  {
+    var ctx_graph     = document.getElementById("graph_status_month")
+    var display_graph = new Chart(ctx_graph, {
+    type:'pie',
+        data: {
+            labels: labels_graph,
+            datasets :
+                [{
+                  data: values_graph,
+                  backgroundColor: [
+                      'rgba(228, 17, 17, 0.9)',
+                      'rgba(228, 196, 17, 0.9)',
+                      'rgba(14, 152, 11, 0.9)',
+                      ],
+                  borderColor: '#000',
+                  borderWidth: 2,
+                  hoverBorderWidth: 3,
+                  hoverBorderColor: '#000'
+                }]
+        },
+        options : {
+          responsive: true,
+          tooltipTemplate: "<%= value %>",
+          tooltipFillColor: "rgba(0,0,0,0)",
+          tooltipFontColor: "#444",
+          tooltipEvents: [],
+          tooltipCaretSize: 0,
+                plugins: {
+                    datalabels: {
+                          display: true,
+                          align: 'center',
+                          anchor: 'center',
+                          color: '#fff'
+                         }
+                      },
+                title: {
+                    display: true,
+                    text: 'Status of Tasks by Quarter',
+                    fontSize: 25,
+                    padding: 50,
+                    fontColor: '#000'
+                    },
+                legend: {
+                    position: 'right',
+                    display: true,
+                labels: {
+                    fontColor: '#000',
+                    fontSize: 15
+                  }
+              },
+          layout: {
+              padding: {
+                  left: 50,
+                  right: 0,
+                  bottom: 0,
+                  top: 0
+              }
+          },
+          tooltips: {
+                    callbacks: {
+                    label: function(tooltipItem, data) {
+                        var allData = data.datasets[tooltipItem.datasetIndex].data;
+                        var tooltipLabel = data.labels[tooltipItem.index];
+                        var tooltipData = allData[tooltipItem.index];
+                        var total = 0;
+                        for (var i in allData) {
+                            total +=  parseInt(allData[i]);
+                        }
+                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
+
+                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
+                              } //end of function
+                          } // end of callbacks
+                      } // end of tooltips
+          }// end of options
+        }); // end of display_graph variable
+      }// end of function
 
 
 {% endblock %}
