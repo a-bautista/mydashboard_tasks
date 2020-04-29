@@ -474,7 +474,7 @@ def create_task(request):
         task.save() 
         # Clean the form
         form_create = TaskModelForm()
-        return redirect('/tasks/')
+        return redirect('/main/')
         
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
@@ -493,7 +493,7 @@ def delete_task(request, id):
         holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
         User.objects.filter(id=request.user.id).update(score=holder-float(task.points)) # subtract the total points minus the subtracted points
         task.delete() # delete the task from the db
-    return redirect('/tasks/')
+    return redirect('/main/')
 
 @login_required
 def retrieve_all(request):
@@ -572,7 +572,7 @@ def update_task(request, id):
                 such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
             #task.username=User.objects.get(id=request.user.id)
             task.save()
-        return redirect('/tasks/')
+        return redirect('/main/')
 
 @login_required
 def view_previous_tasks(request):
