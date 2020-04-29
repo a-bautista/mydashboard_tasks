@@ -28,7 +28,7 @@ def create_goal(request):
         goal.save() 
         # Clean the form
         form_create = GoalModelForm()
-        return redirect('/tasks/')
+        return redirect('/main/')
     #else:
         #print(form_create)
         
@@ -74,7 +74,7 @@ def update_goal(request, id):
     elif request.method == "POST":
         if form.is_valid():
             form.save()
-        return redirect('/tasks/')
+        return redirect('/main/')
 
 
 @login_required
@@ -83,7 +83,7 @@ def delete_goal(request, id):
     goal = Goal.objects.get(pk=id) # get the current points of the task
     if request.method == "POST":
         goal.delete() # delete the task from the db
-    return redirect('/tasks/')
+    return redirect('/main/')
 
 
 @login_required

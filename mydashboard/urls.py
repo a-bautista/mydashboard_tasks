@@ -19,6 +19,9 @@ from django.urls import path, include, re_path
 
 #import the URLs from the home app
 from home.views import index
+from task.views import (main_dashboard, Dashboard_Categories_Month, 
+                Dashboard_Status_Month, Dashboard_Tasks_Week, Dashboard_Goals_Quarter, 
+                Dashboard_Goals_Year, Dashboard_Goals_Status_Task)
 
 
 from accounts import views as user_views
@@ -34,10 +37,14 @@ urlpatterns = [
     path('profile/', user_views.profile, name='profile'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logout.html'), name='logout'), # template view for logout
-    path('tasks/', include('task.urls')), # when you reach dashboard, go directly to look for the urls from the Task application
+    path('main/', main_dashboard, name='main_dashboard'), # when you reach dashboard, go directly to look for the urls from the Task application
+    path('tasks/', include('task.urls')),
     path('goals/', include('goal.urls')),
-    #path('category/', include('category.urls'))
-    #path('', include('task.urls')) # when you reach home, go directly to look for the urls from the Task application
-    #path('', HomeView.as_view(), name='home'),
-    #path('task/', include('task.urls')), # connect this application with the dashboard application by including the task.urls   
+
+    path('main/dashboard_categories_month', Dashboard_Categories_Month.as_view()), # load this view in the main page
+    path('main/dashboard_status_month', Dashboard_Status_Month.as_view()),         # load this view in the main page
+    path('main/dashboard_points_week', Dashboard_Tasks_Week.as_view()),
+    path('main/dashboard_goals_quarter', Dashboard_Goals_Quarter.as_view()),
+    path('main/dashboard_goals_year', Dashboard_Goals_Year.as_view()),
+    path('main/dashboard_goals_status_task', Dashboard_Goals_Status_Task.as_view()),
 ]
