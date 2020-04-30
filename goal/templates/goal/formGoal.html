@@ -9,64 +9,64 @@
   {% endif %}
 </div>
 
-<body onload="makeReadOnly();">
-  <div id="form-group">
-    <form method="POST" action="." enctype="multipart/form-data">
-        {% csrf_token %}
-          
-          <label>Insert your goal</label>
-            {{ form.goal|add_class:"card" }}
 
-          <br />
-          <br />
-            <label>Initial date</label>
-              {{ form.initial_date|add_class:"card" }}
-
-            <br />
-            <br />
-            <label>Expiration date</label>
-              {{ form.expiration_date|add_class:"card" }}  
-
-            <br />
-            <br />  
-
-            <label>Type</label>
-              {{ form.goal_type|add_class:"card" }}  
-
-            <br />
-            <br />  
-
-            {% if request.resolver_match.url_name == 'update_goal' %}
-            
-            
-            <label>What's the status of the goal?</label>
-              {{ form.status|add_class:"card" }}
-
-            <br />
-            <br />
-
-            <div class="tweet-composer">
-              <label>Comments</label>
-                {{ form.comments|add_class:"card js-keeper-editor" }}
-            </div>
-
-            <br />
-            <br />
-
-            <div class="tweet-composer">
-              <label>Final notes</label>
-                {{ form.final_notes|add_class:"card  js-keeper-editor" }}  
-            </div>
-
-            <br />
-            <br />
-
-          {% endif %}
+<div id="form-group">
+  <form method="POST" action="." enctype="multipart/form-data">
+      {% csrf_token %}
         
-        <button type="submit" class="btn btn-success">Send</button>
-    </form>
-  </div>
-</body>
+        <label>Insert your goal</label>
+          {{ form.goal|add_class:"card" }}
+
+        <br />
+        <br />
+          <label>Initial date</label>
+            {{ form.initial_date|add_class:"card" }}
+
+          <br />
+          <br />
+          <label>Expiration date</label>
+            {{ form.expiration_date|add_class:"card" }}  
+
+          <br />
+          <br />  
+
+          <label>Type</label>
+            {{ form.goal_type|add_class:"card" }}  
+
+          <br />
+          <br />  
+
+          {% if request.resolver_match.url_name == 'update_goal' %}
+          
+          
+          <label>What's the status of the goal?</label>
+            {{ form.status|add_class:"card" }}
+
+          <br />
+          <br />
+
+          <div class="tweet-composer">
+            <label>Comments</label>
+              {{ form.comments|add_class:"card js-keeper-editor" }}
+          </div>
+
+          <br />
+          <br />
+
+          <div class="tweet-composer">
+            <label>Final notes</label>
+              {{ form.final_notes|add_class:"card  js-keeper-editor" }}  
+          </div>
+
+          <br />
+          <br />
+
+        {% endif %}
+      
+      <button type="submit" class="btn btn-success">Send</button>
+  </form>
+</div>
+
 
 {% endblock content %}
 <script type="text/javascript">
