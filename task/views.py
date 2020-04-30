@@ -21,7 +21,7 @@ def main_dashboard(request):
     if request.user.get_username():
         username = request.user.username
     
-    user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
+    user= round(User.objects.filter(username=username).values('score').values_list('score')[0][0])
     week = date.today().isocalendar()[1]
     month = datetime.today().month
     year  = datetime.today().year
@@ -141,13 +141,13 @@ class Dashboard_Tasks_Week(APIView):
             '''
         for task in qs:
             if (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=7) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=14) and task.life_task == 3:
-                task.points = round(task.points*standard_increase_points)
+                task.points = (task.points*standard_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=14) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=21) and task.life_task == 2:
-                task.points = round(task.points*standard_increase_points)
+                task.points = (task.points*standard_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=21) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=28) and task.life_task == 1:
-                task.points = round(task.points*last_increase_points)
+                task.points = (task.points*last_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
                 
@@ -161,11 +161,14 @@ class Dashboard_Tasks_Week(APIView):
                 #holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
                 #holder = int(list(User.objects.filter(username_id=Cast(request.user.id, TextField())).values('score').values_list('score'))[0][0])
                 holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the points of the form with section points
-                User.objects.filter(id=request.user.id).update(score=round(holder-int(task.points))) # subtract the points from the general score
+                User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the points from the general score
             task.save()
   
-        x_axis = list(qs.values_list('task'))
-        y_axis = list(qs.values_list('points'))
+        x_axis    = list(qs.values_list('task'))
+        temp_list = list(qs.values_list('points')[0])
+        
+        # display only rounded values
+        y_axis = [round(val) for val in temp_list ]
 
         front_end_dictionary = {
             "labels_graph": x_axis,
