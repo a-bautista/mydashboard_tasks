@@ -141,13 +141,13 @@ class Dashboard_Tasks_Week(APIView):
             '''
         for task in qs:
             if (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=7) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=14) and task.life_task == 3:
-                task.points = task.points*standard_increase_points
+                task.points = round(task.points*standard_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=14) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=21) and task.life_task == 2:
-                task.points = task.points*standard_increase_points
+                task.points = round(task.points*standard_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=21) and (datetime.now()-datetime.combine(task.initial_date,time())) < timedelta(days=28) and task.life_task == 1:
-                task.points = task.points*last_increase_points
+                task.points = round(task.points*last_increase_points)
                 task.life_task = task.life_task - 1
             elif (datetime.now()-datetime.combine(task.initial_date,time())) >= timedelta(days=28) and task.life_task == 0:
                 
@@ -161,7 +161,7 @@ class Dashboard_Tasks_Week(APIView):
                 #holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
                 #holder = int(list(User.objects.filter(username_id=Cast(request.user.id, TextField())).values('score').values_list('score'))[0][0])
                 holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the points of the form with section points
-                User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the points from the general score
+                User.objects.filter(id=request.user.id).update(score=round(holder-int(task.points))) # subtract the points from the general score
             task.save()
   
         x_axis = list(qs.values_list('task'))
@@ -229,7 +229,7 @@ class Dashboard_Goals_Quarter(APIView):
             
             for goal in total_goals:
                 try:
-                    percentages_task_goals[goal] = (finalized_task_goal_count[goal]*100)/total_task_goal_count[goal]
+                    percentages_task_goals[goal] = round((finalized_task_goal_count[goal]*100)/total_task_goal_count[goal])
                 except:
                     # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
                     percentages_task_goals[goal] = 0
@@ -427,7 +427,7 @@ class Dashboard_Goals_Year(APIView):
             
             for goal in total_goals:
                 try:
-                    percentages_task_goals[goal] = (finalized_task_goal_count[goal]*100)/total_task_goal_count[goal]
+                    percentages_task_goals[goal] = round((finalized_task_goal_count[goal]*100)/total_task_goal_count[goal])
                 except:
                     # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
                     percentages_task_goals[goal] = 0
