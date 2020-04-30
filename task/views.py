@@ -165,10 +165,10 @@ class Dashboard_Tasks_Week(APIView):
             task.save()
   
         x_axis    = list(qs.values_list('task'))
-        temp_list = list(qs.values_list('points')[0])
+        temp_list = qs.values_list('points')
         
         # display only rounded values
-        y_axis = [round(val) for val in temp_list ]
+        y_axis = [round(val[0]) for val in temp_list ]
 
         front_end_dictionary = {
             "labels_graph": x_axis,
