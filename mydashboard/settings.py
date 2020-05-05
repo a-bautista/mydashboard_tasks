@@ -161,3 +161,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
 # when logged in successfully, log in to the main dashboard
 LOGIN_REDIRECT_URL = 'main_dashboard'
 LOGIN_URL = 'login'
+
+#EMAIL = 'smtp'
+DEFAULT_FROM_EMAIL = "dentalokunexpected@gmail.com"

@@ -6,6 +6,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from goal.models import Goal
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
 class MyAccountManager(BaseUserManager):
      
      def create_user(self, email, username, score, password=None):
@@ -64,11 +67,8 @@ class Account(AbstractBaseUser):
      is_staff     = models.BooleanField(default=False)
      is_superuser = models.BooleanField(default=False)
 
-     USERNAME_FIELD = 'email' 
-     REQUIRED_FIELDS = ['username', 
-                        #'first_name', 
-                        #'last_name', 
-                        'score']
+     USERNAME_FIELD = 'username' # this field is used for the login
+     REQUIRED_FIELDS = ['username','email' 'score']
 
      objects = MyAccountManager()
 
@@ -84,3 +84,29 @@ class Account(AbstractBaseUser):
 # Create your models here.
 # When you clone this repo run the following to apply the migrations correctly:  the python3 manager.py migrate --run-syncdb
 # to retrieve the objects in the shell you type from task.models import Task
+
+class EmailConfirmed(models.Model):
+     username         = models.OneToOneField(Account, on_delete = models.CASCADE)
+     activation_key   = models.CharField(max_length=200)
+     confirmed        = models.BooleanField(default=False)
+
+     def __unicode__(self):
+          return str(self.confirmed)
+
+     def activate_user_email(self):
+        #send email here and render string
+        activation_url = "http://localhost/accounts/activate/%s" %(self.activation_key)
+        context = {
+               "activation_key": self.activation_key,
+               "activation_url": activation_url
+        }
+        subject = "Activate your Email"
+        message = render_to_string("Accounts/activation_message.txt", context)
+        self.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+
+
+     def email_user(self, subject, message, from_email=None, **kwargs):
+         send_mail(subject, message, from_email, [self.email_user], **kwargs)
+     
+     
+     

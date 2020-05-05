@@ -33,8 +33,9 @@ from django.contrib.auth import views as auth_views # we won't be using this bec
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='index'),
-    path('register/', user_views.register, name='register'),
+    path('register/', user_views.register_view, name='register'),
     path('profile/', user_views.profile, name='profile'),
+    #path('login/', user_views.login_view, name='login'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logout.html'), name='logout'), # template view for logout
     path('main/', main_dashboard, name='main_dashboard'), # when you reach dashboard, go directly to look for the urls from the Task application
