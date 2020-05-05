@@ -306,8 +306,14 @@ For testing you image locally, you need to execute the command `sudo docker run 
 
     `heroku run bash -a djangodocker`
 
+#### Pass a command through the docker container
 
-###Testing with AWS
+`sudo docker exec -it mydashboard_web_1 sh`
+`sudo docker exec -it mydashboard_web_1 python manage.py makemigrations`
+`sudo docker exec -it mydashboard_web_1 python manage.py migrate goal`
+`sudo docker exec -it mydashboard_web_1 python manage.py migrate account`
+
+#### Testing with AWS
 
 In order to run your app with AWS, we need to create each service (Django, Nginx and PostgreSQL) separately. For doing that we need to create the docker-compose.yml file
 and modify the settings.py to add the following lines:
