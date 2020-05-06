@@ -80,8 +80,9 @@ def activation_view(request, activation_key):
             # activation link 
             
             context = {}
+
             # get the username that needs a new activation link
-            user = User.objects.get(id=user_confirmed.username) # map user id (accounts) with the username_id (accounts_emailconfirmed)
+            user = User.objects.get(id=user_confirmed.username_id) # map user id (accounts) with the username_id (accounts_emailconfirmed)
             context['username'] = user.username
             context['email'] = user.email
 
@@ -106,10 +107,7 @@ def activation_view(request, activation_key):
             if user_confirmed.user_confirmed == False:
                 
                 # activate user
-                print("ready to go?")
-                print(user_confirmed.username)
-                
-                user = User.objects.get(id=user_confirmed.username)
+                user = User.objects.get(id=user_confirmed.username_id)
                 user.is_active = True
                 user.save()
 
