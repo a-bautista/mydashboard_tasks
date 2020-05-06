@@ -15,7 +15,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
+from django.conf.urls import url 
 
 #import the URLs from the home app
 from home.views import index
@@ -41,6 +42,7 @@ urlpatterns = [
     path('main/', main_dashboard, name='main_dashboard'), # when you reach dashboard, go directly to look for the urls from the Task application
     path('tasks/', include('task.urls')),
     path('goals/', include('goal.urls')),
+    url(r'^activate/(?P<activation_key>\w+)/$', user_views.activation_view, name='activate_account'),
 
     path('main/dashboard_categories_month', Dashboard_Categories_Month.as_view()), # load this view in the main page
     path('main/dashboard_status_month', Dashboard_Status_Month.as_view()),         # load this view in the main page
