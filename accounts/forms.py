@@ -27,7 +27,7 @@ class UserRegisterForm(UserCreationForm):
         			      'username':context['username']
         		  		}
 
-        subject = "Activate your Email"
+        subject = "Activate your Telos Account"
         message = render_to_string("accounts/activation_message.txt", email_content)
         from_email = None
         send_mail(subject, message, from_email, [context['email']], fail_silently=False)

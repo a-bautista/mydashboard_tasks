@@ -90,6 +90,7 @@ class EmailConfirmed(models.Model):
      username         = models.OneToOneField(Account, on_delete = models.CASCADE)
      activation_key   = models.CharField(max_length=200)
      key_expires      = models.DateTimeField()
+     user_confirmed   = models.BooleanField(default=False)
 
      class Meta:
          ordering = ['activation_key']

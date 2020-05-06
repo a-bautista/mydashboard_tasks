@@ -148,3 +148,4 @@ LOGIN_REDIRECT_URL = 'main_dashboard'
 LOGIN_URL = 'login'
 
 #EMAIL = 'smtp'
+
