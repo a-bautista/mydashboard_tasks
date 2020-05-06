@@ -67,7 +67,7 @@ class Task(models.Model):
         ordering = ['initial_date']
         db_table = 'task_table'
 
-    # ------------------------- Post Save --------------------------------------
+    # ------------------------- Post Save Signal --------------------------------------
 
 
 def update_points(sender, instance, created, **kwargs):

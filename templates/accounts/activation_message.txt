@@ -1,0 +1,9 @@
+Hello {{ username }},
+
+Please activate your Telos account through the following link:
+
+{{ activation_url }}
+
+Thank you!
+
+- The Telos Team
