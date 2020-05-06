@@ -163,4 +163,3 @@ LOGIN_REDIRECT_URL = 'main_dashboard'
 LOGIN_URL = 'login'
 
 #EMAIL = 'smtp'
-DEFAULT_FROM_EMAIL = "dentalokunexpected@gmail.com"

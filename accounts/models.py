@@ -8,6 +8,7 @@ from goal.models import Goal
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.db.models.signals import post_save
 
 class MyAccountManager(BaseUserManager):
      
@@ -68,7 +69,7 @@ class Account(AbstractBaseUser):
      is_superuser = models.BooleanField(default=False)
 
      USERNAME_FIELD = 'username' # this field is used for the login
-     REQUIRED_FIELDS = ['username','email' 'score']
+     REQUIRED_FIELDS = ['email' 'score'] # the username field should not be included in the required field
 
      objects = MyAccountManager()
 
@@ -88,25 +89,26 @@ class Account(AbstractBaseUser):
 class EmailConfirmed(models.Model):
      username         = models.OneToOneField(Account, on_delete = models.CASCADE)
      activation_key   = models.CharField(max_length=200)
-     confirmed        = models.BooleanField(default=False)
+     key_expires      = models.DateTimeField()
 
-     def __unicode__(self):
-          return str(self.confirmed)
+     class Meta:
+         ordering = ['activation_key']
+         db_table = 'accounts_emailconfirmed'
 
-     def activate_user_email(self):
-        #send email here and render string
-        activation_url = "http://localhost/accounts/activate/%s" %(self.activation_key)
-        context = {
-               "activation_key": self.activation_key,
-               "activation_url": activation_url
-        }
-        subject = "Activate your Email"
-        message = render_to_string("Accounts/activation_message.txt", context)
-        self.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
-
-
-     def email_user(self, subject, message, from_email=None, **kwargs):
-         send_mail(subject, message, from_email, [self.email_user], **kwargs)
+          
      
-     
-     
+     # ------------------------- Post Save Signal --------------------------------------
+
+# def user_created(sender, instance, created, *args, **kwargs):
+#     user = instance
+#     if created:
+#         email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=user)
+#         if email_is_created:
+#             short_hash = hashlib.sha256(str(os.urandom(256)).encode('utf-8')).hexdigest()[:10]
+#             username, domain = str(user.email).split("@")
+#             activation_key = hashlib.sha256(str(short_hash+username).encode('utf-8')).hexdigest()
+#             email_confirmed.activation_key = activation_key
+#             email_confirmed.save()
+#             email_confirmed.activate_user_email()
+
+# post_save.connect(user_created, sender=Account)
