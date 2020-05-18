@@ -24,16 +24,15 @@ class UserRegisterForm(UserCreationForm):
 
     
     def activate_user_email(self, context):
-        #activation_url = "http://telos-app.xyz/activate/"+context['activation_key']
-        activation_url = "http://localhost/activate/"+context['activation_key']
+        activation_url = "http://www.telos-app.xyz/activate/"+context['activation_key']
         
         message = Mail(
-            from_email='',
+            from_email=os.environ['EMAIL_HOST_USER'],
             to_emails=context['email'],
             subject='Activate your Telos Account',
             html_content='Hello '+context['username']+',<br /><br />Please use the following link to activate your Telos account:<br /><br />'+activation_url+'<br /><br /> Thank you!<br />The Telos Team')
         try:
-            sg = SendGridAPIClient(api_key='')
+            sg = SendGridAPIClient(api_key=os.environ['SENDGRID_API_KEY'])
             response = sg.send(message)
             print(response.status_code)
             print(response.body)

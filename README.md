@@ -439,3 +439,10 @@ In Godaddy, look for the DNS management and add the CNAME www and * and insert t
 in your Heroku configuration.
 
 Activate the forwarding domain and put the name of your app. 
+
+
+#### In case your encounter the error:
+ `unauthorized: authentication required`
+ `▸    Error: docker push exited with Error: 1`
+
+`sudo heroku container:login`
