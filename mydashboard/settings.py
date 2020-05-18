@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+# read from the dotenv file
+from dotenv import load_dotenv
+from pathlib import Path
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -147,5 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
 LOGIN_REDIRECT_URL = 'main_dashboard'
 LOGIN_URL = 'login'
 
-#EMAIL = 'smtp'
 
+# External email settings
+EMAIL = os.getenv("EMAIL_HOST_USER")
+API_KEY = os.getenv("SENDGRID_API_KEY")
