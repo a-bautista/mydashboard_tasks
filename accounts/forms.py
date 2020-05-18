@@ -26,16 +26,12 @@ class UserRegisterForm(UserCreationForm):
     def activate_user_email(self, context):
         #activation_url = "http://telos-app.xyz/activate/"+context['activation_key']
         activation_url = "http://localhost/activate/"+context['activation_key']
-        email_content = {
-        			      'activation_url':activation_url,
-        			      'username':context['username']
-        		  		}
-       
+        
         message = Mail(
             from_email='',
             to_emails=context['email'],
             subject='Activate your Telos Account',
-            html_content=activation_url)
+            html_content='Hello '+context['username']+',<br /><br />Please use the following link to activate your Telos account:<br /><br />'+activation_url+'<br /><br /> Thank you!<br />The Telos Team')
         try:
             sg = SendGridAPIClient(api_key='')
             response = sg.send(message)
@@ -44,5 +40,3 @@ class UserRegisterForm(UserCreationForm):
             print(response.headers)
         except Exception as e:
             print(e.message)
-
-    
