@@ -431,3 +431,34 @@ in your travis-ci account under settings and then you create the protected varia
 
 `\d+ task_table_goal;`
 
+
+You need to apply the following command `heroku domains:add www.telos-app.xyz -a telos-dashboard-container`
+
+add a wildcard for your app `heroku domains:add *.telos-app.xyz -a telos-dashboard-container`
+
+In Godaddy, look for the DNS management and add the CNAME www and * and insert the values that you have from the settings
+in your Heroku configuration.
+
+Activate the forwarding domain and put the name of your app. 
+
+
+#### In case your encounter the error:
+ `unauthorized: authentication required`
+ `▸    Error: docker push exited with Error: 1`
+
+`sudo heroku container:login`
+
+
+#### How does the hashing works in the email?
+
+
+#### generate the hash for the activation url
+            `short_hash = hashlib.sha256(str(os.urandom(256)).encode('utf-8')).hexdigest()[:10]`
+            `activation_key = hashlib.sha256(str(short_hash+context['username']).encode('utf-8')).hexdigest()`
+            `context['activation_key'] = activation_key`
+            `UserRegisterForm.activate_user_email(UserRegisterForm,context)`
+
+
+##### Details of data types in postgresql
+
+`\d+ task_table_goal;`
