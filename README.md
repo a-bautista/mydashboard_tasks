@@ -427,3 +427,7 @@ Then you need to configure the IAM (User Access and Encryption keys) by selectin
 attach existing policies directly and then on the search menu you type  beanstalk and you select all your permissions for now. You copy the access variables that are provided and you paste them
 in your travis-ci account under settings and then you create the protected variables for storing the keys.
 
+##### Details of data types in postgresql
+
+`\d+ task_table_goal;`
+
