@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load widget_tweaks %} {% block content %}
+{% extends "base.html" %} {% load widget_tweaks %} {% load retrieve_goal %} {% block content %}
 <div class="content-header">
   <h1>Created tasks in {{year}}</h1>
 </div>
@@ -20,7 +20,7 @@
     {% for task in task_list %}
     <tr>
       <td>{{task.task}}</td>
-      <td>{{task.goal}}</td>
+      <td>{{ task.goal.values | retrieve_goal}}</td>
       <td>{{task.status}}</td>
       <td>{{task.category}}</td>
       <td>{{task.points}}</td>

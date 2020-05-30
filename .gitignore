@@ -37,3 +37,4 @@ mydashboard/live-static/static-root/*
 .vscode/*sendgrid.env
 sendgrid.env
 .vscode
+.env
