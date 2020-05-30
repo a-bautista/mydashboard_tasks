@@ -7,6 +7,9 @@ venv/
 db.sqlite3
 
 # Cache
+
+**/__pycache__
+
 mydashboard/__pycache__/*
 mydashboard/task/__pycache__/*
 mydashboard/settings/__pycache__/*
@@ -16,6 +19,7 @@ mydashboard/__pycache__/wsgi.cpython-36.pyc
 mydashboard/__pycache__/urls.cpython-36.pyc
 
 task/__pycache__/*
+task/templatetags/__pycache__/*
 home/__pycache__/*
 accounts/__pycache__/*
 accounts/migrations/*

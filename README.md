@@ -446,3 +446,18 @@ Activate the forwarding domain and put the name of your app.
  `▸    Error: docker push exited with Error: 1`
 
 `sudo heroku container:login`
+
+
+#### How does the hashing works in the email?
+
+
+#### generate the hash for the activation url
+            `short_hash = hashlib.sha256(str(os.urandom(256)).encode('utf-8')).hexdigest()[:10]`
+            `activation_key = hashlib.sha256(str(short_hash+context['username']).encode('utf-8')).hexdigest()`
+            `context['activation_key'] = activation_key`
+            `UserRegisterForm.activate_user_email(UserRegisterForm,context)`
+
+
+##### Details of data types in postgresql
+
+`\d+ task_table_goal;`
