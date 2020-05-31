@@ -180,18 +180,20 @@ to connect to your database. In order to connect to the db, you should type a co
 
 There is NO need to type in the credentials of your db in the django app because heroku manages this automatically (this applies for creating an app with a container and via Git).
 
-# create the table task based on the models.py file (notice the name must be task_task to make this working):
+# Creating the tables manually (not necessary because when you make the migrations and then apply the changes, they will be reflected automatically)
+
+## create the table task based on the models.py file (notice the name must be task_task to make this working):
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
-# table for the user points
+## table for the user points
 `CREATE TABLE TASK_USER_POINTS(id serial, points text);`
 
-# table for the customized User model
+## table for the customized User model
 
 `CREATE TABLE ACCOUNTS_ACCOUNT(EMAIL TEXT, USERNAME TEXT, FIRST_NAME TEXT, LAST_NAME TEXT, SCORE FLOAT, PASSWORD varchar, LAST_LOGIN TIMESTAMP, DATE_JOINED TIMESTAMP, IS_ADMIN BOOLEAN, IS_ACTIVE BOOLEAN, IS_STAFF BOOLEAN, IS_SUPERUSER BOOLEAN, ID SERIAL);`
 
-# alter the table task_task for changing the responsible to username
+## alter the table task_task for changing the responsible to username
 
 `ALTER TABLE TASK_TASK`
 `RENAME COLUMN responsible TO username_id;`
@@ -202,7 +204,8 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku run python3 manage.py makemigrations -a djangodocker`
     `heroku run python3 manage.py createsuperuser -a djangodocker`
 
-###Heroku with containerized docker
+
+### Heroku with containerized docker
 
 ## set the volumes
 
@@ -284,17 +287,21 @@ For testing you image locally, you need to execute the command `sudo docker run 
     `heroku open -a djangodocker`
 
 ### 15. Make the migrations in the Docker container after you have changed the configuration.
-
-
-    `heroku run python3 manage.py migrate -a djangodocker`
-    `heroku run python3 manage.py makemigrations -a djangodocker`
-    `heroku run python3 manage.py create superuser`
+    
+    `heroku run python3 manage.py makemigrations -a telos-dashboard-container`
+    `heroku run python3 manage.py migrate -a telos-dashboard-container`
 
     In case you cannot do it with the command from above use the following:
 
-    `heroku run bash -a djangodocker`
+    `heroku run bash -a telos-dashboard-container`
     `cd src`
     `python3 manage.py makemigrations`
+    `python3 manage.py migrate`
+
+
+### 16. Creating a super user to manage.
+
+    `heroku run python3 manage.py createsuperuser -a telos-dashboard-container`
 
 ### Additional notes
 

@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'zk6r!vjkf)1&4$m0m%dj(j5z(i6$jwq2)_(i0)2^04$sbyx1!)'
+SECRET_KEY = os.environ['SECRET_KEY_DJANGO']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'task',
     'accounts',
     'goal',
+    'user_profile',
     'widget_tweaks'
 ]
 
@@ -144,18 +145,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
 #STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'static', 'mydashboard'))
 STATIC_ROOT = os.path.join(BASE_DIR, "live-static", "static-root")
 
+
 # Static files for running your app in Live
 # Whitenoise is mandatory for making the gunicorn to work correctly
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-MEDIA_URL = '/media/'
-
 # Media files for running your app in Live
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
 
 # when logged in successfully, log in to the main dashboard

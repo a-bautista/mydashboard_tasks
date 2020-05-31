@@ -158,9 +158,9 @@ def new_activation_link(request, user_id):
 #         return render(request, 'accounts/login.html')
         
     
-@login_required
-def profile(request):
-    return render(request, 'accounts/profile.html')
+# @login_required
+# def profile(request):
+#     return render(request, 'accounts/profile.html')
 
 # messages.debug
 # messages.info

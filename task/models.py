@@ -60,8 +60,8 @@ class Task(models.Model):
     life_task    = models.IntegerField(default=3) # task has a life of 4 weeks (3,2,1,0) to be completed
 
     initial_week = models.CharField(max_length=2, null=False, default=date.today().isocalendar()[1])
-    initial_date = models.DateField(default=timezone.now(), null=False)
-    ending_date  = models.DateField(default=timezone.now(), null=True)
+    initial_date = models.DateTimeField(default=timezone.now, null=False)
+    ending_date  = models.DateTimeField(default=timezone.now, null=True)
 
     class Meta:
         ordering = ['initial_date']
