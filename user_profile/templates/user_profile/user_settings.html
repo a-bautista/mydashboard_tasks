@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% load widget_tweaks %} 
+
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="userimage.jpg">
+            <div class="media-body">
+                <h1>User settings</h1>
+                <h2 class="account-heading">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+                <p>This is the template that is being loaded.</p>
+                
+                
+            </div>
+
+        </div>
+    </div>
+
+{% endblock content %}

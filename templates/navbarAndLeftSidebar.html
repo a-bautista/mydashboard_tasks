@@ -9,13 +9,13 @@
                     <div class="nav-profile-image">
                         
                         <!--<img src="https://i.stack.imgur.com/b6c2l.jpg?s=328&amp;g=1" alt="" width="164" height="164" class="bar-sm avatar-user">-->
-                        <img src="{% static 'accounts/img/avatar.png' %}" alt="avatar_pic" width="164" height="164" class="bar-sm avatar-user">
+                        <img src="{% static 'user_profile/img/avatar.png' %}" alt="avatar_pic" width="164" height="164" class="bar-sm avatar-user">
                         <div class="nav-profile-name">{{ user.username }}<i class="fa fa-caret-down"></i></div>
                     </div>
                 </a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="/profile"><span class="fa fa-user"></span>My Profile</a></li>
-                    <li><a href="#"><span class="fa fa-cog"></span>Settings</a></li>
+                    <li><a href="/profile/user"><span class="fa fa-user"></span>My Profile</a></li>
+                    <li><a href="/profile/app_settings"><span class="fa fa-cog"></span>Settings</a></li>
                     <li class="divider"></li>
                     <li><a href="/logout"><span class="fa fa-power-off"></span>Logout</a></li>
                 </ul>

@@ -44,15 +44,13 @@ class Goal(models.Model):
     goal             = models.CharField(null=False, max_length=60)
     #user             = models.ForeignKey(User, on_delete = models.CASCADE) # this is the id of the user
     
-    initial_date     = models.DateField(default=timezone.now(), null=False)
+    initial_date     = models.DateField(default=timezone.now, null=False)
     expiration_date  = models.DateField()
     status           = models.CharField(max_length=24, choices=STATUS, default=IN_PROGRESS)
     goal_type        = models.CharField(max_length=10, choices=TYPE, default=SHORT)
     comments         = models.CharField(max_length=200)
     final_notes      = models.CharField(max_length=200)
     accounts         = models.ManyToManyField(User)
-    #task             = models.ManyToManyField(Task)
-    #registry         = models.ManyToManyField(GeneralRegistry, through_fields=id)
     
     class Meta:
         ordering = ['initial_date']
@@ -69,21 +67,5 @@ class Goal(models.Model):
         user1_detailed_goal = UserToGoal.objects.filter(user=8)
     '''
 
-    # ------------------------- Initial definitions -----------------------------
-    #COMPLETED = 'Completed'
-    #NOT_COMPLETED = 'Not completed'
-    #CANCELLED = 'Cancelled'
-    #IN_PROGRESS = 'In Progress'
-
-    # -------------------------- Options in the dropdown menu ---------------------
-    #STATUS = [(COMPLETED, COMPLETED), (NOT_COMPLETED, NOT_COMPLETED), (CANCELLED, CANCELLED), (IN_PROGRESS, IN_PROGRESS)]
-
-    #user             = models.ForeignKey(User, on_delete = models.CASCADE) # this is the id of the user
-    #goal             = models.ForeignKey(Goal, on_delete = models.CASCADE) # this is the id of the goal
-    #initial_date     = models.DateField(default=timezone.now(), null=False)
-    #expiration_date  = models.DateField()
-    #status           = models.CharField(max_length=24, choices=STATUS, default=IN_PROGRESS)
-    #comments         = models.CharField(max_length=200)
-    #final_notes      = models.CharField(max_length=200)
-
+    
 

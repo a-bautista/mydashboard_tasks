@@ -26,7 +26,6 @@ class UserRegisterForm(UserCreationForm):
 
     
     def activate_user_email(self, context):
-        #activation_url = "http://telos-app.xyz/activate/"+context['activation_key']
         activation_url = "http://localhost/activate/"+context['activation_key']
         
         message = Mail(

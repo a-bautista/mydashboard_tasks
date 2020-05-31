@@ -69,7 +69,7 @@ class Account(AbstractBaseUser):
      is_superuser = models.BooleanField(default=False)
 
      USERNAME_FIELD = 'username' # this field is used for the login
-     REQUIRED_FIELDS = ['email' 'score'] # the username field should not be included in the required field
+     REQUIRED_FIELDS = ['email','score'] # the username field should not be included in the required field
 
      objects = MyAccountManager()
 
@@ -87,6 +87,7 @@ class Account(AbstractBaseUser):
 # to retrieve the objects in the shell you type from task.models import Task
 
 class EmailConfirmed(models.Model):
+     # django created automatically the id column
      username         = models.OneToOneField(Account, on_delete = models.CASCADE)
      activation_key   = models.CharField(max_length=200)
      key_expires      = models.DateTimeField()

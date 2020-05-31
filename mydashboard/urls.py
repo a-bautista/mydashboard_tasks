@@ -24,7 +24,7 @@ from task.views import (main_dashboard, Dashboard_Categories_Month,
                 Dashboard_Status_Month, Dashboard_Tasks_Week, Dashboard_Goals_Quarter, 
                 Dashboard_Goals_Year, Dashboard_Goals_Status_Task)
 
-
+#from user_profile.views import profile
 from accounts import views as user_views
 
 '''You can import the login/logout functionalities as template views in this file or you can customize them but you will have 
@@ -32,14 +32,15 @@ from accounts import views as user_views
 from django.contrib.auth import views as auth_views # we won't be using this because we have customized our Users model
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', index, name='index'),
+    path('admin/', admin.site.urls),
     path('register/', user_views.register_view, name='register'),
-    path('profile/', user_views.profile, name='profile'),
+    #path('profile/', profile, name='profile'),
     #path('login/', user_views.login_view, name='login'),
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logout.html'), name='logout'), # template view for logout
     path('main/', main_dashboard, name='main_dashboard'), # when you reach dashboard, go directly to look for the urls from the Task application
+    path('profile/', include('user_profile.urls')),
     path('tasks/', include('task.urls')),
     path('goals/', include('goal.urls')),
     url(r'^activate/(?P<activation_key>\w+)/$', user_views.activation_view, name='activate_account'),
