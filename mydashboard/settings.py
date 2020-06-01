@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY_DJANGO']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['telos-dashboard-container.herokuapp.com', '0.0.0.0', '127.0.0.1', 'localhost', 'www.telos-app.xyz', 'telos-app.xyz']
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages', # necessary for the AWS
     'home',
     'task',
     'accounts',
@@ -159,11 +160,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files for running your app in Live
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # when logged in successfully, log in to the main dashboard
 LOGIN_REDIRECT_URL = 'main_dashboard'
 LOGIN_URL = 'login'
 
-#EMAIL = 'smtp'
+# AWS storage keys
+AWS_ACCESS_KEY_ID       = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY   = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+
+# files won't be overwritten but renamed
+AWS_S3_FILE_OVERWRITE = False
+
+# set this to None due to functionality
+AWS_DEFAULT_ACL = None
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 

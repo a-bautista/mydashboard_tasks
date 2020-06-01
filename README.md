@@ -468,3 +468,36 @@ Activate the forwarding domain and put the name of your app.
 ##### Details of data types in postgresql
 
 `\d+ task_table_goal;`
+
+
+##### Serving files with S3 Amazon bucket for production
+
+You need to create a S3 bucket, create an IAM user and provide the credentials in heroku for storing files.
+Then you need to install 2 packages: boto3 and django-storages.
+When you create your S3 bucket you need to configure the CORS file with the following:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+   <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+
+Add the following lines to the settings.py file and include the `storages` app in installed_apps.
+
+# AWS storage keys
+AWS_ACCESS_KEY_ID       = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY   = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+
+# files won't be overwritten but renamed
+AWS_S3_FILE_OVERWRITE = False
+
+# set this to None due to functionality
+AWS_DEFAULT_ACL = None
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

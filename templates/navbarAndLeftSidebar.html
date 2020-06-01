@@ -9,7 +9,7 @@
                     <div class="nav-profile-image">
                         
                         <!--<img src="https://i.stack.imgur.com/b6c2l.jpg?s=328&amp;g=1" alt="" width="164" height="164" class="bar-sm avatar-user">-->
-                        <img src="{% static 'user_profile/img/avatar.png' %}" alt="avatar_pic" width="164" height="164" class="bar-sm avatar-user">
+                        <img src="{{ user.profile.image.url }}" alt="avatar_pic" width="164" height="164" class="bar-sm avatar-user">
                         <div class="nav-profile-name">{{ user.username }}<i class="fa fa-caret-down"></i></div>
                     </div>
                 </a>
