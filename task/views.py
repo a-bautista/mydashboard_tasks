@@ -561,10 +561,7 @@ def update_task(request, id):
     elif request.method == "POST":
         if form.is_valid():
             holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-
             
-            
-            #u.today_ref_viewed_ips.set(today_ref_objs, clear=True)
 
             #Task.objects.filter(id=task.id).update(goal=new_val) # get the points of the form with section points
             #task.goal.add(new_val)  # associate the task with the goal by the id but you need to update

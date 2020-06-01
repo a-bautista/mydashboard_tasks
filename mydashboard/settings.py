@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'mydashboard.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres_password',
+        'NAME': os.getenv("NAME_POSTGRES"),
+        'USER': os.getenv("USER_POSTGRES"),
+        'PASSWORD': os.getenv("PASSWORD_POSTGRES"),
         'HOST': 'database',
         'PORT': 5432
     }
@@ -159,9 +159,3 @@ LOGIN_URL = 'login'
 # External email settings
 EMAIL = os.getenv("EMAIL_HOST_USER")
 API_KEY = os.getenv("SENDGRID_API_KEY")
-
-# mailtrap.io
-# EMAIL_HOST = 'smtp.mailtrap.io'
-# EMAIL_HOST_USER = '49723dd55a86b1'
-# EMAIL_HOST_PASSWORD = '6a1377258d1330'
-# EMAIL_PORT = '2525'
