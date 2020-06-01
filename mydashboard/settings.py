@@ -147,9 +147,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "live-static", "static-root")
 # Whitenoise is mandatory for making the gunicorn to work correctly
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files for running your app in Live
-MEDIA_URL = '/live-static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'live-static', 'media-root')
+# Media files that store the images of the profiles
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # when logged in successfully, log in to the main dashboard
 LOGIN_REDIRECT_URL = 'main_dashboard'
@@ -159,3 +159,9 @@ LOGIN_URL = 'login'
 # External email settings
 EMAIL = os.getenv("EMAIL_HOST_USER")
 API_KEY = os.getenv("SENDGRID_API_KEY")
+
+# mailtrap.io
+# EMAIL_HOST = 'smtp.mailtrap.io'
+# EMAIL_HOST_USER = '49723dd55a86b1'
+# EMAIL_HOST_PASSWORD = '6a1377258d1330'
+# EMAIL_PORT = '2525'

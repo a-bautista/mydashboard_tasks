@@ -18,16 +18,10 @@ class MyAccountManager(BaseUserManager):
                raise ValueError("User must have an email address.")
           if not username:
                raise ValueError("User must have a username.")
-          #if not first_name:
-          #     raise ValueError("User must have a first name.")
-          #if not last_name:
-          #     raise ValueError("User must have a last name.")
           
 
           user = self.model(email=self.normalize_email(email),
                  username=username,
-                 #first_name = first_name,
-                 #last_name = last_name,
                  score = score,
           )
 
@@ -54,10 +48,7 @@ class Account(AbstractBaseUser):
      id           = models.AutoField(primary_key=True)
      email        = models.EmailField(verbose_name="email", max_length=60, unique=True)
      username     = models.CharField(max_length=30, unique=True)
-     #first_name   = models.CharField(max_length=25)
-     #last_name    = models.CharField(max_length=25)
      score        = models.FloatField(default=100)
-     #image        = models.ImageField(default='default.jpg', upload_to='profile_pics')
      
 
      # The following fields are required for every customer User model
@@ -98,19 +89,4 @@ class EmailConfirmed(models.Model):
          db_table = 'accounts_emailconfirmed'
 
           
-     
-     # ------------------------- Post Save Signal --------------------------------------
-
-# def user_created(sender, instance, created, *args, **kwargs):
-#     user = instance
-#     if created:
-#         email_confirmed, email_is_created = EmailConfirmed.objects.get_or_create(user=user)
-#         if email_is_created:
-#             short_hash = hashlib.sha256(str(os.urandom(256)).encode('utf-8')).hexdigest()[:10]
-#             username, domain = str(user.email).split("@")
-#             activation_key = hashlib.sha256(str(short_hash+username).encode('utf-8')).hexdigest()
-#             email_confirmed.activation_key = activation_key
-#             email_confirmed.save()
-#             email_confirmed.activate_user_email()
-
-# post_save.connect(user_created, sender=Account)
+          

@@ -4,8 +4,8 @@ from django import forms
 from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import EmailConfirmed
+from user_profile.models import Profile
 from django.conf import settings
-
 
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
@@ -41,3 +41,7 @@ class UserRegisterForm(UserCreationForm):
             print(response.headers)
         except Exception as e:
             print(e.message)
+
+
+
+    
