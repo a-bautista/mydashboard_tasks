@@ -48,7 +48,7 @@ class Account(AbstractBaseUser):
      id           = models.AutoField(primary_key=True)
      email        = models.EmailField(verbose_name="email", max_length=60, unique=True)
      username     = models.CharField(max_length=30, unique=True)
-     score        = models.FloatField(default=100)
+     #score        = models.FloatField(default=100)
      
      # The following fields are required for every customer User model
      last_login   = models.DateTimeField(verbose_name='last login', auto_now=True)

@@ -8,8 +8,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task, Goal
+from .models import Task, Goal # I can use Goal here because I already imported this model in models.py/task
+from user_profile.models import Profile # I need to use this syntax because I haven't imported this model on anywhere else
 import json, calendar
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -20,17 +22,17 @@ def main_dashboard(request):
     username = None
     if request.user.get_username():
         username = request.user.username
-    
-    user= round(User.objects.filter(username=username).values('score').values_list('score')[0][0])
-    week = date.today().isocalendar()[1]
-    month = datetime.today().month
-    year  = datetime.today().year
-    quarter   = (month-1)//3+1
+  
+    score   = round(Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0])    
+    week    = date.today().isocalendar()[1]
+    month   = datetime.today().month
+    year    = datetime.today().year
+    quarter = (month-1)//3+1
     
     initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
     lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
-    context = { "points": user, "month": datetime.now().strftime("%B"), "week": week, 
+    context = { "points": score, "month": datetime.now().strftime("%B"), "week": week, 
                 "initial_date_quarter": initialDayQuarter, "lastDayQuarter":lastDayQuarter,
                 "current_date": date.today() } # display the current points, current month, current week
     return render(request, 'task/mainDashboard.html', context)
@@ -160,8 +162,8 @@ class Dashboard_Tasks_Week(APIView):
                 #user_points = User_Points.objects.filter(id=1) # get our only user from the db
                 #holder = int(list(User_Points.objects.filter(id=1).values('points').values_list('points'))[0][0])
                 #holder = int(list(User.objects.filter(username_id=Cast(request.user.id, TextField())).values('score').values_list('score'))[0][0])
-                holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the points of the form with section points
-                User.objects.filter(id=request.user.id).update(score=holder-int(task.points)) # subtract the points from the general score
+                holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the points of the form with section points
+                Profile.objects.filter(user_id=request.user.id).update(score=holder-int(task.points)) # subtract the points from the general score
             task.save()
   
         x_axis    = list(qs.values_list('task'))
@@ -506,8 +508,8 @@ def delete_task(request, id):
     '''Delete a task'''
     task = Task.objects.get(pk=id) # get the current points of the task
     if request.method == "POST":
-        holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-        User.objects.filter(id=request.user.id).update(score=holder-float(task.points)) # subtract the total points minus the subtracted points
+        holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
+        Profile.objects.filter(user_id=request.user.id).update(score=holder-Decimal(task.points)) # subtract the total points minus the subtracted points
         task.delete() # delete the task from the db
     return redirect('/main/')
 
@@ -560,30 +562,18 @@ def update_task(request, id):
     # when the forms gets updated, the task disappears from the db
     elif request.method == "POST":
         if form.is_valid():
-            holder = User.objects.filter(id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-
+            holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
             
-            
-            #u.today_ref_viewed_ips.set(today_ref_objs, clear=True)
 
             #Task.objects.filter(id=task.id).update(goal=new_val) # get the points of the form with section points
             #task.goal.add(new_val)  # associate the task with the goal by the id but you need to update
             
             if request.POST.get('status', None) == 'Finalized':
-                User.objects.filter(id=request.user.id).update(score=holder+float(request.POST.get('points', None))) # get the points of the form with section points
+                Profile.objects.filter(user_id=request.user.id).update(score=holder+Decimal(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
-                User.objects.filter(id=request.user.id).update(score=holder-float(request.POST.get('points', None))) # get the points of the form with section points
+                Profile.objects.filter(user_id=request.user.id).update(score=holder-Decimal(request.POST.get('points', None))) # get the points of the form with section points
             #form.cleaned_data['username'] = request.user.id # doesn't work this line
             
-            #print(task.goal)
-            #task.goal.set(new_val, clear=True) # int object is not iterable
-
-            #for u in MyUser.objects.all():
-            #    u.today_ref_viewed_ips.clear()
-
-            #today_ref_objs = [obj1, obj2, obj3]
-            #u = MyUser.objects.get(pk=1)
-            #u.today_ref_viewed_ips.set(today_ref_objs, clear=True)
 
             form.save()
             '''Below you need to update the username.id in the task_task table because if the task gets updated or cancelled then the username.id
