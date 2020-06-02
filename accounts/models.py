@@ -50,7 +50,6 @@ class Account(AbstractBaseUser):
      username     = models.CharField(max_length=30, unique=True)
      score        = models.FloatField(default=100)
      
-
      # The following fields are required for every customer User model
      last_login   = models.DateTimeField(verbose_name='last login', auto_now=True)
      date_joined  = models.DateTimeField(verbose_name='date joined', auto_now_add=True)

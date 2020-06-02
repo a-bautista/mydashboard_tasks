@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY_DJANGO']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['telos-dashboard-container.herokuapp.com', '0.0.0.0', '127.0.0.1', 'localhost', 'www.telos-app.xyz', 'telos-app.xyz']
 

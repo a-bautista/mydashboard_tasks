@@ -312,6 +312,11 @@ For testing you image locally, you need to execute the command `sudo docker run 
 #### Log into the bash of the Heroku app.
 
     `heroku run bash -a djangodocker`
+    `heroku run bash -a telos-dashboard-container`
+
+#### Map your container 
+`heroku run python3 manage.py runserver -a telos-dashboard-container && heroku run -p 3000:8888`
+
 
 #### Pass a command through the docker container
 
