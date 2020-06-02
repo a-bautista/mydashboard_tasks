@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% load widget_tweaks %} 
+
+{% block content %}
+    <div class="content-header">
+        <h1>Score settings</h1>
+    </div>
+
+    <body>
+        <div id="form-group">  
+            <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}         
+                <div class="tweet-composer">
+                    <h4><b>Task increase points</b></h4>
+                        <h5>{{ form.task_increase_point|add_class:"card" }}</h5>
+                </div>
+                <br />
+                <div class="tweet-composer">
+                    <h4><b>Max life of task in weeks</b></h4>
+                        <h5>{{ form.max_task_life_week|add_class:"card" }}</h5>
+                </div>
+                <br />
+                <button class="btn btn-success" type="submit">Update</button>
+            </form>
+        </div>
+        
+    </body>
+{% endblock content %}
