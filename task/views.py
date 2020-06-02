@@ -526,7 +526,7 @@ def retrieve_all(request):
     initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
     lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
-
+    # retrieve only active tasks
     goal_ids = []
     #user -> goal
     qs_current_user_goals = Goal.objects.filter(initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter, 

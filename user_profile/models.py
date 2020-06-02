@@ -7,7 +7,7 @@ class Profile(models.Model):
     user                = models.OneToOneField(User, on_delete = models.CASCADE)
     first_name          = models.CharField(max_length=40, blank=True)
     last_name           = models.CharField(max_length=60, blank=True)
-    image               = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image               = models.ImageField(default='default.png', upload_to='profile_pics')
     score               = models.FloatField(default=100)
     task_increase_point = models.IntegerField(default=5)
     max_task_life_week  = models.IntegerField(default=4)
