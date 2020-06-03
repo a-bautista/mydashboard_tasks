@@ -517,27 +517,19 @@ def delete_task(request, id):
 def retrieve_all(request):
     '''Get the list of all tasks created during the quarter (you will focus only on the tasks of the current quarter).'''
     template_name = 'task/formRetrieval.html'
-    
-    #initial_date, ending_date = get_start_end_date_yearly(year)
+    status_goal = 'In Progress'
+    status_task = 'Active'
 
-    month = datetime.today().month
-    year = datetime.today().year
-    quarter   = (month-1)//3+1
-    initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-    lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
-
-    # retrieve only active tasks
     goal_ids = []
-    #user -> goal
-    qs_current_user_goals = Goal.objects.filter(initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter, 
-                            accounts=request.user.id)
 
+    qs_current_user_goals = Goal.objects.filter(accounts=request.user.id, 
+                                                            status=status_goal).values('id').values_list('id')
 
     for value in qs_current_user_goals:
         goal_ids.append(value)
     
     # tasks ->  goals
-    form = {'task_list': Task.objects.filter(goal__in=goal_ids).distinct(), 'year':year}
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids, status=status_task).distinct()}
     
     return render(request, template_name, form)
 
