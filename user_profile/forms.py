@@ -5,20 +5,12 @@ from datetime import date
 from django import forms
 from .models import Profile
 
-class ProfileModelForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['first_name','last_name','score','image']
-
-    def __init__(self, *args, **kwargs):
-        super(ProfileModelForm, self).__init__(*args, **kwargs)
-        self.fields['first_name'].required = False
-        self.fields['last_name'].required  = False
-        self.fields['score'].required      = True
-        self.fields['image'].required      = False
-
-
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['first_name','last_name','image','task_increase_point', 'max_task_life_week']
+        fields = ['first_name','last_name','image']
+
+class AppUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['task_increase_point', 'max_task_life_week']
