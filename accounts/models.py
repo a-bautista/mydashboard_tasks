@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 
 class MyAccountManager(BaseUserManager):
      
-     def create_user(self, email, username, score, password=None):
+     def create_user(self, email, username, password=None):
         
           if not email:
                raise ValueError("User must have an email address.")
@@ -22,18 +22,17 @@ class MyAccountManager(BaseUserManager):
 
           user = self.model(email=self.normalize_email(email),
                  username=username,
-                 score = score,
+                 
           )
 
           user.set_password(password)
           user.save(using=self._db)
           return user
 
-     def create_superuser(self, email, username, score, password):
+     def create_superuser(self, email, username, password):
           
           user = self.create_user(email=self.normalize_email(email),
                username=username,
-               score = score,
                password=password, 
           )
 
@@ -48,7 +47,6 @@ class Account(AbstractBaseUser):
      id           = models.AutoField(primary_key=True)
      email        = models.EmailField(verbose_name="email", max_length=60, unique=True)
      username     = models.CharField(max_length=30, unique=True)
-     #score        = models.FloatField(default=100)
      
      # The following fields are required for every customer User model
      last_login   = models.DateTimeField(verbose_name='last login', auto_now=True)
@@ -59,7 +57,7 @@ class Account(AbstractBaseUser):
      is_superuser = models.BooleanField(default=False)
 
      USERNAME_FIELD = 'username' # this field is used for the login
-     REQUIRED_FIELDS = ['email','score'] # the username field should not be included in the required field
+     REQUIRED_FIELDS = ['email'] # the username field should not be included in the required field
 
      objects = MyAccountManager()
 

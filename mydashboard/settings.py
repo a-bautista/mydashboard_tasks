@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+#from sendgrid import SendGridAPIClient
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -179,3 +180,61 @@ AWS_DEFAULT_ACL = None
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
+
+# email settings password reset with sendgrid - not working
+
+# Send grid credentials
+# SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
+# SENDGRID_PASSWORD= os.environ["SENDGRID_PASSWORD"]
+# SENDGRID_USERNAME= os.environ["SENDGRID_USERNAME"]
+
+# email settings
+# EMAIL_HOST = 'smtp.sendgrid.net'
+
+
+# previous combinations that didn't send any email
+
+#EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_PASSWORD"]
+
+#EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+#EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+
+#EMAIL_HOST_USER = 'apikey'
+#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_PASSWORD"]
+
+#EMAIL_HOST_USER = 'apikey'
+#EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+
+# EMAIL_HOST_USER = 'apikey'
+# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+# FROM_EMAIL = 'telosappxyz@gmail.com'
+
+# EMAIL_HOST_USER = 'apikey'
+# EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
+
+# EMAIL_HOST_USER = 'apikey'
+# EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
+
+#EMAIL_HOST_USER = 'apikey'
+#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
+#FROM_EMAIL = 'telosappxyz@gmail.com'
+
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+
+#SENDGRID_SANDBOX_MODE_IN_DEBUG = True
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+
+
+# email settings password reset with Gmail - working
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

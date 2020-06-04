@@ -4,6 +4,6 @@ Please activate your Telos account through the following link:
 
 {{ activation_url }}
 
-Thank you!
+Thanks for collaborating in this project!
 
 - The Telos Team
