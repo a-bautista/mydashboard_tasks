@@ -42,20 +42,21 @@ def create_goal(request):
 def retrieve_all(request):
     '''Get the list of all goals during the year'''
     template_name = 'goal/formRetrieval.html'
+    status_goal = 'In Progress'
     
-    year = date.today().year
-    initial_date, ending_date = get_start_end_date_yearly(year)
+    # year = date.today().year
+    # initial_date, ending_date = get_start_end_date_yearly(year)
 
     goal_ids = []
     #user -> goal
-    qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, expiration_date__lte=ending_date, 
-                            accounts=request.user.id).values('id').values_list('id')
+    qs_current_user_goals = Goal.objects.filter(accounts=request.user.id, 
+                                                            status=status_goal).values('id').values_list('id')
 
     for value in qs_current_user_goals:
         goal_ids.append(value[0])
     
     # current goals
-    form = {'goal_list': Goal.objects.filter(id__in=goal_ids), 'year':year}
+    form = {'goal_list': Goal.objects.filter(id__in=goal_ids)}
     
     return render(request, template_name, form)
 
