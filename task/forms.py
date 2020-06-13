@@ -18,32 +18,21 @@ User = apps.get_model('accounts', 'Account')
     I want the goals of the logged in user who are in progress.
 '''
 
-#from django.conf import settings
-#User = settings.AUTH_USER_MODEL
-
-# user1.goal_set.all()
-
 class DropDownMenuGoalsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('id')
         super(DropDownMenuGoalsForm, self).__init__(*args, **kwargs)
         self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
-        #queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress')
-    #goal = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(status='In Progress'))  
+
 
 class DropDownMenuSelectedGoalsForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        task_id = kwargs.pop('id')
-        super(DropDownMenuSelectedGoalsForm, self).__init__(*args, **kwargs)
-        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(task=Task.objects.get(id=task_id)))
-        
-        # self.fields['goal'] = forms.ModelChoiceField(queryset = Task.objects.values_list('goal',flat=True).filter(goal=Goal.objects.get(id=task_id)))
 
-#class DropDownMenuCategoriesForm(forms.Form):
-#    def __init__(self, *args, **kwargs):
-#        user_id = kwargs.pop('id')
-#        super(DropDownMenuCategoriesForm, self).__init__(*args, **kwargs)
-#        self.fields['category'] = forms.ModelChoiceField(queryset = Category.objects.values_list('category',flat=True).filter(accounts=User.objects.get(id=user_id)))
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('id')
+        super(DropDownMenuSelectedGoalsForm, self).__init__(*args, **kwargs)
+        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True)
+                                                    .filter(accounts=User.objects.get(id=user_id),
+                                                    status='In Progress'), empty_label=None, to_field_name='goal')
 
 
 class TaskForm(forms.Form):
