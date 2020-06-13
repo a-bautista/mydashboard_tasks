@@ -460,35 +460,16 @@ def create_task(request):
     goal = DropDownMenuGoalsForm(id = request.user.id)
     #category = DropDownMenuCategoriesForm(id = request.user.id)
 
-    #Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
-
-    #print(goals_dropdownmenu)
-    #username_id = None
-    #if request.user.get_username():    
-    #    username_id = User.objects.get(id=request.user.id)
-
     # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
     select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
 
-    # task[0].task
-    #user= User.objects.filter(username=username).values('score').values_list('score')[0][0]
-    
-    #select_goal_id = Goal.objects.filter(goal=request.POST.get('goal', None)).values('id').values_list('id',flat=True)[0][0]
-    #new_val = select_goal_id[0].id
-
     for value in select_goal_id:
         new_val = value
-
-    #select_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category',None))
-
-    #for value in select_category_id:
-    #    selected_category = value
     
     if form_create.is_valid():
         task = form_create.save(commit=True) # save the first task
         task.goal.add(new_val)  # associate the task with the goal by the id
 
-        #obj.username = username_id # save the username_id in the task_task table
         task.save() 
         # Clean the form
         form_create = TaskModelForm()
@@ -537,44 +518,48 @@ def retrieve_all(request):
 def update_task(request, id):
     '''Update a task'''
     task = Task.objects.get(pk=id)  # get the task id from the db
-    #print(task)
-    form = TaskModelForm(request.POST or None, instance=task) # overwrite the task, do not create a new one
-    goal = DropDownMenuGoalsForm(id = request.user.id)
 
-    # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
-    select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
+    # task.goal.values() allows me to see all the fields that are associated to the relationship
+    initial_value = task.goal.values_list('goal',flat=True)[0]
+    
+    # overwrite the task, do not create a new one
+    form = TaskModelForm(request.POST or None, instance=task) 
 
-    for value in select_goal_id:
-        new_val = value
+    # initialize the dropdown menu
+    goal = DropDownMenuSelectedGoalsForm(id = request.user.id, initial={'goal': initial_value})
 
     if request.method == "GET":
         template_name = 'task/formTask.html'
-        return render(request, template_name, {'form': form, 'goal': goal})
+        return render(request, template_name, {'form': form, 'goal':goal})
 
     # when the forms gets updated, the task disappears from the db
     elif request.method == "POST":
         if form.is_valid():
-            holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-            
+            holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user                 
 
-            #Task.objects.filter(id=task.id).update(goal=new_val) # get the points of the form with section points
-            #task.goal.add(new_val)  # associate the task with the goal by the id but you need to update
-            
+            # look for the previous id of the goal
+            old_goal_id = task.goal.values_list('id',flat=True)[0]
+
+            # look for the new id of the goal
+            new_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))[0]
+
+            # Associate the new goal to the current task
+            task.goal.add(new_goal_id)
+
+            # remove the old goal from the current task
+            task.goal.remove(old_goal_id)
+
+            # calculate the  points
             if request.POST.get('status', None) == 'Finalized':
                 Profile.objects.filter(user_id=request.user.id).update(score=holder+Decimal(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
                 Profile.objects.filter(user_id=request.user.id).update(score=holder-Decimal(request.POST.get('points', None))) # get the points of the form with section points
-            #form.cleaned_data['username'] = request.user.id # doesn't work this line
             
-
             form.save()
-            '''Below you need to update the username.id in the task_task table because if the task gets updated or cancelled then the username.id
-               is erased because in the form there's no visible field to get the username id. The solution is not the cleanest but it works.'''
             
             '''The reason for the error django.model object has no attribute 'update' is that .get() returns an individual object and .update() only works on querysets, 
-                such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
-            #task.username=User.objects.get(id=request.user.id)
-            task.save()
+               such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
+
         return redirect('/main/')
 
 @login_required
@@ -758,7 +743,6 @@ def get_start_end_date_monthly(year, month):
     ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
 
     return initial_date, ending_date
-
 
 
 def get_start_end_date_yearly(year):
