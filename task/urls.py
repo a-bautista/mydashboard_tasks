@@ -1,9 +1,7 @@
 from django.urls import path
 # import the component task
 from .views import (create_task, delete_task, update_task,
-                    view_previous_tasks, view_previous_tasks_monthly, view_previous_tasks_yearly, retrieve_all, main_dashboard,
-                    Dashboard_Categories_Month, Dashboard_Status_Month,
-                    Dashboard_Tasks_Week, Dashboard_Goals_Quarter, Dashboard_Goals_Year, Dashboard_Goals_Status_Task)
+                    view_previous_tasks, view_previous_tasks_monthly, view_previous_tasks_yearly, retrieve_all, main_dashboard)
 
 # Because I am redirecting the root address to the Task application, I need to include the task in the URL, so it gets defined in the lines below
 
