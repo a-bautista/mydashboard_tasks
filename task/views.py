@@ -384,8 +384,8 @@ class Dashboard_Goals_Status_Task(APIView):
         return Response(front_end_dictionary)
 
 
-class Dashboard_Goals_Year(APIView):
-    ''' Display all the yearly goals and indicate the % of progress in each one once they have been finalized. '''
+class Dashboard_Long_Term_Goals(APIView):
+    ''' Display all the long term goals and indicate the % of progress in each one once they have been finalized. '''
     def get(self, request, *args, **kwargs):
 
         '''Show only the results of the logged in user'''
@@ -393,8 +393,6 @@ class Dashboard_Goals_Year(APIView):
         initial_date, ending_date = get_start_end_date_yearly(year)
 
         goal_task_finalized = {}
-        #goal_task_cancelled = {}
-        #goal_task_active    = {}
         goal_task_total     = {}
 
         finalized_task_goal_count = {}
@@ -405,11 +403,11 @@ class Dashboard_Goals_Year(APIView):
         y_axis = None
 
         status_to_exclude = ['Cancelled','Not completed']
+        goal_type = 'Long'
+
         goal_ids = []   
         # goals -> users
-        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
-                                                            initial_date__gte=initial_date, 
-                                                            expiration_date__lte=ending_date).exclude(status__in=status_to_exclude).values('id','goal').values_list('id','goal')
+        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, goal_type=goal_type).exclude(status__in=status_to_exclude).values('id','goal').values_list('id','goal')
 
         for id, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
@@ -437,13 +435,68 @@ class Dashboard_Goals_Year(APIView):
                     # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
                     percentages_task_goals[goal] = 0
 
-            
             x_axis, y_axis = zip(*percentages_task_goals.items())            
 
-        #print(x_axis, y_axis)
-        # tasks -> goals
-        #qs = Task.objects.filter(goal__in=goal_ids)
-        # qs = Task.objects.filter(status='A
+        # only the goals with finalized tasks are being displayed, fix this
+        front_end_dictionary = {
+            "labels_graph": x_axis,
+            "values_graph": y_axis
+        }
+        return Response(front_end_dictionary)
+
+
+class Dashboard_Medium_Term_Goals(APIView):
+    ''' Display all the medium term goals and indicate the % of progress in each one once they have been finalized. '''
+    def get(self, request, *args, **kwargs):
+
+        '''Show only the results of the logged in user'''
+        year  = date.today().year
+        initial_date, ending_date = get_start_end_date_yearly(year)
+
+        goal_task_finalized = {}
+        goal_task_total     = {}
+
+        finalized_task_goal_count = {}
+        total_task_goal_count     = {}
+        percentages_task_goals    = {}
+
+        x_axis = None
+        y_axis = None
+
+        status_to_exclude = ['Cancelled','Not completed']
+        goal_type = 'Medium'
+
+        goal_ids = []   
+        # goals -> users
+        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, goal_type=goal_type).exclude(status__in=status_to_exclude).values('id','goal').values_list('id','goal')
+
+        for id, value in enumerate(qs_current_user_goals_quarter):
+            goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
+            goal_task_total[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
+
+        # if the dictionaries are not empty - fix for displaying the graphs when a user logs in for the first time
+        if goal_task_finalized and goal_task_total:
+            finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
+            total_goals,     qs_total     = zip(*goal_task_total.items())
+
+        
+            for goal in finalized_goals:
+                for element in goal_task_finalized[goal]:
+                    finalized_task_goal_count[goal] = element['task_goal_count']
+
+            for goal in total_goals:
+                for element in goal_task_total[goal]:
+                    total_task_goal_count[goal] = element['task_goal_count']
+
+            
+            for goal in total_goals:
+                try:
+                    percentages_task_goals[goal] = round((finalized_task_goal_count[goal]*100)/total_task_goal_count[goal])
+                except:
+                    # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
+                    percentages_task_goals[goal] = 0
+
+            x_axis, y_axis = zip(*percentages_task_goals.items())            
 
         # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
