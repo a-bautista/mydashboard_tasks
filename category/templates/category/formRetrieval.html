@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% load widget_tweaks %}  {% block content %}
+<div class="content-header">
+  <h1>Categories</h1>
+</div>
+<table class="table table-borderless">
+  <thead class="border-bottom font-weight-bold">
+    <tr>
+      <td>Category</td>
+      <td>Description</td>
+      <td></td>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for category in category_list %}
+    <tr>
+      <td>{{ category.category}}</td>
+      <td>{{ category.description}}</td>
+      
+      <td>
+        <a href="{% url 'update_category' category.id %}"
+          class="btn text-secondary px-0"
+        >
+          <i class="far fa-edit fa-lg"></i>
+        </a>
+       
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{%endblock content %}

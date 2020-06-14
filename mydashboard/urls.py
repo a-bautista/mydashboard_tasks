@@ -50,6 +50,7 @@ urlpatterns = [
     path('profile/', include('user_profile.urls')),
     path('tasks/', include('task.urls')),
     path('goals/', include('goal.urls')),
+    path('categories/', include('category.urls')),
     url(r'^activate/(?P<activation_key>\w+)/$', user_views.activation_view, name='activate_account'),
 
     path('main/dashboard_categories_month', Dashboard_Categories_Month.as_view()), # load this view in the main page

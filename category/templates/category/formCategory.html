@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% load widget_tweaks %} 
+{% block content %}
+<div class="content-header">
+  {% if request.resolver_match.url_name == 'create_category' %}
+    <h1>Create a new category</h1>
+  {% endif %}
+  {% if request.resolver_match.url_name == 'update_category' %}
+    <h1>Update a category</h1>
+  {% endif %}
+</div>
+
+
+<div id="form-group">
+  <form method="POST" action="." enctype="multipart/form-data">
+      {% csrf_token %}
+        
+        <label>Insert your category</label>
+          {{ form.category|add_class:"card" }}
+
+        <br />
+        <br />
+
+        <div class="tweet-composer">
+          <label>What's the description?</label>
+            {{ form.description|add_class:"card" }}
+        </div>
+
+
+      
+      <button type="submit" class="btn btn-success">Send</button>
+  </form>
+</div>
+
+
+{% endblock content %}
+<script type="text/javascript">
+{% block jquery %}
+
+
+{% endblock %}
+</script>

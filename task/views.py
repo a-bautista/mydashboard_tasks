@@ -5,10 +5,10 @@ from django.db.models import Count, TextField
 from django.db.models.functions import Cast
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm, DropDownMenuCategoryForm, DropDownMenuSelectedCategoryForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Task, Goal # I can use Goal here because I already imported this model in models.py/task
+from .models import Task, Goal, Category # I can use Goal here because I already imported this model in models.py/task
 from user_profile.models import Profile # I need to use this syntax because I haven't imported this model on anywhere else
 import json, calendar
 from decimal import Decimal
@@ -511,19 +511,28 @@ def create_task(request):
     '''You are passing the form TaskModel into the template, so it can render it.'''
     form_create = TaskModelForm(request.POST or None)
     goal = DropDownMenuGoalsForm(id = request.user.id)
-    #category = DropDownMenuCategoriesForm(id = request.user.id)
+    category = DropDownMenuCategoryForm(id=request.user.id)
+
+    selected_goal = None
+    selected_category = None
 
     # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
     select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
 
     for value in select_goal_id:
-        new_val = value
+        selected_goal = value
+
+    select_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category',None))
+
+    for value in select_category_id:
+        selected_category = value
     
     if form_create.is_valid():
         task = form_create.save(commit=True) # save the first task
-        task.goal.add(new_val)  # associate the task with the goal by the id
-
+        task.goal.add(selected_goal)  # associate the task with the goal by the id
+        task.category.add(selected_category)
         task.save() 
+
         # Clean the form
         form_create = TaskModelForm()
         return redirect('/main/')
@@ -531,8 +540,8 @@ def create_task(request):
     template_name = 'task/formTask.html'
     # the form keyword gets all the data that will be passed along to the formCreate template
     context = {'form': form_create,
-               #'category': category,
-               'goal': goal
+               'goal': goal,
+               'category': category
                }
     return render(request, template_name, context)
 
@@ -554,16 +563,23 @@ def retrieve_all(request):
     status_goal = 'In Progress'
     status_task = 'Active'
 
-    goal_ids = []
+    goal_ids       = []
+    categories_ids = []
 
     qs_current_user_goals = Goal.objects.filter(accounts=request.user.id, 
                                                             status=status_goal).values('id').values_list('id')
 
-    for value in qs_current_user_goals:
-        goal_ids.append(value)
-    
+    qs_current_user_categories = Category.objects.filter(accounts=request.user.id)
+
     # tasks ->  goals
-    form = {'task_list': Task.objects.filter(goal__in=goal_ids, status=status_task).distinct()}
+    for goal in qs_current_user_goals:
+        goal_ids.append(goal)
+
+    # tasks -> categories
+    for category in qs_current_user_categories:
+        categories_ids.append(category)
+    
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids, category__in=categories_ids, status=status_task).distinct()}
     
     return render(request, template_name, form)
 
@@ -573,17 +589,23 @@ def update_task(request, id):
     task = Task.objects.get(pk=id)  # get the task id from the db
 
     # task.goal.values() allows me to see all the fields that are associated to the relationship
-    initial_value = task.goal.values_list('goal',flat=True)[0]
+    initial_value_goal = task.goal.values_list('goal',flat=True)[0]
     
+    # task.category.values() 
+    initial_value_category = task.category.values_list('category',flat=True)[0]
+
     # overwrite the task, do not create a new one
     form = TaskModelForm(request.POST or None, instance=task) 
 
-    # initialize the dropdown menu
-    goal = DropDownMenuSelectedGoalsForm(id = request.user.id, initial={'goal': initial_value})
+    # initialize the Goals dropdown menu
+    goal = DropDownMenuSelectedGoalsForm(id = request.user.id, initial={'goal': initial_value_goal})
+
+    # initialize the Category dropdown menu
+    category = DropDownMenuSelectedCategoryForm(id = request.user.id, initial={'category': initial_value_category})
 
     if request.method == "GET":
         template_name = 'task/formTask.html'
-        return render(request, template_name, {'form': form, 'goal':goal})
+        return render(request, template_name, {'form': form, 'goal':goal, 'category': category})
 
     # when the forms gets updated, the task disappears from the db
     elif request.method == "POST":
@@ -593,15 +615,34 @@ def update_task(request, id):
             # look for the previous id of the goal
             old_goal_id = task.goal.values_list('id',flat=True)[0]
 
+            # look for the previous id of the category
+            old_category_id = task.category.values_list('id', flat=True)[0]
+
             # look for the new id of the goal
             new_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))[0]
 
-            # Associate the new goal to the current task
-            task.goal.add(new_goal_id)
+            # look for the new id of the category
+            new_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category', None))[0]
 
-            # remove the old goal from the current task
-            task.goal.remove(old_goal_id)
+            if old_goal_id!=new_goal_id:
 
+                # Associate the new goal to the current task
+                # print("Associating the task with the new goal")
+                task.goal.add(new_goal_id)
+
+                # remove the old goal from the current task
+                # print("Deleting the task with the new goal")
+                task.goal.remove(old_goal_id)
+
+            if old_category_id!= new_category_id:
+                # Associate the new category to the current task
+                # print("Associating the category with the new task")
+                task.category.add(new_category_id)
+
+                # Remove the old category from the current task
+                # print("Removing the category from the new task")
+                task.category.remove(old_category_id)
+            
             # calculate the  points
             if request.POST.get('status', None) == 'Finalized':
                 Profile.objects.filter(user_id=request.user.id).update(score=holder+Decimal(request.POST.get('points', None))) # get the points of the form with section points

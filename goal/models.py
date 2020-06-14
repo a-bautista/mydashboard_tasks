@@ -2,7 +2,6 @@
 # Django libraries
 
 from django.db import models
-#from django.apps import apps
 from django.utils import timezone
 #from django.contrib.auth.models import AbstractBaseUser
 #from django.contrib.auth import get_user_model
@@ -42,8 +41,6 @@ class Goal(models.Model):
      # ------------------------- Main fields --------------------------------------
     id               = models.AutoField(primary_key=True)
     goal             = models.CharField(null=False, max_length=60)
-    #user             = models.ForeignKey(User, on_delete = models.CASCADE) # this is the id of the user
-    
     initial_date     = models.DateField(default=timezone.now, null=False)
     expiration_date  = models.DateField()
     status           = models.CharField(max_length=24, choices=STATUS, default=IN_PROGRESS)

@@ -11,7 +11,7 @@ from django.db.models import Q, F
 from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized
 
 from goal.models import Goal
-#from category.models import Category
+from category.models import Category
 
 '''We will be using the customized User model from Django to store all our users which will be stored in a postgresql db.'''
 #User = get_user_model()
@@ -49,12 +49,11 @@ class Task(models.Model):
 
     # ------------------------- Main fields --------------------------------------
     id           = models.AutoField(primary_key=True)
-    #username     = models.ManyToManyField(User)
     #username     = models.ForeignKey(User, on_delete=models.CASCADE) # the name changes to username_id inside of the db automatically
     goal         = models.ManyToManyField(Goal)
     task         = models.CharField(null=False, max_length=140)
-    #category     = models.ManyToManyField(Category)
-    category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
+    category     = models.ManyToManyField(Category)
+    #category     = models.CharField(max_length=24, choices=CATEGORIES, default=PERSONAL_DEVELOPMENT)
     status       = models.CharField(max_length=24, choices=STATUS, default=ACTIVE)
     points       = models.FloatField(default=5)
     life_task    = models.IntegerField(default=3) # task has a life of 4 weeks (3,2,1,0) to be completed

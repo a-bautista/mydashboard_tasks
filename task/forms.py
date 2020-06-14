@@ -12,7 +12,7 @@ from django.apps import apps
 '''Declare the class to indicate the data that will be stored. '''
 Goal = apps.get_model('goal', 'Goal') # app_name and model_name
 User = apps.get_model('accounts', 'Account')
-#Category = apps.get_model('category', 'Category')
+Category = apps.get_model('category', 'Category')
 
 '''Declare the class to indicate the data that will be stored. 
     I want the goals of the logged in user who are in progress.
@@ -22,7 +22,7 @@ class DropDownMenuGoalsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user_id = kwargs.pop('id')
         super(DropDownMenuGoalsForm, self).__init__(*args, **kwargs)
-        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'))
+        self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True).filter(accounts=User.objects.get(id=user_id),status='In Progress'), empty_label="Select your goal")
 
 
 class DropDownMenuSelectedGoalsForm(forms.Form):
@@ -33,6 +33,19 @@ class DropDownMenuSelectedGoalsForm(forms.Form):
         self.fields['goal'] = forms.ModelChoiceField(queryset = Goal.objects.values_list('goal',flat=True)
                                                     .filter(accounts=User.objects.get(id=user_id),
                                                     status='In Progress'), empty_label=None, to_field_name='goal')
+
+class DropDownMenuCategoryForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('id')
+        super(DropDownMenuCategoryForm, self).__init__(*args, **kwargs)
+        self.fields['category'] = forms.ModelChoiceField(queryset = Category.objects.values_list('category',flat=True).filter(accounts=User.objects.get(id=user_id)), empty_label="Select your category")
+
+
+class DropDownMenuSelectedCategoryForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        user_id = kwargs.pop('id')
+        super(DropDownMenuSelectedCategoryForm, self).__init__(*args, **kwargs)
+        self.fields['category'] = forms.ModelChoiceField(queryset = Category.objects.values_list('category',flat=True).filter(accounts=User.objects.get(id=user_id)), empty_label=None)
 
 
 class TaskForm(forms.Form):
@@ -72,7 +85,7 @@ class DropDownMenuYearsForm(forms.Form):
 class TaskModelForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['task', 'category', 'status', 'ending_date', 'points']
+        fields = ['task', 'status', 'ending_date', 'points']
         # this is necessary for the calendar
         widgets = {
             'ending_date': DateInput(),
