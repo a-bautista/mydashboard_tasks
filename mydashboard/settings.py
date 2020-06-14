@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'home',
     'task',
     'accounts',
+    'category',
     'goal',
     'user_profile',
     'widget_tweaks'

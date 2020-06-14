@@ -49,7 +49,7 @@ class GoalModelForm(forms.ModelForm):
         self.fields['initial_date'].required    = True
         self.fields['expiration_date'].required = True
         self.fields['status'].required          = False  # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
-        self.fields['goal_type'].required            = False # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
+        self.fields['goal_type'].required       = False # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
         self.fields['comments'].required        = False # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
         self.fields['final_notes'].required     = False # I had to make this field to false, so when you insert a record it doesn't tell you that the field is mandatory
 

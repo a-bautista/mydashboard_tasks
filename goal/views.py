@@ -29,8 +29,7 @@ def create_goal(request):
         # Clean the form
         form_create = GoalModelForm()
         return redirect('/main/')
-    #else:
-        #print(form_create)
+    
         
     template_name = 'goal/formGoal.html'
     # the form keyword gets all the data that will be passed along to the formCreate template

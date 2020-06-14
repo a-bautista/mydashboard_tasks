@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load widget_tweaks %} {% load retrieve_goal %} {% block content %}
+{% extends "base.html" %} {% load widget_tweaks %} {% load retrieve_goal %} {% load retrieve_category %}  {% block content %}
 <div class="content-header">
   <h1>Current active tasks</h1>
 </div>
@@ -22,7 +22,7 @@
       <td>{{task.task}}</td>
       <td>{{ task.goal.values | retrieve_goal}}</td>
       <td>{{task.status}}</td>
-      <td>{{task.category}}</td>
+      <td>{{ task.category.values | retrieve_category }}</td>
       <td>{{task.points}}</td>
       <td>{{task.initial_week}}</td>
       <td>{{task.initial_date}}</td>

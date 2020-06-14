@@ -19,6 +19,7 @@ mydashboard/__pycache__/wsgi.cpython-36.pyc
 mydashboard/__pycache__/urls.cpython-36.pyc
 mydashboard/wsgi.pyc
 mydashboard/__pycache__/__init__.cpython-36.pyc
+category/__pycache__/*
 task/templatetags/__pycache__/*
 home/__pycache__/*
 accounts/__pycache__/*
@@ -40,6 +41,7 @@ live-static/*
 goal/migrations/*
 home/migrations/*
 user_profile/migrations/*
+category/migrations/*
 
 # Other folders
 .idea/
