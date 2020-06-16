@@ -12,6 +12,7 @@ from .models import Task, Goal, Category # I can use Goal here because I already
 from user_profile.models import Profile # I need to use this syntax because I haven't imported this model on anywhere else
 import json, calendar
 from decimal import Decimal
+from collections import Counter
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -43,27 +44,28 @@ class Dashboard_Categories_Month(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         month = date.today().month
-        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
-        #initial_date, ending_date = get_start_end_date_monthly(year, month)
-
-        quarter   = (month-1)//3+1
-        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
-
-        goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
-                            accounts=request.user.id).values('id').values_list('id')
-
-        for value in qs_current_user_goals:
-            goal_ids.append(value)
-
-        qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(goal__in = goal_ids, 
-            initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
-
         
-        keys_graph = list(qs_group_by.values_list('category'))
-        values_graph = list(qs_group_by.values_list('count'))
+        # get the categories from users
+        qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
+        category_id = []
+
+        for c in qs:
+            category_id.append(c)
+
+        # do a reference of categories and tasks
+        task_count = Task.objects.filter(category__in=category_id).distinct()
+
+        new_list = []
+        # append only the categories of each user
+        for t in task_count:
+            new_list.append(list(t.category.values('category').values_list('category', flat=True))[0])
+
+        # count the categories
+        results = Counter(new_list)
+
+        keys_graph = results.keys()
+        values_graph = results.values()
+
         front_end_dictionary = {
             "labels_graph": keys_graph,
             "values_graph": values_graph
