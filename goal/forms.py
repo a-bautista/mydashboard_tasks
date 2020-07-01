@@ -19,13 +19,13 @@ class DropDownMenuQuarterlyForm(forms.Form):
 
     quarters = ("1",'Q1'),("2",'Q2'),("3",'Q3'),("4",'Q4')
     
-    if date(date.today().year, 1, 1) < date.today() < date(date.today().year, 3, 31):
+    if date(date.today().year, 1, 1) <= date.today() <= date(date.today().year, 3, 31):
         initial_value = ("1",'Q1')
-    elif date(date.today().year, 4, 1) < date.today() < date(date.today().year, 6, 30):
+    elif date(date.today().year, 4, 1) <= date.today() <= date(date.today().year, 6, 30):
         initial_value = ("2",'Q2')
-    elif date(date.today().year, 7, 1) < date.today() < date(date.today().year, 9, 30):
+    elif date(date.today().year, 7, 1) <= date.today() <= date(date.today().year, 9, 30):
         initial_value = ("3",'Q3')
-    elif date(date.today().year, 10, 1) < date.today() < date(date.today().year, 12, 31):
+    elif date(date.today().year, 10, 1) <= date.today() <= date(date.today().year, 12, 31):
         initial_value = ("4",'Q4')    
 
     quarter = forms.ChoiceField(choices=[x for x in quarters], initial=initial_value)
