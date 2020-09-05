@@ -272,9 +272,10 @@ class Dashboard_Goals_Status_Task(APIView):
         '''Show only the results of the logged in user'''
         year  = date.today().year
         month = date.today().month
-        quarter   = (month-1)//3+1
-        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+        goal_type = 'Short'
+        #quarter   = (month-1)//3+1
+        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
@@ -300,8 +301,9 @@ class Dashboard_Goals_Status_Task(APIView):
         x_axis = []
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
-                                                            initial_date__gte=initialDayQuarter, 
-                                                            expiration_date__lte=lastDayQuarter,
+                                                            #initial_date__gte=initialDayQuarter, 
+                                                            #expiration_date__lte=lastDayQuarter,
+                                                            goal_type=goal_type,
                                                             status='In Progress').values('id','goal').values_list('id','goal')
         
         #print(qs_current_user_goals_quarter)
