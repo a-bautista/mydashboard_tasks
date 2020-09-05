@@ -188,9 +188,10 @@ class Dashboard_Goals_Quarter(APIView):
         '''Show only the results of the logged in user'''
         year  = date.today().year
         month = date.today().month
-        quarter   = (month-1)//3+1
-        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+        goal_type = 'Short'
+        #quarter   = (month-1)//3+1
+        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         #initial_date, ending_date = get_start_end_date(year, week)
@@ -210,8 +211,9 @@ class Dashboard_Goals_Quarter(APIView):
 
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
-                                                            initial_date__gte=initialDayQuarter, 
-                                                            expiration_date__lte=lastDayQuarter,
+                                                            #initial_date__gte=initialDayQuarter, 
+                                                            #expiration_date__lte=lastDayQuarter,
+                                                            goal_type=goal_type,
                                                             status='In Progress').values('id','goal').values_list('id','goal')
         
         for id, value in enumerate(qs_current_user_goals_quarter):
@@ -406,7 +408,7 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
         x_axis = None
         y_axis = None
 
-        status_to_exclude = ['Cancelled','Not completed']
+        status_to_exclude = ['Cancelled','Not completed','Completed']
         goal_type = ['Medium','Long']
 
         goal_ids = []   
@@ -495,7 +497,7 @@ def delete_task(request, id):
     task = Task.objects.get(pk=id) # get the current points of the task
     if request.method == "POST":
         holder = Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0] # get the current point of the user
-        Profile.objects.filter(user_id=request.user.id).update(score=holder-float(task.points)) # subtract the total points minus the subtracted points
+        Profile.objects.filter(user_id=request.user.id).update(score=holder-Decimal(task.points)) # subtract the total points minus the subtracted points
         task.delete() # delete the task from the db
     return redirect('/main/')
 
@@ -529,7 +531,6 @@ def retrieve_all(request):
 @login_required
 def update_task(request, id):
     '''Update a task'''
-
     task = Task.objects.get(pk=id)  # get the task id from the db
 
     # task.goal.values() allows me to see all the fields that are associated to the relationship
@@ -589,15 +590,15 @@ def update_task(request, id):
             
             # calculate the  points
             if request.POST.get('status', None) == 'Finalized':
-                Profile.objects.filter(user_id=request.user.id).update(score=holder+float(request.POST.get('points', None))) # get the points of the form with section points
+                Profile.objects.filter(user_id=request.user.id).update(score=holder+Decimal(request.POST.get('points', None))) # get the points of the form with section points
             elif request.POST.get('status', None) == 'Cancelled':
-                Profile.objects.filter(user_id=request.user.id).update(score=holder-float(request.POST.get('points', None))) # get the points of the form with section points
+                Profile.objects.filter(user_id=request.user.id).update(score=holder-Decimal(request.POST.get('points', None))) # get the points of the form with section points
             
             form.save()
             
             '''The reason for the error django.model object has no attribute 'update' is that .get() returns an individual object and .update() only works on querysets, 
                such as what would be returned with .filter() instead of .get(). If you are using .get(), then .update() will not work.'''
-            
+
         return redirect('/main/')
 
 @login_required
@@ -711,13 +712,16 @@ def view_previous_tasks_yearly(request):
     elif request.method == "POST":
         template_name = 'task/retrieval_results/previous_tasks_yearly.html'
         year = request.POST.get('select_year', None)
+        goal_type = ['Short','Medium','Long']
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_yearly(year)
         
+        
         goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                            accounts=request.user.id).values('id').values_list('id')
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
+                                                    goal_type__in=goal_type,
+                                                    accounts=request.user.id).values('id').values_list('id')
 
         for value in qs_current_user_goals:
             goal_ids.append(value)
@@ -781,7 +785,6 @@ def get_start_end_date_monthly(year, month):
     ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
 
     return initial_date, ending_date
-
 
 
 def get_start_end_date_yearly(year):
