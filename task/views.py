@@ -408,7 +408,7 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
         x_axis = None
         y_axis = None
 
-        status_to_exclude = ['Cancelled','Not completed']
+        status_to_exclude = ['Cancelled','Not completed','Completed']
         goal_type = ['Medium','Long']
 
         goal_ids = []   
