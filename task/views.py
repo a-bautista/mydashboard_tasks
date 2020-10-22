@@ -31,7 +31,11 @@ def main_dashboard(request):
     quarter = (month-1)//3+1
     
     initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-    lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+    # old formula from below
+    #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+    
+    # new formula
+    lastDayQuarter = datetime(year + 3*quarter//12, 3*quarter%12+1,1)+timedelta(days=-1)
 
     context = { "points": score, "month": datetime.now().strftime("%B"), "week": week, 
                 "initial_date_quarter": initialDayQuarter, "lastDayQuarter":lastDayQuarter,
@@ -78,16 +82,18 @@ class Dashboard_Status_Month(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         month = date.today().month
-        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
+        #initial_date_year, ending_date_year = get_start_end_date_yearly(year)
         #initial_date, ending_date = get_start_end_date_monthly(year, month)
         
-        quarter   = (month-1)//3+1
-        initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
+        #quarter   = (month-1)//3+1
+        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
+        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
-                            accounts=request.user.id).values('id').values_list('id')
+        #qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
+        #                    accounts=request.user.id).values('id').values_list('id')
+        
+        qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
 
 
         for value in qs_current_user_goals:
@@ -95,9 +101,11 @@ class Dashboard_Status_Month(APIView):
 
 
         # there's an error when you start having different tasks, they are not counting, really?
-        qs_group_by = Task.objects.values(
-            'status').annotate(count=Count('status')).filter(goal__in = goal_ids, 
-            initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
+        # qs_group_by = Task.objects.values(
+        #     'status').annotate(count=Count('status')).filter(goal__in = goal_ids, 
+        #     initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
+
+        qs_group_by = Task.objects.values('status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
 
 
         keys_graph = list(qs_group_by.values_list('status'))
