@@ -277,6 +277,10 @@ For testing you image locally, you need to execute the command `sudo docker run 
     `cd src`
     `python3 manage.py makemigrations`
 
+### Debug your container through heroku
+
+Open your terminal and type: `heroku run bash -a telos-dashboard-app`
+
 ### Additional notes
 
 #### See the logs in Heroku in case something has failed.
