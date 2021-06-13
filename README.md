@@ -221,6 +221,10 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku create telos-dashboard`
 
     `sudo heroku container:login`
+    
+### 2.5 In case you want to download the docker image to your machine
+
+    `sudo heroku container:pull web -a telos-dashboard-container`
 
 ### 3. Provide the PostgreSQL database for production
 
