@@ -13,7 +13,6 @@ from user_profile.models import Profile # I need to use this syntax because I ha
 import json, calendar
 from decimal import Decimal
 from collections import Counter
-
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -429,8 +428,8 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
 
         # if the dictionaries are not empty - fix for displaying the graphs when a user logs in for the first time
         if goal_task_finalized and goal_task_total:
-            finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
-            total_goals,     qs_total     = zip(*goal_task_total.items())
+            finalized_goals, _ = zip(*goal_task_finalized.items())
+            total_goals,     _ = zip(*goal_task_total.items())
 
         
             for goal in finalized_goals:
@@ -470,12 +469,17 @@ def create_task(request):
     selected_category = None
 
     # Messy code but it works to get the goals id that will be used to insert in the goal_task_table
-    select_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))
+    # If you don't specify the account name then the task will be assigned to the goal that has the highest id value in case you have
+    # duplicate values
+
+    # Generate all the goals and select only the goal that the user clicked on it
+    select_goal_id = Goal.objects.values_list('id',flat=True).filter(accounts=request.user.id, goal=request.POST.get('goal', None))
 
     for value in select_goal_id:
         selected_goal = value
 
-    select_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category',None))
+    # Generate all the goals and select only the goal that the user clicked on it.
+    select_category_id = Category.objects.values_list('id',flat=True).filter(accounts=request.user.id, category=request.POST.get('category',None))
 
     for value in select_category_id:
         selected_category = value
@@ -511,28 +515,38 @@ def delete_task(request, id):
 
 @login_required
 def retrieve_all(request):
-    '''Get the list of all tasks created during the quarter (you will focus only on the tasks of the current quarter).'''
+    '''Get the list of all tasks that were created.'''
     template_name = 'task/formRetrieval.html'
     status_goal = 'In Progress'
     status_task = 'Active'
-
+    
     goal_ids       = []
-    categories_ids = []
+    # categories_ids = []
 
+    # f.write("This is a text!")
+    # logging.basicConfig(filename='std.log',
+    #                         filemode='w',
+    #                         format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+    #                         datefmt='%H:%M:%S',
+    #                         level=logging.DEBUG)
+    # logger = logging.getLogger()
+        
     qs_current_user_goals = Goal.objects.filter(accounts=request.user.id, 
                                                             status=status_goal).values('id').values_list('id')
 
-    qs_current_user_categories = Category.objects.filter(accounts=request.user.id)
-
+    # qs_current_user_categories = Category.objects.filter(accounts=request.user.id)
+    # f.write((str(qs_current_user_categories)))
+    # logFile.write(str(qs_current_user_categories))
+    # logger.debug(qs_current_user_categories)
     # tasks ->  goals
     for goal in qs_current_user_goals:
         goal_ids.append(goal)
 
     # tasks -> categories
-    for category in qs_current_user_categories:
-        categories_ids.append(category)
-    
-    form = {'task_list': Task.objects.filter(goal__in=goal_ids, category__in=categories_ids, status=status_task).distinct()}
+    # for category in qs_current_user_categories:
+    #     categories_ids.append(category)
+
+    form = {'task_list': Task.objects.filter(goal__in=goal_ids, status=status_task).distinct()}
     
     return render(request, template_name, form)
 
@@ -572,10 +586,10 @@ def update_task(request, id):
             old_category_id = task.category.values_list('id', flat=True)[0]
 
             # look for the new id of the goal
-            new_goal_id = Goal.objects.values_list('id',flat=True).filter(goal=request.POST.get('goal', None))[0]
+            new_goal_id = Goal.objects.values_list('id',flat=True).filter(accounts=request.user.id, goal=request.POST.get('goal', None))[0]
 
             # look for the new id of the category
-            new_category_id = Category.objects.values_list('id',flat=True).filter(category=request.POST.get('category', None))[0]
+            new_category_id = Category.objects.values_list('id',flat=True).filter(accounts=request.user.id, category=request.POST.get('category', None))[0]
 
             if old_goal_id!=new_goal_id:
 
@@ -724,7 +738,6 @@ def view_previous_tasks_yearly(request):
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_yearly(year)
-        
         
         goal_ids = []   
         qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
