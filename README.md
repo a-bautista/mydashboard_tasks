@@ -180,6 +180,12 @@ to connect to your database. In order to connect to the db, you should type a co
 
 There is NO need to type in the credentials of your db in the django app because heroku manages this automatically (this applies for creating an app with a container and via Git).
 
+### Debugging your tables:
+
+Below you will find the main tables that you need to work on.
+`select * from pg_catalog.pg_tables where tableowner <> 'postgres';`
+
+
 # Creating the tables manually (not necessary because when you make the migrations and then apply the changes, they will be reflected automatically)
 
 ## create the table task based on the models.py file (notice the name must be task_task to make this working):
@@ -506,3 +512,29 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Debug your heroku container
+
+Get access to your container with:
+
+    `heroku run bash -a telos-dashboard-container`
+
+Get access to the Django queries with:
+
+    `python manage.py shell`
+
+Some queries that I had to execute to troubleshoot a problem were:
+
+    `qs_tasks = Task.objects.filter(status='Active')`
+
+    `>>> from task.models import Task`
+    `>>> from goal.models import Goal`
+    `>>> qs_current_user_goals = Goal.objects.filter(accounts='3', status='In Progress').values('id').values_list('id')`
+    >>> qs_current_user_goals
+    `<QuerySet [(13,), (12,), (22,), (29,), (30,), (34,), (35,), (33,), (37,)]>`
+
+    `qs_current_user_goals = Goal.objects.filter(accounts='3', status='In Progress')`
+    `>>> qs_current_user_goals`
+    `<QuerySet [<Goal: Goal object (13)>, <Goal: Goal object (12)>, <Goal: Goal object (22)>, <Goal: Goal object (29)>, <Goal: Goal object (30)>, <Goal: Goal object (34)>, <Goal: Goal object (35)>, <Goal: Goal object (33)>, <Goal: Goal object (37)>]>  
+    `>>> for goal in qs_current_user_goals:`
+         `print(goal.goal)`

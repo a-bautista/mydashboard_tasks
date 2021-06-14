@@ -13,7 +13,7 @@ class DropDownMenuForm(forms.Form):
     week = forms.ChoiceField(choices=[(x, x) for x in range(
         1, 53)], initial=date.today().isocalendar()[1])
     year = forms.ChoiceField(
-        choices=[(x, x) for x in range(2019, 2022)], initial=date.today().year)
+        choices=[(x, x) for x in range(2019, 2026)], initial=date.today().year)
 
 class DropDownMenuQuarterlyForm(forms.Form):
 
