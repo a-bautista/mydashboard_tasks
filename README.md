@@ -180,18 +180,26 @@ to connect to your database. In order to connect to the db, you should type a co
 
 There is NO need to type in the credentials of your db in the django app because heroku manages this automatically (this applies for creating an app with a container and via Git).
 
-# create the table task based on the models.py file (notice the name must be task_task to make this working):
+### Debugging your tables:
+
+Below you will find the main tables that you need to work on.
+`select * from pg_catalog.pg_tables where tableowner <> 'postgres';`
+
+
+# Creating the tables manually (not necessary because when you make the migrations and then apply the changes, they will be reflected automatically)
+
+## create the table task based on the models.py file (notice the name must be task_task to make this working):
 
 `create table task_task(id serial, responsible text, task text, category text, status text, initial_date date, ending_date date);`
 
-# table for the user points
+## table for the user points
 `CREATE TABLE TASK_USER_POINTS(id serial, points text);`
 
-# table for the customized User model
+## table for the customized User model
 
 `CREATE TABLE ACCOUNTS_ACCOUNT(EMAIL TEXT, USERNAME TEXT, FIRST_NAME TEXT, LAST_NAME TEXT, SCORE FLOAT, PASSWORD varchar, LAST_LOGIN TIMESTAMP, DATE_JOINED TIMESTAMP, IS_ADMIN BOOLEAN, IS_ACTIVE BOOLEAN, IS_STAFF BOOLEAN, IS_SUPERUSER BOOLEAN, ID SERIAL);`
 
-# alter the table task_task for changing the responsible to username
+## alter the table task_task for changing the responsible to username
 
 `ALTER TABLE TASK_TASK`
 `RENAME COLUMN responsible TO username_id;`
@@ -202,7 +210,8 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku run python3 manage.py makemigrations -a djangodocker`
     `heroku run python3 manage.py createsuperuser -a djangodocker`
 
-###Heroku with containerized docker
+
+### Heroku with containerized docker
 
 ## set the volumes
 
@@ -221,6 +230,10 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku create telos-dashboard`
 
     `sudo heroku container:login`
+
+### 2.5 In case you want to download the docker image to your machine
+
+    `sudo heroku container:pull web -a telos-dashboard-container`
 
 ### 3. Provide the PostgreSQL database for production
 
@@ -284,17 +297,21 @@ For testing you image locally, you need to execute the command `sudo docker run 
     `heroku open -a djangodocker`
 
 ### 15. Make the migrations in the Docker container after you have changed the configuration.
-
-
-    `heroku run python3 manage.py migrate -a djangodocker`
-    `heroku run python3 manage.py makemigrations -a djangodocker`
-    `heroku run python3 manage.py create superuser`
+    
+    `heroku run python3 manage.py makemigrations -a telos-dashboard-container`
+    `heroku run python3 manage.py migrate -a telos-dashboard-container`
 
     In case you cannot do it with the command from above use the following:
 
-    `heroku run bash -a djangodocker`
+    `heroku run bash -a telos-dashboard-container`
     `cd src`
     `python3 manage.py makemigrations`
+    `python3 manage.py migrate`
+
+
+### 16. Creating a super user to manage.
+
+    `heroku run python3 manage.py createsuperuser -a telos-dashboard-container`
 
 ### Additional notes
 
@@ -305,6 +322,11 @@ For testing you image locally, you need to execute the command `sudo docker run 
 #### Log into the bash of the Heroku app.
 
     `heroku run bash -a djangodocker`
+    `heroku run bash -a telos-dashboard-container`
+
+#### Map your container 
+`heroku run python3 manage.py runserver -a telos-dashboard-container && heroku run -p 3000:8888`
+
 
 #### Pass a command through the docker container
 
@@ -427,9 +449,8 @@ Then you need to configure the IAM (User Access and Encryption keys) by selectin
 attach existing policies directly and then on the search menu you type  beanstalk and you select all your permissions for now. You copy the access variables that are provided and you paste them
 in your travis-ci account under settings and then you create the protected variables for storing the keys.
 
-##### Details of data types in postgresql
 
-`\d+ task_table_goal;`
+#### Adding a domain with Heroku and GoDaddy
 
 
 You need to apply the following command `heroku domains:add www.telos-app.xyz -a telos-dashboard-container`
@@ -462,3 +483,62 @@ Activate the forwarding domain and put the name of your app.
 ##### Details of data types in postgresql
 
 `\d+ task_table_goal;`
+
+
+##### Serving files with S3 Amazon bucket for production
+
+You need to create a S3 bucket, create an IAM user and provide the credentials in heroku for storing files.
+Then you need to install 2 packages: boto3 and django-storages.
+When you create your S3 bucket you need to configure the CORS file with the following:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+   <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+
+Add the following lines to the settings.py file and include the `storages` app in installed_apps.
+
+# AWS storage keys
+AWS_ACCESS_KEY_ID       = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY   = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+
+# files won't be overwritten but renamed
+AWS_S3_FILE_OVERWRITE = False
+
+# set this to None due to functionality
+AWS_DEFAULT_ACL = None
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Debug your heroku container
+
+Get access to your container with:
+
+    `heroku run bash -a telos-dashboard-container`
+
+Get access to the Django queries with:
+
+    `python manage.py shell`
+
+Some queries that I had to execute to troubleshoot a problem were:
+
+    `qs_tasks = Task.objects.filter(status='Active')`
+
+    `>>> from task.models import Task`
+    `>>> from goal.models import Goal`
+    `>>> qs_current_user_goals = Goal.objects.filter(accounts='3', status='In Progress').values('id').values_list('id')`
+    >>> qs_current_user_goals
+    `<QuerySet [(13,), (12,), (22,), (29,), (30,), (34,), (35,), (33,), (37,)]>`
+
+    `qs_current_user_goals = Goal.objects.filter(accounts='3', status='In Progress')`
+    `>>> qs_current_user_goals`
+    `<QuerySet [<Goal: Goal object (13)>, <Goal: Goal object (12)>, <Goal: Goal object (22)>, <Goal: Goal object (29)>, <Goal: Goal object (30)>, <Goal: Goal object (34)>, <Goal: Goal object (35)>, <Goal: Goal object (33)>, <Goal: Goal object (37)>]>  
+    `>>> for goal in qs_current_user_goals:`
+         `print(goal.goal)`
