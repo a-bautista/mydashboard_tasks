@@ -278,45 +278,36 @@
 		        tooltipCaretSize: 0,
                 tooltips: {mode: 'label'},
                 scales: {
-                        y: {
-                            ticks: {
-                                beginAtZero: true,
-                                fontColor: '#000',
-                                fontSize: 10,
-                                },
-                            grid: {
-                                display: false,
-                                drawBorder: true,
-                                drawTicks: false,
-                                color:'#000'
-                                },
-                            scaleLabel: {
-                                display: true,
-                                fontSize: 15,
-                                labelString: 'Number of tasks in goals',
-                                fontColor: '#000'
-                                },
-                                stacked: true
+                    y: {
+                        grid: {
+                            display: false,
+                            drawBorder: true,
+                            drawTicks: false,
+                            color:'#000'
                             },
-                        x: {
-                            ticks: {
-                                fontColor: '#000',
-                                fontSize: 10
-                            },
-                            grid: {
-                                display:false,
-                                drawBorder: true,
-                                drawTicks: false,
-                                color:'#000'
-                            },
-                            scaleLabel: {
-                                display: false,
-                                fontSize: 30,
-                                labelString: 'Current days',
-                                fontColor: '#fff'
-                            },
-                            stacked: true
-                        }
+                        title:{
+                          display: true,
+                          text: 'Number of tasks assigned to goals',
+                          font: {
+                            size: 15
+                          },
+                          color: '#000'
+                        },
+                        stacked: true
+                        },
+                    x: {
+                        ticks: {
+                            fontColor: '#000',
+                            fontSize: 10
+                        },
+                        grid: {
+                            display:false,
+                            drawBorder: true,
+                            drawTicks: false,
+                            color:'#000'
+                        },
+                        stacked: true
+                    }
                 },//end of scales
                 plugins: {
                   datalabels: {
@@ -340,7 +331,7 @@
                             size: 20
                           },
                         padding: {
-                          top: 10,
+                          top: 20,
                           bottom: 5,
                           left: 0,
                           right: 0
@@ -529,7 +520,7 @@
     }
   })
 
-    // Define the chart for the first graph
+  // graph points week
   function setGraphPoints()
   {
     var ctx_graph     = document.getElementById("graph_points_week")
@@ -594,14 +585,22 @@
               datalabels: {
                     align: 'center',
                     anchor: 'center',
-                    formatter: (val) => (`${val}%`),
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        let percentage = (value*100 / sum).toFixed(2)+"%";
+                        return percentage;
+                    },
                     labels: {
                       value:{
                         color: '#fff'
                       }
                     }
-                  }
-                }
+                  },
+            } // end of plugins
           }// end of options
         }); // end of display_graph variable
       }// end of function
@@ -696,7 +695,15 @@
               datalabels: {
                     align: 'center',
                     anchor: 'center',
-                    formatter: (val) => (`${val}%`),
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        let percentage = (value*100 / sum).toFixed(2)+"%";
+                        return percentage;
+                    },
                     labels: {
                       value:{
                         color: '#fff'
@@ -795,7 +802,16 @@
               datalabels: {
                     align: 'center',
                     anchor: 'center',
-                    formatter: (val) => (`${val}%`),
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        // patch for displaying the correct % of tasks
+                        let percentage = (value*100000 / sum).toFixed(2)+"%";
+                        return percentage;
+                    },
                     labels: {
                       value:{
                         color: '#fff'
