@@ -281,9 +281,10 @@ For testing you image locally, you need to execute the command `sudo docker run 
 ### 11. Create the docker image that will be released in Heroku. Run the command at the same level of the Dockerfile.
 
     `sudo docker build -t abautista/django-docker-heroku .`
+    `sudo heroku build -t abautista/telos-dashboard-container . `
 
 ### 12. Push the image into Heroku (djangodocker is the name of your app)
-
+### These commands are used to deploy your container to Heroku, no additional step is required. 
     `sudo heroku container:push web -a djangodocker`
     `sudo heroku container:push web -a telos-dashboard-container`
 

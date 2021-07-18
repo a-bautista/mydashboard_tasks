@@ -16,7 +16,6 @@
   </div>
 </div>
 
-
 <div class="widget-box sample-widget">
   <div class="widget-header">
     <h2> Quarter: {{initial_date_quarter}} to {{lastDayQuarter}} </h2>
@@ -25,7 +24,6 @@
     <canvas id="graph_goals_status_task" width="700" height="400"></canvas>
   </div>
 </div>
-
 
 <div class="widget-box sample-widget">
   <div class="widget-header">
@@ -36,33 +34,30 @@
   </div>
 </div>
 
-
 <div class="widget-box sample-widget">
   <div class="widget-header">
     <h2>Current week: {{week}} | Date: {{current_date}} </h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_points_week" width="700" height="400"></canvas>
+    <canvas id="graph_points_week" width="700" height="425"></canvas>
   </div>
 </div>
-
 
 <div class="widget-box sample-widget">
   <div class="widget-header">
     <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_status_month" width="700" height="400"></canvas>
+    <canvas id="graph_status_month" width="700" height="425"></canvas>
   </div>
 </div>
-
 
 <div class="widget-box sample-widget">
     <div class="widget-header">
       <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
     </div>
     <div class="widget-content">
-      <canvas id="graph_categories_month" width="700" height="400"></canvas>
+      <canvas id="graph_categories_month" width="700" height="425"></canvas>
     </div>
 </div>
 
@@ -71,8 +66,7 @@
 <script>
 {% block jquery %}
 
-
-   // First graph: Goals in quarter
+  // First graph: Goals in quarter
 
   var endpoint = 'dashboard_goals_quarter' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
   var labels_graph = []
@@ -103,6 +97,7 @@
     var ctx_graph     = document.getElementById("graph_goals_quarter")
     var display_graph = new Chart(ctx_graph, {
       type:'bar',
+      plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
@@ -131,91 +126,79 @@
           tooltipEvents: [],
           tooltipCaretSize: 0,
           scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    fontColor: '#000',
-                    fontSize: 10
-                     },
-                  gridLines: {
-                    display: false,
-                    color:'#000'
-                    },
-                  scaleLabel: {
-                    display: true,
-                    fontSize: 15,
-                    labelString: 'Progress %',
-                    fontColor: '#000'
-                    }
-                  }],
-                xAxes: [{
-                  ticks: {
-                    fontColor: '#000',
-                    fontSize: 10
-                    },
-                  gridLines: {
-                    display:false,
-                    color:'#000'
-                    },
-                  scaleLabel: {
-                    display: false,
-                    fontSize: 30,
-                    labelString: 'Current tasks',
-                    fontColor: '#000'
-                    }
-                  }]
-                }, //end of scales
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Goals in current Quarter',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: false,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
+              y: {
+                grid: {
+                  display: false,
+                  drawBorder: true,
+                  drawTicks: false,
+                },
+                title:{
+                  display: true,
+                  text: 'Progress %',
+                  font: {
+                    size: 15
+                  },
+                  color: '#000'
+                }
               },
-          layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
+              x: {
+                grid: {
+                  display: false,
+                  drawBorder: true,
+                  drawTicks: false,
+                },
+                title:{
+                  display: false,
+                  text: 'Current tasks',
+                  font: {
+                    size: 20
+                  },
+                  color: '#000'
+                }
               }
-          },
-          // tooltips: {
-          //           callbacks: {
-          //           label: function(tooltipItem, data) {
-          //               var allData = data.datasets[tooltipItem.datasetIndex].data;
-          //               var tooltipLabel = data.labels[tooltipItem.index];
-          //               var tooltipData = allData[tooltipItem.index];
-          //               var total = 0;
-          //               for (var i in allData) {
-          //                   total +=  parseInt(allData[i]);
-          //               }
-          //               var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-          //               return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-          //                     } //end of function
-          //                 } // end of callbacks
-          //             } // end of tooltips
+            }, //end of scales
+            plugins: {
+              legend: {
+                display: false,
+                position: 'right',
+                labels: {
+                  color: '#000',
+                  font: {
+                    size: 25
+                  },
+                }
+              },
+              title:{
+                display: true,
+                text: 'Goals in current Quarter',
+                font: {
+                    size: 20
+                  },
+                padding: 25,
+                color: '#000',
+              },
+              datalabels: {
+                align: 'center',
+                anchor: 'center',
+                formatter: (val) => (`${val}%`),
+                labels:{
+                  value: {
+                    color: '#fff'
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                left: 50,
+                right: 0,
+                bottom: 0,
+                top: 0
+              }
+            },
           }// end of options
-        }); // end of display_graph variable
-      }// end of function
-
+      }); // end of display_graph variable
+    }// end of function
 
 
  var endpoint = 'dashboard_goals_status_task' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
@@ -244,18 +227,19 @@
     }
   })
 
-    // Define the chart for the first graph
-  function setGoalsStatusTaskQuarter()
+    // Define the chart for the second graph
+    function setGoalsStatusTaskQuarter()
   {
     var ctx_graph     = document.getElementById("graph_goals_status_task")
     var display_graph = new Chart(ctx_graph, {
       type:'bar',
+      plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
                 [{
                   label: legend[0],
-					        data: values_graph[0],
+				          data: values_graph[0],
                   backgroundColor: 'rgba(251, 95, 4, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
@@ -265,7 +249,7 @@
 
                 {
                   label: legend[1],
-					        data: values_graph[1],
+				          data: values_graph[1],
                   backgroundColor: 'rgba(202, 28, 28, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
@@ -275,15 +259,14 @@
 
                 {
                   label: legend[2],
-					        data: values_graph[2],
+				          data: values_graph[2],
                   backgroundColor: 'rgba(251, 235, 4, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
                   hoverBorderWidth: 3,
                   hoverBorderColor: '#000'
                 },
-
-                ]
+              ]
                   
         },
         options : {
@@ -295,14 +278,16 @@
 		        tooltipCaretSize: 0,
                 tooltips: {mode: 'label'},
                 scales: {
-                        yAxes: [{
+                        y: {
                             ticks: {
                                 beginAtZero: true,
                                 fontColor: '#000',
                                 fontSize: 10,
                                 },
-                            gridLines: {
+                            grid: {
                                 display: false,
+                                drawBorder: true,
+                                drawTicks: false,
                                 color:'#000'
                                 },
                             scaleLabel: {
@@ -312,14 +297,16 @@
                                 fontColor: '#000'
                                 },
                                 stacked: true
-                            }],
-                        xAxes: [{
+                            },
+                        x: {
                             ticks: {
                                 fontColor: '#000',
                                 fontSize: 10
                             },
-                            gridLines: {
+                            grid: {
                                 display:false,
+                                drawBorder: true,
+                                drawTicks: false,
                                 color:'#000'
                             },
                             scaleLabel: {
@@ -329,41 +316,58 @@
                                 fontColor: '#fff'
                             },
                             stacked: true
-                        }]
+                        }
                 },//end of scales
                 plugins: {
-                         datalabels: {
-                            display: true,
-                            align: 'center',
-                            anchor: 'center',
-                            color: '#fff'
-                         }
+                  datalabels: {
+                    display: true,
+                    align: 'center',
+                    anchor: 'center',
+                    labels:{
+                      value: {
+                      color: '#fff'
                       },
+                      font:{
+                        size: 15,
+                        }
+                      }
+                    },
 
                 title: {
                         display: true,
                         text: 'Status of Tasks in Goals',
-                        fontSize: 30,
-                        padding: 50,
-                        fontColor: '#000'
+                        font:{
+                            size: 20
+                          },
+                        padding: {
+                          top: 10,
+                          bottom: 5,
+                          left: 0,
+                          right: 0
                         },
+                        color: '#000'
+                      },
 
                 legend: {
                         position: 'right',
                         display: true,
                         labels: {
-                            fontColor: '#000'
+                          color: '#000',
+                          font: {
+                          size: 15
+                          },
                         }
-		            },
-		        layout: {
-		            padding: {
-		                left: 50,
-		                right: 0,
-		                bottom: 0,
-		                top: 0
-		            }
-		        },
-	        }// end of options
+		                  },
+                layout: {
+                    padding: {
+                        left: 50,
+                        right: 0,
+                        bottom: 0,
+                        top: 0
+                    }
+                },
+        }
+      }// end of options
     }); // end of display_graph variable
 }// end of function
 
@@ -397,6 +401,7 @@
     var ctx_graph     = document.getElementById("graph_long_medium_term_goals")
     var display_graph = new Chart(ctx_graph, {
       type:'bar',
+      plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
@@ -425,75 +430,79 @@
           tooltipEvents: [],
           tooltipCaretSize: 0,
           scales: {
-                yAxes: [{
-                  ticks: {
-                    beginAtZero: true,
-                    fontColor: '#000',
-                    fontSize: 10
-                     },
-                  gridLines: {
-                    display: false,
-                    color:'#000'
-                    },
-                  scaleLabel: {
-                    display: true,
-                    fontSize: 15,
-                    labelString: 'Progress %',
-                    fontColor: '#000'
-                    }
-                  }],
-                xAxes: [{
-                  ticks: {
-                    fontColor: '#000',
-                    fontSize: 10
-                    },
-                  gridLines: {
-                    display:false,
-                    color:'#000'
-                    },
-                  scaleLabel: {
-                    display: false,
-                    fontSize: 30,
-                    labelString: 'Current tasks',
-                    fontColor: '#000'
-                    }
-                  }]
-                }, //end of scales
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Long & Medium Term Goals',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: false,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
+              y: {
+                grid: {
+                  display: false,
+                  drawBorder: true,
+                  drawTicks: false,
+                },
+                title:{
+                  display: true,
+                  text: 'Progress %',
+                  font: {
+                    size: 15
+                  },
+                  color: '#000'
+                }
               },
-          layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
+              x: {
+                grid: {
+                  display: false,
+                  drawBorder: true,
+                  drawTicks: false,
+                },
+                title:{
+                  display: false,
+                  text: 'Current tasks',
+                  font: {
+                    size: 20
+                  },
+                  color: '#000'
+                }
               }
-          },
+            }, //end of scales
+            plugins: {
+              legend: {
+                display: false,
+                position: 'right',
+                labels: {
+                  color: '#000',
+                  font: {
+                    size: 25
+                  },
+                }
+              },
+              title:{
+                display: true,
+                text: 'Medium & Long Term Goals',
+                font: {
+                    size: 20
+                  },
+                padding: 25,
+                color: '#000',
+              },
+              datalabels: {
+                align: 'center',
+                anchor: 'center',
+                formatter: (val) => (`${val}%`),
+                labels:{
+                  value: {
+                    color: '#fff'
+                  }
+                }
+              }
+            },
+            layout: {
+              padding: {
+                left: 50,
+                right: 0,
+                bottom: 0,
+                top: 0
+              }
+            },
           }// end of options
-        }); // end of display_graph variable
-      }// end of function
-
+      }); // end of display_graph variable
+    }// end of function
 
     // graph: Points in Tasks
 
@@ -526,6 +535,7 @@
     var ctx_graph     = document.getElementById("graph_points_week")
     var display_graph = new Chart(ctx_graph, {
       type:'pie',
+      plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
@@ -547,63 +557,54 @@
                 }]
         },
         options : {
-          responsive: true,
-          tooltipTemplate: "<%= value %>",
-          tooltipFillColor: "rgba(0,0,0,0)",
-          tooltipFontColor: "#444",
-          tooltipEvents: [],
-          tooltipCaretSize: 0,
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Current Active Tasks',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: true,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
-              },
+          responsive: false,
           layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
-              }
+            padding: {
+              top: 30,
+              bottom: 50,
+              right: 0,
+              left: 10
+            }
           },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
+          plugins: {
+              legend:{
+                display: true,
+                position: 'right',
+                labels: {
+                  color: '#000',
+                  font:{
+                    size: 15,
+                  }
+                }
+              },
+              title:{
+                display: true,
+                text: 'Current Active Tasks',
+                font: {
+                  size: 20
+                },
+                padding: {
+                  top: 5,
+                  bottom: 15,
+                  left: 0,
+                  right: 0
+                },
+                color: '#000'
+              },
+              datalabels: {
+                    align: 'center',
+                    anchor: 'center',
+                    formatter: (val) => (`${val}%`),
+                    labels: {
+                      value:{
+                        color: '#fff'
+                      }
+                    }
+                  }
+                }
           }// end of options
         }); // end of display_graph variable
       }// end of function
-
     // Second graph: Category of Tasks
 
   var endpoint = 'dashboard_categories_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
@@ -636,6 +637,7 @@
     var ctx_graph     = document.getElementById("graph_categories_month")
     var display_graph = new Chart(ctx_graph, {
     type:'pie',
+    plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
@@ -657,59 +659,51 @@
                 }]
         },
         options : {
-          responsive: true,
-          tooltipTemplate: "<%= value %>",
-          tooltipFillColor: "rgba(0,0,0,0)",
-          tooltipFontColor: "#444",
-          tooltipEvents: [],
-          tooltipCaretSize: 0,
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Categories of Tasks by Quarter',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: true,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
-              },
+          responsive: false,
           layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
-              }
+            padding: {
+              top: 30,
+              bottom: 50,
+              right: 0,
+              left: 10
+            }
           },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
+          plugins: {
+              legend:{
+                display: true,
+                position: 'right',
+                labels: {
+                  color: '#000',
+                  font:{
+                    size: 15,
+                  }
+                }
+              },
+              title:{
+                display: true,
+                text: 'Categories of Tasks by Quarter',
+                font: {
+                  size: 20
+                },
+                padding: {
+                  top: 5,
+                  bottom: 15,
+                  left: 0,
+                  right: 0
+                },
+                color: '#000'
+              },
+              datalabels: {
+                    align: 'center',
+                    anchor: 'center',
+                    formatter: (val) => (`${val}%`),
+                    labels: {
+                      value:{
+                        color: '#fff'
+                      }
+                    }
+                  }
+                }
           }// end of options
         }); // end of display_graph variable
       }// end of function
@@ -746,6 +740,7 @@
     var ctx_graph     = document.getElementById("graph_status_month")
     var display_graph = new Chart(ctx_graph, {
     type:'pie',
+    plugins: [ChartDataLabels],
         data: {
             labels: labels_graph,
             datasets :
@@ -763,65 +758,54 @@
                 }]
         },
         options : {
-          responsive: true,
-          tooltipTemplate: "<%= value %>",
-          tooltipFillColor: "rgba(0,0,0,0)",
-          tooltipFontColor: "#444",
-          tooltipEvents: [],
-          tooltipCaretSize: 0,
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Status of Tasks by Quarter',
-                    fontSize: 25,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: true,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
-              },
+          responsive: false,
           layout: {
-              padding: {
-                  left: 50,
-                  right: 0,
-                  bottom: 0,
-                  top: 0
-              }
+            padding: {
+              top: 30,
+              bottom: 50,
+              right: 0,
+              left: 10
+            }
           },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
-                        }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
+          plugins: {
+              legend:{
+                display: true,
+                position: 'right',
+                labels: {
+                  color: '#000',
+                  font:{
+                    size: 15,
+                  }
+                }
+              },
+              title:{
+                display: true,
+                text: 'Status of Tasks by Quarter',
+                font: {
+                  size: 20
+                },
+                padding: {
+                  top: 5,
+                  bottom: 15,
+                  left: 0,
+                  right: 0
+                },
+                color: '#000'
+              },
+              datalabels: {
+                    align: 'center',
+                    anchor: 'center',
+                    formatter: (val) => (`${val}%`),
+                    labels: {
+                      value:{
+                        color: '#fff'
+                      }
+                    }
+                  }
+                }
           }// end of options
         }); // end of display_graph variable
       }// end of function
 
-
 {% endblock %}
 </script>
-
-
