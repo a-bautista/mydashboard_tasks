@@ -22,85 +22,86 @@
 
         var graph = document.getElementById("graph")
         var display_graph = new Chart(graph, {
-         type:'pie',
-        data: {
-            labels: labels,
-            datasets :
-                [{
-                  data: values,
-                  backgroundColor: [
-                      'rgba(237, 98, 18, 0.9)',
-                      'rgba(54, 162, 235, 0.9)',
-                      'rgba(255, 206, 86, 0.9)',
-                      'rgba(75, 192, 192, 0.9)',
-                      'rgba(153, 102, 255, 0.9)',
-                      'rgba(45, 154, 35, 0.9)',
-                      'rgba(154, 39, 35, 0.9)',
-                      ],
-                  borderColor: '#000',
-                  borderWidth: 2,
-                  hoverBorderWidth: 3,
-                  hoverBorderColor: '#000'
-                }]
-        },
-        options : {
-          responsive: true,
-          tooltipTemplate: "<%= value %>",
-          tooltipFillColor: "rgba(0,0,0,0)",
-          tooltipFontColor: "#444",
-          tooltipEvents: [],
-          tooltipCaretSize: 0,
-                plugins: {
-                    datalabels: {
-                          display: true,
-                          align: 'center',
-                          anchor: 'center',
-                          color: '#fff'
-                         }
-                      },
-                title: {
-                    display: true,
-                    text: 'Categories of Tasks',
-                    fontSize: 30,
-                    padding: 50,
-                    fontColor: '#000'
-                    },
-                legend: {
-                    position: 'right',
-                    display: true,
-                labels: {
-                    fontColor: '#000',
-                    fontSize: 15
-                  }
-              },
-          layout: {
-              padding: {
-                  left: 50,
+        type:'pie',
+        plugins: [ChartDataLabels],
+            data: {
+                labels: labels,
+                datasets :
+                    [{
+                      data: values,
+                      backgroundColor: [
+                          'rgba(237, 98, 18, 0.9)',
+                          'rgba(54, 162, 235, 0.9)',
+                          'rgba(255, 206, 86, 0.9)',
+                          'rgba(75, 192, 192, 0.9)',
+                          'rgba(153, 102, 255, 0.9)',
+                          'rgba(45, 154, 35, 0.9)',
+                          'rgba(154, 39, 35, 0.9)',
+                          ],
+                      borderColor: '#000',
+                      borderWidth: 2,
+                      hoverBorderWidth: 3,
+                      hoverBorderColor: '#000'
+                    }]
+            },
+            options : {
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 30,
+                  bottom: 50,
                   right: 0,
-                  bottom: 0,
-                  top: 0
-              }
-          },
-          tooltips: {
-                    callbacks: {
-                    label: function(tooltipItem, data) {
-                        var allData = data.datasets[tooltipItem.datasetIndex].data;
-                        var tooltipLabel = data.labels[tooltipItem.index];
-                        var tooltipData = allData[tooltipItem.index];
-                        var total = 0;
-                        for (var i in allData) {
-                            total +=  parseInt(allData[i]);
+                  left: 10
+                }
+              },
+              plugins: {
+                  legend:{
+                    display: true,
+                    position: 'right',
+                    labels: {
+                      color: '#000',
+                      font:{
+                        size: 15,
+                      }
+                    }
+                  },
+                  title:{
+                    display: true,
+                    text: 'Categories of Tasks by Year',
+                    font: {
+                      size: 20
+                    },
+                    padding: {
+                      top: 5,
+                      bottom: 15,
+                      left: 0,
+                      right: 0
+                    },
+                    color: '#000'
+                  },
+                  datalabels: {
+                        align: 'center',
+                        anchor: 'center',
+                        formatter: (value, ctx) => {
+                            let sum = 0;
+                            let dataArr = ctx.chart.data.datasets[0].data;
+                            dataArr.map(data => {
+                                sum += data;
+                            });
+                            let percentage = (value*100 / sum).toFixed(2)+"%";
+                            return percentage;
+                        },
+                        labels: {
+                          value:{
+                            color: '#fff'
+                          }
                         }
-                        var tooltipPercentage = Math.round((tooltipData / total) * 100);
-
-                        return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                              } //end of function
-                          } // end of callbacks
-                      } // end of tooltips
-          }// end of options
-        }); // end of display_graph variable
-      }// end of function
-
+                      }
+                    }
+              }// end of options
+            }); // end of display_graph variable
+          }// end of function
   {% endblock %}
 </script>
 
@@ -123,7 +124,7 @@
       <tr>
         <th bgcolor="#fff">ID</th>
         <th bgcolor="#fff">Task</th>
-        <th bgcolor="#fff">Category</th>
+        <!-- <th bgcolor="#fff">Category</th> -->
         <th bgcolor="#fff">Status</th>
         <th bgcolor="#fff">Points</th>
         <th bgcolor="#fff">Life task</th>

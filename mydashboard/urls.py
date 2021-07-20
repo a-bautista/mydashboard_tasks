@@ -20,8 +20,8 @@ from django.conf.urls import url
 
 #import the URLs from the home app
 from home.views import index
-from task.views import (main_dashboard, Dashboard_Categories_Month, 
-                Dashboard_Status_Month, Dashboard_Tasks_Week, Dashboard_Goals_Quarter, 
+from task.views import (main_dashboard, Dashboard_Categories_Year, 
+                Dashboard_Status_Year, Dashboard_Tasks_Week, Dashboard_Goals_Quarter, 
                 Dashboard_Long_Medium_Term_Goals, Dashboard_Goals_Status_Task)
 
 #from user_profile.views import profile
@@ -53,8 +53,8 @@ urlpatterns = [
     path('categories/', include('category.urls')),
     url(r'^activate/(?P<activation_key>\w+)/$', user_views.activation_view, name='activate_account'),
 
-    path('main/dashboard_categories_month', Dashboard_Categories_Month.as_view()), # load this view in the main page
-    path('main/dashboard_status_month', Dashboard_Status_Month.as_view()),         # load this view in the main page
+    path('main/dashboard_categories_year', Dashboard_Categories_Year.as_view()), # load this view in the main page
+    path('main/dashboard_status_year', Dashboard_Status_Year.as_view()),         # load this view in the main page
     path('main/dashboard_points_week', Dashboard_Tasks_Week.as_view()),
     path('main/dashboard_goals_quarter', Dashboard_Goals_Quarter.as_view()),
     path('main/dashboard_long_medium_term_goal', Dashboard_Long_Medium_Term_Goals.as_view()),

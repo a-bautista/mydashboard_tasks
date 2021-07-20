@@ -48,7 +48,7 @@
     <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_status_month" width="700" height="400"></canvas>
+    <canvas id="graph_status_year" width="700" height="400"></canvas>
   </div>
 </div>
 
@@ -57,7 +57,7 @@
       <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
     </div>
     <div class="widget-content">
-      <canvas id="graph_categories_month" width="700" height="400"></canvas>
+      <canvas id="graph_categories_year" width="700" height="400"></canvas>
     </div>
 </div>
 
@@ -603,7 +603,7 @@
       }// end of function
     // Second graph: Category of Tasks
 
-  var endpoint = 'dashboard_categories_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var endpoint = 'dashboard_categories_year' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
   var labels_graph = []
   var values_graph = []
   $.ajax({
@@ -631,7 +631,7 @@
 
   function setGraphCategories()
   {
-    var ctx_graph     = document.getElementById("graph_categories_month")
+    var ctx_graph     = document.getElementById("graph_categories_year")
     var display_graph = new Chart(ctx_graph, {
     type:'pie',
     plugins: [ChartDataLabels],
@@ -679,7 +679,7 @@
               },
               title:{
                 display: true,
-                text: 'Categories of Tasks by Quarter',
+                text: 'Categories of Tasks by Year',
                 font: {
                   size: 20
                 },
@@ -716,7 +716,7 @@
 
       
   
-  var endpoint = 'dashboard_status_month' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
+  var endpoint = 'dashboard_status_year' //This is an endpoint that communicates with the urls and then executes the view that is attached to it
   var labels_graph = []
   var values_graph = []
   $.ajax({
@@ -743,7 +743,7 @@
 
   function setGraphStatus()
   {
-    var ctx_graph     = document.getElementById("graph_status_month")
+    var ctx_graph     = document.getElementById("graph_status_year")
     var display_graph = new Chart(ctx_graph, {
     type:'pie',
     plugins: [ChartDataLabels],
@@ -753,8 +753,8 @@
                 [{
                   data: values_graph,
                   backgroundColor: [
-                      'rgba(228, 17, 17, 0.9)',
                       'rgba(228, 196, 17, 0.9)',
+                      'rgba(228, 17, 17, 0.9)',
                       'rgba(14, 152, 11, 0.9)',
                       ],
                   borderColor: '#000',
@@ -787,7 +787,7 @@
               },
               title:{
                 display: true,
-                text: 'Status of Tasks by Quarter',
+                text: 'Status of Tasks by Year',
                 font: {
                   size: 20
                 },

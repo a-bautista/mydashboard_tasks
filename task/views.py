@@ -42,11 +42,12 @@ def main_dashboard(request):
     return render(request, 'task/mainDashboard.html', context)
 
 
-class Dashboard_Categories_Month(APIView):
+class Dashboard_Categories_Year(APIView):
 
     def get(self, request, *args, **kwargs):
         year = date.today().year
-        month = date.today().month
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
+        #month = date.today().month
         
         # get the categories from users
         qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
@@ -56,7 +57,9 @@ class Dashboard_Categories_Month(APIView):
             category_id.append(c)
 
         # do a reference of categories and tasks
-        task_count = Task.objects.filter(category__in=category_id).distinct()
+        task_count = Task.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
+                        category__in=category_id).distinct()
+
 
         new_list = []
         # append only the categories of each user
@@ -76,12 +79,12 @@ class Dashboard_Categories_Month(APIView):
         return Response(front_end_dictionary)
 
 
-class Dashboard_Status_Month(APIView):
+class Dashboard_Status_Year(APIView):
 
     def get(self, request, *args, **kwargs):
         year = date.today().year
-        month = date.today().month
-        #initial_date_year, ending_date_year = get_start_end_date_yearly(year)
+        #month = date.today().month
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
         #initial_date, ending_date = get_start_end_date_monthly(year, month)
         
         #quarter   = (month-1)//3+1
@@ -89,10 +92,10 @@ class Dashboard_Status_Month(APIView):
         #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         goal_ids = []   
-        #qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
-        #                    accounts=request.user.id).values('id').values_list('id')
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
+                            accounts=request.user.id).values('id').values_list('id')
         
-        qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
+        #qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
 
 
         for value in qs_current_user_goals:
