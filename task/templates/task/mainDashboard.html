@@ -91,7 +91,7 @@
     }
   })
 
-    // Define the chart for the first graph
+    // Define the chart for the goals in the current quarter
   function setGoalsQuarter()
   {
     var ctx_graph     = document.getElementById("graph_goals_quarter")
@@ -120,6 +120,7 @@
         },
         options : {
           responsive: true,
+          maintainAspectRatio: false,
           tooltipTemplate: "<%= value %>",
           tooltipFillColor: "rgba(0,0,0,0)",
           tooltipFontColor: "#444",
@@ -227,7 +228,7 @@
     }
   })
 
-    // Define the chart for the second graph
+    // Tasks assigned to the current goals
     function setGoalsStatusTaskQuarter()
   {
     var ctx_graph     = document.getElementById("graph_goals_status_task")
@@ -240,7 +241,7 @@
                 [{
                   label: legend[0],
 				          data: values_graph[0],
-                  backgroundColor: 'rgba(251, 95, 4, 0.9)',
+                  backgroundColor: 'rgba(14, 152, 11, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
                   hoverBorderWidth: 3,
@@ -250,7 +251,7 @@
                 {
                   label: legend[1],
 				          data: values_graph[1],
-                  backgroundColor: 'rgba(202, 28, 28, 0.9)',
+                  backgroundColor: 'rgba(251, 235, 4, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
                   hoverBorderWidth: 3,
@@ -260,7 +261,7 @@
                 {
                   label: legend[2],
 				          data: values_graph[2],
-                  backgroundColor: 'rgba(251, 235, 4, 0.9)',
+                  backgroundColor: 'rgba(202, 28, 28, 0.9)',
                   borderColor: '#000',
                   borderWidth: 2,
                   hoverBorderWidth: 3,
@@ -271,6 +272,7 @@
         },
         options : {
 		        responsive: true,
+            maintainAspectRatio: false,
 		        tooltipTemplate: "<%= value %>",
 		        tooltipFillColor: "rgba(0,0,0,0)",
 		        tooltipFontColor: "#444",
@@ -407,7 +409,7 @@
                       'rgba(45, 154, 35, 0.9)',
                       'rgba(154, 39, 35, 0.9)',
                       ],
-                  barThickness: 60,
+                  //barThickness: 120,
                   borderColor: '#000',
                   borderWidth: 3,
                   hoverBorderWidth: 3,
@@ -415,7 +417,8 @@
                 }]
         },
         options : {
-          responsive: false,
+          responsive: true,
+          maintainAspectRatio: false,
           tooltipTemplate: "<%= value %>",
           tooltipFillColor: "rgba(0,0,0,0)",
           tooltipFontColor: "#444",
@@ -550,7 +553,8 @@
                 }]
         },
         options : {
-          responsive: false,
+          responsive: true,
+          maintainAspectRatio: false,
           layout: {
             padding: {
               top: 30,
@@ -623,7 +627,8 @@
   })
 
 
-    // Define the chart for the first graph
+  // Set the graph of categories of tasks by quarter
+
   function setGraphCategories()
   {
     var ctx_graph     = document.getElementById("graph_categories_month")
@@ -651,7 +656,8 @@
                 }]
         },
         options : {
-          responsive: false,
+          responsive: true,
+          maintainAspectRatio: false,
           layout: {
             padding: {
               top: 30,
@@ -733,7 +739,7 @@
     }
   })
 
-    // Define the chart for the second graph
+    // Define the chart for the status of tasks by quarter
 
   function setGraphStatus()
   {
@@ -758,7 +764,8 @@
                 }]
         },
         options : {
-          responsive: false,
+          responsive: true,
+          maintainAspectRatio: false,
           layout: {
             padding: {
               top: 30,
@@ -799,10 +806,10 @@
                         let sum = 0;
                         let dataArr = ctx.chart.data.datasets[0].data;
                         dataArr.map(data => {
-                            sum += data;
+                            // patch: the data from the backend comes in a string format, convert it to int
+                            sum += parseInt(data);
                         });
-                        // patch for displaying the correct % of tasks
-                        let percentage = (value*100000 / sum).toFixed(2)+"%";
+                        let percentage = (value*100 / sum).toFixed(2)+"%";
                         return percentage;
                     },
                     labels: {
