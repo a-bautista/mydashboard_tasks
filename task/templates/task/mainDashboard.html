@@ -39,7 +39,7 @@
     <h2>Current week: {{week}} | Date: {{current_date}} </h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_points_week" width="700" height="425"></canvas>
+    <canvas id="graph_points_week" width="700" height="400"></canvas>
   </div>
 </div>
 
@@ -48,7 +48,7 @@
     <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
   </div>
   <div class="widget-content">
-    <canvas id="graph_status_month" width="700" height="425"></canvas>
+    <canvas id="graph_status_month" width="700" height="400"></canvas>
   </div>
 </div>
 
@@ -57,7 +57,7 @@
       <h2>Quarter: {{initial_date_quarter}} to {{lastDayQuarter}}</h2>
     </div>
     <div class="widget-content">
-      <canvas id="graph_categories_month" width="700" height="425"></canvas>
+      <canvas id="graph_categories_month" width="700" height="400"></canvas>
     </div>
 </div>
 
@@ -331,7 +331,7 @@
                             size: 20
                           },
                         padding: {
-                          top: 20,
+                          top: 30,
                           bottom: 5,
                           left: 0,
                           right: 0
@@ -407,14 +407,15 @@
                       'rgba(45, 154, 35, 0.9)',
                       'rgba(154, 39, 35, 0.9)',
                       ],
+                  barThickness: 60,
                   borderColor: '#000',
-                  borderWidth: 2,
+                  borderWidth: 3,
                   hoverBorderWidth: 3,
                   hoverBorderColor: '#000'
                 }]
         },
         options : {
-          responsive: true,
+          responsive: false,
           tooltipTemplate: "<%= value %>",
           tooltipFillColor: "rgba(0,0,0,0)",
           tooltipFontColor: "#444",
@@ -521,6 +522,7 @@
   })
 
   // graph points week
+  // this graph doesn't need the % display because we need to know only the points of each task
   function setGraphPoints()
   {
     var ctx_graph     = document.getElementById("graph_points_week")
@@ -570,7 +572,7 @@
               },
               title:{
                 display: true,
-                text: 'Current Active Tasks',
+                text: 'Points in Active Tasks',
                 font: {
                   size: 20
                 },
@@ -585,15 +587,6 @@
               datalabels: {
                     align: 'center',
                     anchor: 'center',
-                    formatter: (value, ctx) => {
-                        let sum = 0;
-                        let dataArr = ctx.chart.data.datasets[0].data;
-                        dataArr.map(data => {
-                            sum += data;
-                        });
-                        let percentage = (value*100 / sum).toFixed(2)+"%";
-                        return percentage;
-                    },
                     labels: {
                       value:{
                         color: '#fff'
