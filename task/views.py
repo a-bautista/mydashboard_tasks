@@ -91,9 +91,8 @@ class Dashboard_Status_Year(APIView):
         #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
         #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
-        goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date_year, initial_date__lte=ending_date_year, 
-                            accounts=request.user.id).values('id').values_list('id')
+        goal_ids = []
+        qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
         
         #qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
 
@@ -107,7 +106,8 @@ class Dashboard_Status_Year(APIView):
         #     'status').annotate(count=Count('status')).filter(goal__in = goal_ids, 
         #     initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
 
-        qs_group_by = Task.objects.values('status').annotate(count=Count('status')).filter(goal__in = goal_ids).order_by('count')
+        qs_group_by = Task.objects.values('status').annotate(count=Count('status')).filter(goal__in = goal_ids,
+                initial_date__gte=initial_date_year, initial_date__lte=ending_date_year,).order_by('count')
 
 
         keys_graph = list(qs_group_by.values_list('status'))

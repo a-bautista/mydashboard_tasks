@@ -148,7 +148,7 @@ def view_previous_goals_yearly(request):
         goal_ids = []
         #user -> goal
         # display the goals of the current year based in their initial dates
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date,
                 accounts=request.user.id).values('id').values_list('id')
 
 
