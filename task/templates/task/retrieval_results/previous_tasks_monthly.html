@@ -71,26 +71,25 @@
                 title: {
                     display: true,
                     text: 'Categories of Tasks per Month',
-                    fontSize: {
-                      size:30
+                    font: {
+                      size:20
                     },
                     padding: {
                       top: 5,
                       bottom: 15,
-                      right: 0,
-                      left: 0                      
+                      left: 0,
+                      right: 0                  
                     },
                     color: '#000'
                     },
                   datalabels: {
                     align: center,
                     anchor: center,
-                    formatter: function(value, ctx) {
+                    formatter: (value, ctx) => {
                       let sum = 0;
                       let dataArr = ctx.chart.data.datasets[0].data;
-                        dataArr.map(data => {    
-                          return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
-                            sum += data; 
+                        dataArr.map(data => {
+                            sum += data;
                         });
                         let percentage = (value*100 / sum).toFixed(2)+"%";
                         return percentage;
@@ -127,22 +126,4 @@
 </div>
 <br />
 
-<div class="col-sm-14">
-  <table class="table table-borderless" id="results" style="width:100%">
-    <thead class="border-bottom font-weight-bold">
-      <tr>
-        <th bgcolor="#fff">ID</th>
-        <th bgcolor="#fff">Task</th>
-        <th bgcolor="#fff">Category</th>
-        <th bgcolor="#fff">Status</th>
-        <th bgcolor="#fff">Points</th>
-        <th bgcolor="#fff">Life task</th>
-        <th bgcolor="#fff">Initial Week</th>
-        <th bgcolor="#fff">Initial Date</th>
-        <th bgcolor="#fff">End Date</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
 {% endblock content %}
