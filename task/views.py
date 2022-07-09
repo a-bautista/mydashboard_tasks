@@ -712,8 +712,8 @@ def view_previous_tasks_monthly(request):
         # count the categories
         results = Counter(new_list)
 
-        keys_graph = results.keys()
-        values_graph = results.values()
+        keys_graph = list(results.keys())
+        values_graph = list(results.values())
 
         goal_ids = []   
         qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
