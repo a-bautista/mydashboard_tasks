@@ -692,29 +692,6 @@ def view_previous_tasks_monthly(request):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
-        # get the categories from users
-        qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
-        category_id = []
-
-        for c in qs:
-            category_id.append(c)
-
-        # do a reference of categories and tasks
-        task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                        category__in=category_id).distinct()
-
-
-        new_list = []
-        # append only the categories of each user
-        for t in task_count:
-            new_list.append(list(t.category.values('category').values_list('category', flat=True))[0])
-
-        # count the categories
-        results = Counter(new_list)
-
-        keys_graph = results.keys()
-        values_graph = results.values()
-
         goal_ids = []   
         qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
                             accounts=request.user.id).values('id').values_list('id')
@@ -726,11 +703,11 @@ def view_previous_tasks_monthly(request):
         # This qs cannot be commented because of the values_to_display_table
         qs = Task.objects.filter(goal__in = goal_ids)
 
-        # qs_group_by = Task.objects.values(
-        #     'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
+        qs_group_by = Task.objects.values(
+            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
 
-        # keys_graph = list(qs_group_by.values_list('category'))
-        # values_graph = list(qs_group_by.values_list('count'))
+        keys_graph = list(qs_group_by.values_list('category'))
+        values_graph = list(qs_group_by.values_list('count'))
 
         values_to_display_table = list(qs.values_list())
 
