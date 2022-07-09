@@ -283,6 +283,14 @@ For testing you image locally, you need to execute the command `sudo docker run 
     `sudo docker build -t abautista/django-docker-heroku .`
     `sudo heroku build -t abautista/telos-dashboard-container . `
 
+##### 11.5. For Apple M1 you need to use the following command:
+
+    `docker buildx build --load --platform linux/amd64 -t registry.heroku.com/telos-dashboard-container/web .`
+
+    `docker push registry.heroku.com/telos-dashboard-container/web:latest`
+
+    `heroku container:release web -a telos-dashboard-container`
+    
 ### 12. Push the image into Heroku (djangodocker is the name of your app)
 ### These commands are used to deploy your container to Heroku, no additional step is required. 
     `sudo heroku container:push web -a djangodocker`
