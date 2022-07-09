@@ -81,24 +81,24 @@
                     color: '#000'
                   },
                   datalabels: {
-                        align: 'center',
-                        anchor: 'center',
-                        formatter: (value, ctx) => {
-                            let sum = 0;
-                            let dataArr = ctx.chart.data.datasets[0].data;
-                            dataArr.map(data => {
-                                sum += data;
-                            });
-                            let percentage = (value*100 / sum).toFixed(2)+"%";
-                            return percentage;
-                        },
-                        labels: {
-                          value:{
-                            color: '#fff'
-                          }
-                        }
+                    align: 'center',
+                    anchor: 'center',
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => {
+                            sum += data;
+                        });
+                        let percentage = (value*100 / sum).toFixed(2)+"%";
+                        return percentage;
+                    },
+                    labels: {
+                      value:{
+                        color: '#fff'
                       }
                     }
+                  }
+                }
               }// end of options
             }); // end of display_graph variable
           }// end of function

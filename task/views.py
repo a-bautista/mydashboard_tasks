@@ -688,6 +688,7 @@ def view_previous_tasks_monthly(request):
         template_name = 'task/retrieval_results/previous_tasks_monthly.html'
         year = request.POST.get('select_year', None)
         month = request.POST.get('select_month', None)
+        goal_type = ['Short','Medium','Long']
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
@@ -715,8 +716,9 @@ def view_previous_tasks_monthly(request):
         values_graph = results.values()
 
         goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                            accounts=request.user.id).values('id').values_list('id')
+        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
+                                                    goal_type__in=goal_type,
+                                                    accounts=request.user.id).values('id').values_list('id')
 
         for value in qs_current_user_goals:
             goal_ids.append(value)
@@ -724,12 +726,6 @@ def view_previous_tasks_monthly(request):
         # Filter the data based on the initial date and active tasks
         # This qs cannot be commented because of the values_to_display_table
         qs = Task.objects.filter(goal__in = goal_ids)
-
-        # qs_group_by = Task.objects.values(
-        #     'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
-
-        # keys_graph = list(qs_group_by.values_list('category'))
-        # values_graph = list(qs_group_by.values_list('count'))
 
         values_to_display_table = list(qs.values_list())
 
