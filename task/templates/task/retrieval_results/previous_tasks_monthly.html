@@ -26,27 +26,27 @@
         var display_graph = new Chart(graph, {
         type:'pie',
         plugins: [ChartDataLabels],
-        data: {
-            labels: labels,
-            datasets :
-                [{
-                  data: values,
-                  backgroundColor: [
-                      'rgba(237, 98, 18, 0.9)',
-                      'rgba(54, 162, 235, 0.9)',
-                      'rgba(255, 206, 86, 0.9)',
-                      'rgba(75, 192, 192, 0.9)',
-                      'rgba(153, 102, 255, 0.9)',
-                      'rgba(45, 154, 35, 0.9)',
-                      'rgba(154, 39, 35, 0.9)',
-                      ],
-                  borderColor: '#000',
-                  borderWidth: 2,
-                  hoverBorderWidth: 3,
-                  hoverBorderColor: '#000'
-                }]
-        },
-        options : {
+            data: {
+                labels: labels,
+                datasets :
+                    [{
+                      data: values,
+                      backgroundColor: [
+                          'rgba(237, 98, 18, 0.9)',
+                          'rgba(54, 162, 235, 0.9)',
+                          'rgba(255, 206, 86, 0.9)',
+                          'rgba(75, 192, 192, 0.9)',
+                          'rgba(153, 102, 255, 0.9)',
+                          'rgba(45, 154, 35, 0.9)',
+                          'rgba(154, 39, 35, 0.9)',
+                          ],
+                      borderColor: '#000',
+                      borderWidth: 2,
+                      hoverBorderWidth: 3,
+                      hoverBorderColor: '#000'
+                    }]
+            },
+            options : {
               responsive: true,
               maintainAspectRatio: false,
               layout: {
@@ -68,42 +68,43 @@
                       }
                     }
                   },
-                title: {
+                  title:{
                     display: true,
-                    text: 'Categories of Tasks per Month',
+                    text: 'Categories of Tasks by Month',
                     font: {
-                      size:20
+                      size: 20
                     },
                     padding: {
                       top: 5,
                       bottom: 15,
                       left: 0,
-                      right: 0                  
+                      right: 0
                     },
                     color: '#000'
-                    },
+                  },
                   datalabels: {
                     align: 'center',
                     anchor: 'center',
                     formatter: (value, ctx) => {
-                      let sum = 0;
-                      let dataArr = ctx.chart.data.datasets[0].data;
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
                         dataArr.map(data => {
                             sum += data;
                         });
                         let percentage = (value*100 / sum).toFixed(2)+"%";
                         return percentage;
-                      },
-                      labels:{
-                        value:{
-                          color: '#fff'
-                        } // end of values
-                      } // end of labels
-                    }, // end of datalabels
-                  } // end of options
-                } // end of plugins
-              }); // end of display_graph variable
-            } // end of function
+                    },
+                    labels: {
+                      value:{
+                        color: '#fff'
+                      }
+                    }
+                  }
+                }
+              }// end of options
+            }); // end of display_graph variable
+          }// end of function
+
   {% endblock %}
 </script>
 
@@ -125,5 +126,24 @@
   </div>
 </div>
 <br />
+
+<div class="col-sm-14">
+  <table class="table table-borderless" id="results" style="width:100%">
+    <thead class="border-bottom font-weight-bold">
+      <tr>
+        <th bgcolor="#fff">ID</th>
+        <th bgcolor="#fff">Task</th>
+        <th bgcolor="#fff">Category</th>
+        <th bgcolor="#fff">Status</th>
+        <th bgcolor="#fff">Points</th>
+        <th bgcolor="#fff">Life task</th>
+        <th bgcolor="#fff">Initial Week</th>
+        <th bgcolor="#fff">Initial Date</th>
+        <th bgcolor="#fff">End Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
 {% endblock content %}
