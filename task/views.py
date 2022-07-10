@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta, time
+from unicodedata import category
 from django.views.generic import View
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, TextField
@@ -688,9 +689,8 @@ def view_previous_tasks_monthly(request):
         template_name = 'task/retrieval_results/previous_tasks_monthly.html'
         year = request.POST.get('select_year', None)
         month = request.POST.get('select_month', None)
-        new_list = []
         category_id = []
-
+    
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
@@ -704,39 +704,15 @@ def view_previous_tasks_monthly(request):
         task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
                         category__in=category_id).distinct()
 
-        # append only the categories of each user
-        for t in task_count:
-            new_list.append(list(t.category.values('category').values_list('category', flat=True))[0])
-
-        # count the categories
-        results = Counter(new_list)
-
-        keys_graph = list(results.keys())
-        values_graph = list(results.values())
-        
-        # Display values in the table
-        values_to_display_table = []
-
-        for value in task_count:
-            temp = []
-            temp.append(value.id)
-            temp.append(value.task)
-            temp.append(value.status)
-            temp.append(value.category.values('category').values_list('category', flat=True)[0])
-            temp.append(value.points)
-            temp.append(value.life_task)
-            temp.append(value.initial_week)
-            temp.append(value.initial_date)
-            temp.append(value.ending_date)
-            values_to_display_table.append(temp)
+        # get the keys, values and table values for the graph
+        keys_graph, values_graph, values_to_display_table = get_graph_data(task_count)
 
         front_end_dictionary = {
             "year": year,
             "month": month,
             "table_results": values_to_display_table,
             "labels_graph": keys_graph,
-            "values_graph": values_graph,
-            "task_count": task_count
+            "values_graph": values_graph
         }
 
         # serialize the dictionary
@@ -755,32 +731,23 @@ def view_previous_tasks_yearly(request):
     elif request.method == "POST":
         template_name = 'task/retrieval_results/previous_tasks_yearly.html'
         year = request.POST.get('select_year', None)
-        goal_type = ['Short','Medium','Long']
+        category_id = []
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_yearly(year)
         
-        goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
-                                                    goal_type__in=goal_type,
-                                                    accounts=request.user.id).values('id').values_list('id')
+        # get the categories from users
+        qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
 
-        for value in qs_current_user_goals:
-            goal_ids.append(value)
+        for c in qs:
+            category_id.append(c)
 
-        # Filter the data based on the initial date and active tasks
-        # This qs cannot be commented because of the values_to_display_table
-        qs = Task.objects.filter(goal__in = goal_ids)
+        # do a reference of categories and tasks
+        task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                        category__in=category_id).distinct()
 
-
-        qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
-
-
-        keys_graph = list(qs_group_by.values_list('category'))
-        values_graph = list(qs_group_by.values_list('count'))
-
-        values_to_display_table = list(qs.values_list())
+        # get the keys, values and table values for the graph
+        keys_graph, values_graph, values_to_display_table = get_graph_data(task_count)
 
         front_end_dictionary = {
             "year": year,
@@ -794,6 +761,35 @@ def view_previous_tasks_yearly(request):
             front_end_dictionary, indent=4, sort_keys=True, default=str)}
 
         return render(request, template_name, converted_front_end_dictionary)
+
+
+def get_graph_data(task_count):
+    # get the categories from users
+    new_list = []
+    values_to_display_table = []
+
+    # append the categories for and values for the graph
+    # append the values for populating the table
+    for value in task_count:
+        temp = []
+        temp.append(value.id)
+        temp.append(value.task)
+        temp.append(value.status)
+        temp.append(value.category.values('category').values_list('category', flat=True)[0])
+        temp.append(value.points)
+        temp.append(value.life_task)
+        temp.append(value.initial_week)
+        temp.append(value.initial_date)
+        temp.append(value.ending_date)
+        values_to_display_table.append(temp)
+        new_list.append(list(value.category.values('category').values_list('category', flat=True))[0])
+
+    # count the categories
+    results = Counter(new_list)
+    keys_graph = list(results.keys())
+    values_graph = list(results.values())
+    
+    return keys_graph, values_graph, values_to_display_table
 
 
 def get_start_end_date(year, week):
