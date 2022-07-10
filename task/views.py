@@ -642,27 +642,8 @@ def view_previous_tasks(request):
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date(year, week)
 
-        goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                            accounts=request.user.id).values('id').values_list('id')
-
-        for value in qs_current_user_goals:
-            goal_ids.append(value)
-
-        # Filter the data based on the initial date and active tasks
-        # This qs cannot be commented because of the values_to_display_table
-        qs = Task.objects.filter(goal__in = goal_ids)
-
-
-        # there's an error when you start having different tasks, they are not counting
-
-        qs_group_by = Task.objects.values(
-            'category').annotate(count=Count('category')).filter(goal__in = goal_ids).order_by('count')
-
-        keys_graph = list(qs_group_by.values_list('category'))
-        values_graph = list(qs_group_by.values_list('count'))
-
-        values_to_display_table = list(qs.values_list())
+         # get the keys, values and table values for the graph
+        keys_graph, values_graph, values_to_display_table = get_graph_data(request, initial_date, ending_date)
 
         front_end_dictionary = {
             "year": year,
@@ -689,23 +670,12 @@ def view_previous_tasks_monthly(request):
         template_name = 'task/retrieval_results/previous_tasks_monthly.html'
         year = request.POST.get('select_year', None)
         month = request.POST.get('select_month', None)
-        category_id = []
     
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
-
-        # get the categories from users
-        qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
-
-        for c in qs:
-            category_id.append(c)
-
-        # do a reference of categories and tasks
-        task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                        category__in=category_id).distinct()
-
+                
         # get the keys, values and table values for the graph
-        keys_graph, values_graph, values_to_display_table = get_graph_data(task_count)
+        keys_graph, values_graph, values_to_display_table = get_graph_data(request, initial_date, ending_date)
 
         front_end_dictionary = {
             "year": year,
@@ -731,23 +701,13 @@ def view_previous_tasks_yearly(request):
     elif request.method == "POST":
         template_name = 'task/retrieval_results/previous_tasks_yearly.html'
         year = request.POST.get('select_year', None)
-        category_id = []
-
-        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
-        initial_date, ending_date = get_start_end_date_yearly(year)
         
-        # get the categories from users
-        qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
-
-        for c in qs:
-            category_id.append(c)
-
-        # do a reference of categories and tasks
-        task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
-                        category__in=category_id).distinct()
-
+        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
+        # how is the statement from above working?
+        initial_date, ending_date = get_start_end_date_yearly(year)
+                
         # get the keys, values and table values for the graph
-        keys_graph, values_graph, values_to_display_table = get_graph_data(task_count)
+        keys_graph, values_graph, values_to_display_table = get_graph_data(request, initial_date, ending_date)
 
         front_end_dictionary = {
             "year": year,
@@ -763,10 +723,21 @@ def view_previous_tasks_yearly(request):
         return render(request, template_name, converted_front_end_dictionary)
 
 
-def get_graph_data(task_count):
+def get_graph_data(request, initial_date, ending_date):
     # get the categories from users
     new_list = []
     values_to_display_table = []
+    category_id = []
+
+     # get the categories from users
+    qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
+
+    for c in qs:
+        category_id.append(c)
+
+    # do a reference of categories and tasks
+    task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
+                    category__in=category_id).distinct()
 
     # append the categories for and values for the graph
     # append the values for populating the table
