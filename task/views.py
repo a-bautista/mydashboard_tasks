@@ -688,14 +688,14 @@ def view_previous_tasks_monthly(request):
         template_name = 'task/retrieval_results/previous_tasks_monthly.html'
         year = request.POST.get('select_year', None)
         month = request.POST.get('select_month', None)
-        goal_type = ['Short','Medium','Long']
+        new_list = []
+        category_id = []
 
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         initial_date, ending_date = get_start_end_date_monthly(year, month)
 
         # get the categories from users
         qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
-        category_id = []
 
         for c in qs:
             category_id.append(c)
@@ -704,7 +704,6 @@ def view_previous_tasks_monthly(request):
         task_count = Task.objects.filter(initial_date__gte=initial_date, initial_date__lte=ending_date, 
                         category__in=category_id).distinct()
 
-        new_list = []
         # append only the categories of each user
         for t in task_count:
             new_list.append(list(t.category.values('category').values_list('category', flat=True))[0])
@@ -714,27 +713,30 @@ def view_previous_tasks_monthly(request):
 
         keys_graph = list(results.keys())
         values_graph = list(results.values())
+        
+        # Display values in the table
+        values_to_display_table = []
 
-        goal_ids = []   
-        qs_current_user_goals = Goal.objects.filter(initial_date__gte=initial_date, 
-                                                    goal_type__in=goal_type,
-                                                    accounts=request.user.id).values('id').values_list('id')
-
-        for value in qs_current_user_goals:
-            goal_ids.append(value)
-
-        # Filter the data based on the initial date and active tasks
-        # This qs cannot be commented because of the values_to_display_table
-        qs = Task.objects.filter(goal__in = goal_ids)
-
-        values_to_display_table = list(qs.values_list())
+        for value in task_count:
+            temp = []
+            temp.append(value.id)
+            temp.append(value.task)
+            temp.append(value.status)
+            temp.append(value.category.values('category').values_list('category', flat=True)[0])
+            temp.append(value.points)
+            temp.append(value.life_task)
+            temp.append(value.initial_week)
+            temp.append(value.initial_date)
+            temp.append(value.ending_date)
+            values_to_display_table.append(temp)
 
         front_end_dictionary = {
             "year": year,
             "month": month,
             "table_results": values_to_display_table,
             "labels_graph": keys_graph,
-            "values_graph": values_graph
+            "values_graph": values_graph,
+            "task_count": task_count
         }
 
         # serialize the dictionary
