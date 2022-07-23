@@ -1,0 +1,68 @@
+anytree==2.8.0
+  - six [required: >=1.9.0, installed: 1.12.0]
+boto3==1.13.19
+  - botocore [required: >=1.16.19,<1.17.0, installed: 1.16.26]
+    - docutils [required: >=0.10,<0.16, installed: 0.15.2]
+    - jmespath [required: >=0.7.1,<1.0.0, installed: 0.10.0]
+    - python-dateutil [required: >=2.1,<3.0.0, installed: 2.8.0]
+      - six [required: >=1.5, installed: 1.12.0]
+    - urllib3 [required: >=1.20,<1.26, installed: 1.25.9]
+  - jmespath [required: >=0.7.1,<1.0.0, installed: 0.10.0]
+  - s3transfer [required: >=0.3.0,<0.4.0, installed: 0.3.7]
+    - botocore [required: >=1.12.36,<2.0a.0, installed: 1.16.26]
+      - docutils [required: >=0.10,<0.16, installed: 0.15.2]
+      - jmespath [required: >=0.7.1,<1.0.0, installed: 0.10.0]
+      - python-dateutil [required: >=2.1,<3.0.0, installed: 2.8.0]
+        - six [required: >=1.5, installed: 1.12.0]
+      - urllib3 [required: >=1.20,<1.26, installed: 1.25.9]
+cachetools==5.2.0
+colorama==0.4.5
+dj-database-url==0.5.0
+django-sendgrid-v5==0.8.1
+  - django [required: >=1.8, installed: 2.2.6]
+    - pytz [required: Any, installed: 2019.3]
+    - sqlparse [required: Any, installed: 0.3.0]
+  - future [required: Any, installed: 0.18.2]
+  - python-http-client [required: >=3.0.0, installed: 3.2.7]
+  - sendgrid [required: >=5.0.0, installed: 6.3.0]
+    - python-http-client [required: >=3.2.1, installed: 3.2.7]
+django-storages==1.9.1
+  - Django [required: >=1.11, installed: 2.2.6]
+    - pytz [required: Any, installed: 2019.3]
+    - sqlparse [required: Any, installed: 0.3.0]
+django-widget-tweaks==1.4.5
+djangorestframework==3.11.0
+  - django [required: >=1.11, installed: 2.2.6]
+    - pytz [required: Any, installed: 2019.3]
+    - sqlparse [required: Any, installed: 0.3.0]
+flake8==3.7.9
+  - entrypoints [required: >=0.3.0,<0.4.0, installed: 0.3]
+  - mccabe [required: >=0.6.0,<0.7.0, installed: 0.6.1]
+  - pycodestyle [required: >=2.5.0,<2.6.0, installed: 2.5.0]
+  - pyflakes [required: >=2.1.0,<2.2.0, installed: 2.1.1]
+gunicorn==19.9.0
+oyaml==1.0
+  - pyyaml [required: Any, installed: 6.0]
+Pillow==9.0.0
+pip-tools==6.8.0
+  - build [required: Any, installed: 0.8.0]
+    - packaging [required: >=19.0, installed: 21.3]
+      - pyparsing [required: >=2.0.2,!=3.0.5, installed: 3.0.9]
+    - pep517 [required: >=0.9.1, installed: 0.12.0]
+      - tomli [required: >=1.1.0, installed: 2.0.1]
+    - tomli [required: >=1.0.0, installed: 2.0.1]
+  - click [required: >=7, installed: 8.1.3]
+  - pip [required: >=21.2, installed: 22.2]
+  - setuptools [required: Any, installed: 62.6.0]
+  - wheel [required: Any, installed: 0.37.1]
+pipdeptree==2.2.1
+  - pip [required: >=6.0.0, installed: 22.2]
+pkginfo==1.8.3
+psycopg2==2.9.3
+psycopg2-binary==2.9.3
+python-dotenv==0.13.0
+structlog==22.1.0
+tabulate==0.8.10
+toml==0.10.2
+whitenoise==4.0
+wimpy==0.6

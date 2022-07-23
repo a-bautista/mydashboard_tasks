@@ -276,6 +276,11 @@ After you have created the db, you need to apply the migrations and create a sup
 
     `Dockerfile` - sudo docker build -t abautista/django-docker-heroku -f Dockerfile .
 
+#### testing in Apple M1
+    `docker buildx build --load --platform linux/amd64 -t dev-docker -f Dockerfile.dev .`
+
+    `docker buildx build --load --platform linux/amd64 -t dev-docker -f Dockerfile .`
+
 For testing you image locally, you need to execute the command `sudo docker run -p 3000:8888 <image_id>`.
 
 ### 11. Create the docker image that will be released in Heroku. Run the command at the same level of the Dockerfile.
