@@ -1,6 +1,6 @@
 import hashlib, os, re
 from datetime import datetime, timedelta
-from django.shortcuts import render, redirect, render_to_response, Http404
+from django.shortcuts import render, redirect, Http404
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from .forms import UserRegisterForm
@@ -54,8 +54,6 @@ def register_view(request):
             messages.success(request, f'Your account {username} has been successfully created! Check your email for activating your account.')   
             return redirect('login')
         else:
-            # display the errors when trying to submit your request
-            #return render_to_response('accounts/register.html', {'form':form})
             return render(request, 'accounts/register.html', {'form':form})
     elif request.method == 'GET':    
         form = UserRegisterForm()

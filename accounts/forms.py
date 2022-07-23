@@ -1,4 +1,3 @@
-import os
 from django import forms
 #from .models import User # call the model User that was created in the models of this app
 from django.contrib.auth import get_user_model # this belongs from the main Django configuration and it has been customized

@@ -4,11 +4,10 @@ from datetime import date
 # Django Libraries
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from goal.models import Goal
 
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.db.models.signals import post_save
+# from django.core.mail import send_mail
+# from django.template.loader import render_to_string
+# from django.db.models.signals import post_save
 
 class MyAccountManager(BaseUserManager):
      
