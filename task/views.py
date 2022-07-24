@@ -1,10 +1,6 @@
 from datetime import date, datetime, timedelta, time
-from unicodedata import category
-from django.views.generic import View
-from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Count, TextField
-from django.db.models.functions import Cast
-from django.db.models import Q
+from django.shortcuts import render, redirect
+from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm, DropDownMenuCategoryForm, DropDownMenuSelectedCategoryForm
 from rest_framework.views import APIView
@@ -46,8 +42,7 @@ def main_dashboard(request):
 class Dashboard_Categories_Year(APIView):
 
     def get(self, request, *args, **kwargs):
-        year = date.today().year
-        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
+        initial_date_year, ending_date_year = get_start_end_date_yearly()
         #month = date.today().month
         
         # get the categories from users
@@ -83,10 +78,7 @@ class Dashboard_Categories_Year(APIView):
 class Dashboard_Status_Year(APIView):
 
     def get(self, request, *args, **kwargs):
-        year = date.today().year
-        #month = date.today().month
-        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
-        #initial_date, ending_date = get_start_end_date_monthly(year, month)
+        initial_date_year, ending_date_year = get_start_end_date_yearly()
         
         #quarter   = (month-1)//3+1
         #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
@@ -208,15 +200,12 @@ class Dashboard_Goals_Quarter(APIView):
         #initial_date, ending_date = get_start_end_date(year, week)
 
         goal_task_finalized = {}
-        #goal_task_cancelled = {}
-        #goal_task_active    = {}
         goal_task_total     = {}
 
         finalized_task_goal_count = {}
         total_task_goal_count     = {}
         percentages_task_goals    = {}
 
-        goal_ids = []   
         x_axis = None
         y_axis = None
 
@@ -407,7 +396,7 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
 
         '''Show only the results of the logged in user'''
         year  = date.today().year
-        initial_date, ending_date = get_start_end_date_yearly(year)
+        initial_date, ending_date = get_start_end_date_yearly()
 
         goal_task_finalized = {}
         goal_task_total     = {}
@@ -704,7 +693,7 @@ def view_previous_tasks_yearly(request):
         
         # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
         # how is the statement from above working?
-        initial_date, ending_date = get_start_end_date_yearly(year)
+        initial_date, ending_date = get_start_end_date_yearly()
                 
         # get the keys, values and table values for the graph
         keys_graph, values_graph, values_to_display_table = get_graph_data(request, initial_date, ending_date)
@@ -796,31 +785,18 @@ def get_start_end_date_monthly(year, month):
     return initial_date, ending_date
 
 
-def get_start_end_date_yearly(year):
+def get_start_end_date_yearly() -> tuple:
+    """Given the year, return the first and last day of the given year.
     
-    initial_year  = str(year)
-    initial_month = str("01") #first month of the year
-    initial_day   = str("01")  # first day of month as a zero padded decimal number
+    Returns
+    -------
 
-    ending_year   = str(year)
-    ending_month  = str("12") #last month of the year
-    ending_day    = str("31")  # get the last day of the month
+    tuple
+        The first and last day of the given year.
+    
+    """
 
-    # Default time values
-    beginning_hour   = 00
-    beginning_minute = 00
-    beginning_second = 00
-
-    # Default time values
-    ending_hour   = 23
-    ending_minute = 59
-    ending_second = 59
-
-
-    initial_date  = datetime(int(initial_year), int(initial_month), int(initial_day),
-                                              beginning_hour, beginning_minute, beginning_second)
-
-    ending_date   = datetime(int(ending_year), int(ending_month), int(ending_day),
-                                                ending_hour, ending_minute, ending_second)
+    initial_date = date(date.today().year, 1, 1)
+    ending_date = date(date.today().year, 12, 31)
 
     return initial_date, ending_date
