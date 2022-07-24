@@ -773,17 +773,27 @@ def get_start_end_date(year, week):
     return d + dlt, d + dlt + timedelta(days=6)
 
 
-def get_start_end_date_monthly(year, month):
+def get_start_end_date_monthly(year: int, month: int) -> tuple:
+    """Given the year and month, return the first and last day of the given month and year.
 
-    initial_day = str("01")  # first day of month as a zero padded decimal number
-    ending_day  = str(calendar.monthrange(int(year), int(month))[1])  # get the last day of the month
+    Parameters:
+    -----------
+        year: int
+            The selected year from the user.
+        month: int
+            The selected month from the user.
 
-    # Get only the date values, do not consider the time values
-    initial_date = str(datetime(int(year), int(month), int(initial_day))).split(" ")[0]
-    ending_date  = str(datetime(int(year), int(month), int(ending_day))).split(" ")[0]
+    Returns
+    -------
+        tuple
+            The first and last day of the given month and year in (year, month, day) format.
+    """
+
+    _, num_days = calendar.monthrange(int(year), int(month))
+    initial_date = date(int(year), int(month), 1)
+    ending_date = date(int(year), int(month), num_days)
 
     return initial_date, ending_date
-
 
 def get_start_end_date_yearly() -> tuple:
     """Given the year, return the first and last day of the given year.
@@ -792,7 +802,7 @@ def get_start_end_date_yearly() -> tuple:
     -------
 
     tuple
-        The first and last day of the given year.
+        The first and last day of the given year in (year, month, day) format.
     
     """
 
