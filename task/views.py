@@ -42,9 +42,7 @@ def main_dashboard(request):
 class Dashboard_Categories_Year(APIView):
 
     def get(self, request, *args, **kwargs):
-        initial_date_year, ending_date_year = get_start_end_date_yearly()
-        #month = date.today().month
-        
+        initial_date_year, ending_date_year = get_start_end_date_yearly()        
         # get the categories from users
         qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
         category_id = []
@@ -189,8 +187,6 @@ class Dashboard_Goals_Quarter(APIView):
     def get(self, request, *args, **kwargs):
 
         '''Show only the results of the logged in user'''
-        year  = date.today().year
-        month = date.today().month
         goal_type = 'Short'
         #quarter   = (month-1)//3+1
         #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
@@ -243,7 +239,6 @@ class Dashboard_Goals_Quarter(APIView):
                     # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
                     percentages_task_goals[goal] = 0
 
-            #print(percentages_task_goals)
             x_axis, y_axis = zip(*percentages_task_goals.items())
 
             #qs_current_user_goals_quarter = Goal.objects.filter(accounts=1, 
@@ -252,8 +247,6 @@ class Dashboard_Goals_Quarter(APIView):
 
             
             #x_axis = list(qs_current_user_goals_quarter.values_list('goal')) #name of the goals to be displayed in the x axis
-
-            #print(x_axis, y_axis)
             # tasks -> goals
             #qs = Task.objects.filter(goal__in=goal_ids)
             # qs = Task.objects.filter(status='A
@@ -272,8 +265,6 @@ class Dashboard_Goals_Status_Task(APIView):
     def get(self, request, *args, **kwargs):
 
         '''Show only the results of the logged in user'''
-        year  = date.today().year
-        month = date.today().month
         goal_type = 'Short'
         #quarter   = (month-1)//3+1
         #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
@@ -291,12 +282,10 @@ class Dashboard_Goals_Status_Task(APIView):
         finalized_task_goal_count = {}
         cancelled_task_goal_count = {}
         active_task_goal_count    = {}
-
         goal_status_count         = {}
 
-        goal_ids = []   
         cancelled = []
-        active =[]
+        active    = []
         finalized = []
 
         y_axis = []
@@ -394,10 +383,6 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
     ''' Display all the medium term goals and indicate the % of progress in each one once they have been finalized. '''
     def get(self, request, *args, **kwargs):
 
-        '''Show only the results of the logged in user'''
-        year  = date.today().year
-        initial_date, ending_date = get_start_end_date_yearly()
-
         goal_task_finalized = {}
         goal_task_total     = {}
 
@@ -411,11 +396,10 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
         status_to_exclude = ['Cancelled','Not completed','Completed']
         goal_type = ['Medium','Long']
 
-        goal_ids = []   
         # goals -> users
         qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, goal_type__in=goal_type).exclude(status__in=status_to_exclude).values('id','goal').values_list('id','goal')
 
-        for id, value in enumerate(qs_current_user_goals_quarter):
+        for _, value in enumerate(qs_current_user_goals_quarter):
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
             goal_task_total[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
 
@@ -432,8 +416,7 @@ class Dashboard_Long_Medium_Term_Goals(APIView):
             for goal in total_goals:
                 for element in goal_task_total[goal]:
                     total_task_goal_count[goal] = element['task_goal_count']
-
-            
+         
             for goal in total_goals:
                 try:
                     percentages_task_goals[goal] = round((finalized_task_goal_count[goal]*100)/total_task_goal_count[goal])
@@ -513,31 +496,13 @@ def retrieve_all(request):
     status_goal = 'In Progress'
     status_task = 'Active'
     
-    goal_ids       = []
-    # categories_ids = []
-
-    # f.write("This is a text!")
-    # logging.basicConfig(filename='std.log',
-    #                         filemode='w',
-    #                         format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-    #                         datefmt='%H:%M:%S',
-    #                         level=logging.DEBUG)
-    # logger = logging.getLogger()
-        
+    goal_ids       = []        
     qs_current_user_goals = Goal.objects.filter(accounts=request.user.id, 
                                                             status=status_goal).values('id').values_list('id')
 
-    # qs_current_user_categories = Category.objects.filter(accounts=request.user.id)
-    # f.write((str(qs_current_user_categories)))
-    # logFile.write(str(qs_current_user_categories))
-    # logger.debug(qs_current_user_categories)
     # tasks ->  goals
     for goal in qs_current_user_goals:
         goal_ids.append(goal)
-
-    # tasks -> categories
-    # for category in qs_current_user_categories:
-    #     categories_ids.append(category)
 
     form = {'task_list': Task.objects.filter(goal__in=goal_ids, status=status_task).distinct()}
     
@@ -690,10 +655,7 @@ def view_previous_tasks_yearly(request):
     elif request.method == "POST":
         template_name = 'task/retrieval_results/previous_tasks_yearly.html'
         year = request.POST.get('select_year', None)
-        
-        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
-        # how is the statement from above working?
-        initial_date, ending_date = get_start_end_date_yearly()
+        initial_date, ending_date = get_start_end_date_yearly(year)
                 
         # get the keys, values and table values for the graph
         keys_graph, values_graph, values_to_display_table = get_graph_data(request, initial_date, ending_date)
@@ -752,29 +714,38 @@ def get_graph_data(request, initial_date, ending_date):
     return keys_graph, values_graph, values_to_display_table
 
 
-def get_start_end_date(year, week):
-    '''Given the year and week, return the first and last day of the given week and year.
-       The first day is Sunday and last day is Saturday'''
+def get_start_end_date(year: int, week: int) -> tuple:
+    """Given the year and week, return the first and last day of that week.
+       The first day is Monday and last day is Sunday
+
+    Parameters:
+    -----------
+    year: int
+        The selected year from the user.
+    week: int
+        The selected week from the user.
+
+    Returns:
+    --------
+        tuple
+            The first and last day of the given week and year.
+    """
 
     year = int(year)
     week = int(week)
 
     d = date(year, 1, 1)
-    # patch to fix the problem of the retrieval of data for the first weeks of the year
     dlt = timedelta(days=(week - 1) * 7)
 
     if (d.weekday() <= 3):
         d = d - timedelta(d.weekday())
     else:
-        # this line  d = d + timedelta(6 - d.weekday()) indicates to start in Sunday and end in Saturday
-        # but it breaks when the retrieval is during the first weeks of the year, so we have to change the code
-        # back to d = d + timedelta(7 - d.weekday())
         d = d + timedelta(7 - d.weekday())
     return d + dlt, d + dlt + timedelta(days=6)
 
 
 def get_start_end_date_monthly(year: int, month: int) -> tuple:
-    """Given the year and month, return the first and last day of the given month and year.
+    """Given the year and month, return the first and last day of the given month.
 
     Parameters:
     -----------
@@ -795,8 +766,8 @@ def get_start_end_date_monthly(year: int, month: int) -> tuple:
 
     return initial_date, ending_date
 
-def get_start_end_date_yearly() -> tuple:
-    """Given the year, return the first and last day of the given year.
+def get_start_end_date_yearly(year: int) -> tuple:
+    """Given the year, return the first and last day of the given year
     
     Returns
     -------
@@ -805,8 +776,7 @@ def get_start_end_date_yearly() -> tuple:
         The first and last day of the given year in (year, month, day) format.
     
     """
-
-    initial_date = date(date.today().year, 1, 1)
-    ending_date = date(date.today().year, 12, 31)
-
+    initial_date = datetime.datetime(year, 1,1)
+    ending_date = datetime.datetime(year, 12, 31)
+    
     return initial_date, ending_date
