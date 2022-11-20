@@ -29,7 +29,7 @@ class DropDownMenuQuarterlyForm(forms.Form):
         initial_value = ("4",'Q4')    
 
     quarter = forms.ChoiceField(choices=[x for x in quarters], initial=initial_value)
-    year    = forms.ChoiceField(choices=[(x, x) for x in range(2019, 2022)], initial=date.today().year)
+    year    = forms.ChoiceField(choices=[(x, x) for x in range(2019, 2026)], initial=date.today().year)
 
 class GoalModelForm(forms.ModelForm):
     class Meta:

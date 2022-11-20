@@ -77,25 +77,12 @@ class Dashboard_Status_Year(APIView):
     def get(self, request, *args, **kwargs):
         year = date.today().year
         initial_date_year, ending_date_year = get_start_end_date_yearly(year)
-        
-        #quarter   = (month-1)//3+1
-        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
 
         goal_ids = []
         qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
         
-        #qs_current_user_goals = Goal.objects.filter(accounts=request.user.id).values('id').values_list('id')
-
-
         for value in qs_current_user_goals:
             goal_ids.append(value)
-
-
-        # there's an error when you start having different tasks, they are not counting, really?
-        # qs_group_by = Task.objects.values(
-        #     'status').annotate(count=Count('status')).filter(goal__in = goal_ids, 
-        #     initial_date__gte=initialDayQuarter, initial_date__lte=lastDayQuarter).order_by('count')
 
         qs_group_by = Task.objects.values('status').annotate(count=Count('status')).filter(goal__in = goal_ids,
                 initial_date__gte=initial_date_year, initial_date__lte=ending_date_year,).order_by('count')
@@ -303,10 +290,10 @@ class Dashboard_Goals_Status_Task(APIView):
 
 
         if goal_task_total and goal_task_finalized and goal_task_active and goal_task_cancelled:
-            total_goals,     qs_total     = zip(*goal_task_total.items())
-            finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
-            active_goals,    qs_active    = zip(*goal_task_active.items())
-            cancelled_goals, qs_active    = zip(*goal_task_cancelled.items())  
+            total_goals,     _ = zip(*goal_task_total.items())
+            finalized_goals, _ = zip(*goal_task_finalized.items())
+            active_goals,    _ = zip(*goal_task_active.items())
+            cancelled_goals, _ = zip(*goal_task_cancelled.items())  
 
 
             for goal in finalized_goals:
