@@ -1,5 +1,4 @@
-import datetime
-from datetime import date, timedelta, time
+from datetime import date, datetime, timedelta, time
 from django.shortcuts import render, redirect
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
@@ -745,7 +744,7 @@ def get_start_end_date(year: int, week: int) -> tuple:
     return d + dlt, d + dlt + timedelta(days=6)
 
 
-def get_start_end_date_monthly(year: int, month: int) -> tuple:
+def get_start_end_date_monthly(year: str, month: str) -> tuple:
     """Given the year and month, return the first and last day of the given month.
 
     Parameters:
@@ -767,7 +766,7 @@ def get_start_end_date_monthly(year: int, month: int) -> tuple:
 
     return initial_date, ending_date
 
-def get_start_end_date_yearly(year: int) -> tuple:
+def get_start_end_date_yearly(year: str) -> tuple:
     """Given the year, return the first and last day of the given year
     
     Returns
@@ -777,7 +776,7 @@ def get_start_end_date_yearly(year: int) -> tuple:
         The first and last day of the given year in (year, month, day) format.
     
     """
-    initial_date = datetime.datetime(year, 1,1)
-    ending_date = datetime.datetime(year, 12, 31)
+    initial_date = datetime(int(year), 1,1)
+    ending_date  = datetime(int(year), 12, 31)
     
     return initial_date, ending_date
