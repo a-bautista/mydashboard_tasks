@@ -482,7 +482,7 @@ Activate the forwarding domain and put the name of your app.
  `▸    Error: docker push exited with Error: 1`
 
 `sudo heroku container:login`
-
+ 
 
 #### How does the hashing works in the email?
 
