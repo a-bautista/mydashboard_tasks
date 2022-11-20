@@ -5,10 +5,6 @@ from datetime import date
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-# from django.core.mail import send_mail
-# from django.template.loader import render_to_string
-# from django.db.models.signals import post_save
-
 class MyAccountManager(BaseUserManager):
      
      def create_user(self, email, username, password=None):

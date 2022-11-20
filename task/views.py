@@ -27,8 +27,6 @@ def main_dashboard(request):
     quarter = (month-1)//3+1
     
     initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-    # old formula from below
-    #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
     
     # new formula
     lastDayQuarter = datetime(year + 3*quarter//12, 3*quarter%12+1,1)+timedelta(days=-1)
@@ -42,7 +40,8 @@ def main_dashboard(request):
 class Dashboard_Categories_Year(APIView):
 
     def get(self, request, *args, **kwargs):
-        initial_date_year, ending_date_year = get_start_end_date_yearly()        
+        year = date.today().year
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)        
         # get the categories from users
         qs = Category.objects.filter(accounts=request.user.id).values('id').values_list('id',flat=True)
         category_id = []
@@ -76,7 +75,8 @@ class Dashboard_Categories_Year(APIView):
 class Dashboard_Status_Year(APIView):
 
     def get(self, request, *args, **kwargs):
-        initial_date_year, ending_date_year = get_start_end_date_yearly()
+        year = date.today().year
+        initial_date_year, ending_date_year = get_start_end_date_yearly(year)
         
         #quarter   = (month-1)//3+1
         #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
@@ -113,10 +113,7 @@ class Dashboard_Status_Year(APIView):
 class Dashboard_Tasks_Week(APIView):
 
     def get(self, request, *args, **kwargs):
-
         '''Show only the results of the logged in user'''
-        year = date.today().year
-        week = date.today().isocalendar()[1]
         standard_increase_points = 1.25
         last_increase_points = 1.50
 
@@ -219,8 +216,8 @@ class Dashboard_Goals_Quarter(APIView):
 
         if goal_task_finalized and goal_task_total:
 
-            finalized_goals, qs_finalized = zip(*goal_task_finalized.items())
-            total_goals,     qs_total     = zip(*goal_task_total.items())
+            finalized_goals, _ = zip(*goal_task_finalized.items())
+            total_goals,     _     = zip(*goal_task_total.items())
 
             
             for goal in finalized_goals:
@@ -717,18 +714,6 @@ def get_graph_data(request, initial_date, ending_date):
 def get_start_end_date(year: int, week: int) -> tuple:
     """Given the year and week, return the first and last day of that week.
        The first day is Monday and last day is Sunday
-
-    Parameters:
-    -----------
-    year: int
-        The selected year from the user.
-    week: int
-        The selected week from the user.
-
-    Returns:
-    --------
-        tuple
-            The first and last day of the given week and year.
     """
 
     year = int(year)
@@ -745,20 +730,7 @@ def get_start_end_date(year: int, week: int) -> tuple:
 
 
 def get_start_end_date_monthly(year: str, month: str) -> tuple:
-    """Given the year and month, return the first and last day of the given month.
-
-    Parameters:
-    -----------
-        year: int
-            The selected year from the user.
-        month: int
-            The selected month from the user.
-
-    Returns
-    -------
-        tuple
-            The first and last day of the given month and year in (year, month, day) format.
-    """
+    """Given the year and month, return the first and last day of the given month."""
 
     _, num_days = calendar.monthrange(int(year), int(month))
     initial_date = date(int(year), int(month), 1)
@@ -767,15 +739,8 @@ def get_start_end_date_monthly(year: str, month: str) -> tuple:
     return initial_date, ending_date
 
 def get_start_end_date_yearly(year: str) -> tuple:
-    """Given the year, return the first and last day of the given year
-    
-    Returns
-    -------
+    """Given the year, return the first and last day of the given year"""
 
-    tuple
-        The first and last day of the given year in (year, month, day) format.
-    
-    """
     initial_date = datetime(int(year), 1,1)
     ending_date  = datetime(int(year), 12, 31)
     
