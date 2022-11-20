@@ -2,7 +2,9 @@ from datetime import date, datetime, timedelta, time
 from django.shortcuts import render, redirect
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm, DropDownMenuCategoryForm, DropDownMenuSelectedCategoryForm
+from .forms import TaskModelForm, DropDownMenuForm, DropDownMenuMonthsForm, \
+    DropDownMenuYearsForm, DropDownMenuGoalsForm, DropDownMenuSelectedGoalsForm, \
+    DropDownMenuCategoryForm, DropDownMenuSelectedCategoryForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task, Goal, Category # I can use Goal here because I already imported this model in models.py/task
@@ -16,9 +18,6 @@ User = get_user_model()
 
 @login_required
 def main_dashboard(request):
-    username = None
-    if request.user.get_username():
-        username = request.user.username
   
     score   = round(Profile.objects.filter(user_id=request.user.id).values('score').values_list('score')[0][0])    
     week    = date.today().isocalendar()[1]
@@ -282,7 +281,7 @@ class Dashboard_Goals_Status_Task(APIView):
                                                             status='In Progress').values('id','goal').values_list('id','goal')
         
         #print(qs_current_user_goals_quarter)
-        for id, value in enumerate(qs_current_user_goals_quarter):
+        for _, value in enumerate(qs_current_user_goals_quarter):
             goal_task_total[value[1]]     = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
             goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
             goal_task_active[value[1]]    = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Active')
