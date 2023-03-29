@@ -245,122 +245,49 @@ class Dashboard_Goals_Quarter(APIView):
 
 class Dashboard_Goals_Status_Task(APIView):
     ''' Display all the quarterly goals and indicate the % of progress in each one once they have been finalized. '''
+    
     def get(self, request, *args, **kwargs):
-
         '''Show only the results of the logged in user'''
         goal_type = 'Short'
-        #quarter   = (month-1)//3+1
-        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
-
-        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
-        #initial_date, ending_date = get_start_end_date(year, week)
-
-        goal_task_finalized = {}
-        goal_task_cancelled = {}
-        goal_task_active    = {}
-        goal_task_total     = {}
-
-
-        finalized_task_goal_count = {}
-        cancelled_task_goal_count = {}
-        active_task_goal_count    = {}
-        goal_status_count         = {}
-
-        cancelled = []
-        active    = []
-        finalized = []
-
-        y_axis = []
-        x_axis = []
-        # goals -> users
-        qs_current_user_goals_quarter = Goal.objects.filter(accounts=request.user.id, 
-                                                            #initial_date__gte=initialDayQuarter, 
-                                                            #expiration_date__lte=lastDayQuarter,
-                                                            goal_type=goal_type,
-                                                            status='In Progress').values('id','goal').values_list('id','goal')
         
-        #print(qs_current_user_goals_quarter)
-        for _, value in enumerate(qs_current_user_goals_quarter):
-            goal_task_total[value[1]]     = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0])
-            goal_task_finalized[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Finalized')
-            goal_task_active[value[1]]    = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Active')
-            goal_task_cancelled[value[1]] = Task.objects.values('goal').order_by().annotate(task_goal_count=Count('goal')).filter(goal=value[0], status='Cancelled')   
-
-
-        if goal_task_total and goal_task_finalized and goal_task_active and goal_task_cancelled:
-            total_goals,     _ = zip(*goal_task_total.items())
-            finalized_goals, _ = zip(*goal_task_finalized.items())
-            active_goals,    _ = zip(*goal_task_active.items())
-            cancelled_goals, _ = zip(*goal_task_cancelled.items())  
-
-
-            for goal in finalized_goals:
-                for element in goal_task_finalized[goal]:
-                    finalized_task_goal_count[goal] = element['task_goal_count']
-
+        goal_status_count = {}
+        y_axis = {'Cancelled': [], 'Active': [], 'Finalized': []}
+        
+        # Get all goals of the current user that are in progress
+        current_user_goals = Goal.objects.filter(
+            accounts=request.user.id,
+            goal_type=goal_type,
+            status='In Progress'
+        ).values_list('id', 'goal')
+        
+        for goal_id, goal in current_user_goals:
+            # Get the count of tasks that belong to this goal, grouped by their status
+            task_counts = Task.objects.filter(
+                goal=goal_id,
+                status__in=['Cancelled', 'Active', 'Finalized']
+            ).values('status').annotate(task_goal_count=Count('goal'))
             
-            for goal in active_goals:
-                for element in goal_task_active[goal]:
-                    active_task_goal_count[goal] = element['task_goal_count']
-
-            for goal in cancelled_goals:
-                for element in goal_task_cancelled[goal]:
-                    cancelled_task_goal_count[goal] = element['task_goal_count']
-
-            
-            # populate the dictionary with empty lists to store the count of active, cancelled and finalized goals
-            for goal in total_goals:
-                goal_status_count[goal]=goal_status_count.get(goal,[])
-
-            
-            for goal in total_goals:
-                try:
-                    goal_status_count[goal].append(finalized_task_goal_count[goal])
-                except:
-                    # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
-                    goal_status_count[goal].append(0)
-                    
-
-            for goal in total_goals:
-                try:
-                    goal_status_count[goal].append(active_task_goal_count[goal])
-                except:
-                    # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
-                    goal_status_count[goal].append(0)
-            
-            for goal in total_goals:
-                try:
-                    goal_status_count[goal].append(cancelled_task_goal_count[goal])
-                except:
-                    # assign the goal that doesn't have any finalized task to 0, so you can visualize it in the graph
-                    goal_status_count[goal].append(0)
-
-
-            x_axis, temp_y_axis = zip(*goal_status_count.items())
-            
-            for inner_list in temp_y_axis:
-                for i in range(len(inner_list)):
-                    if i==0:
-                        cancelled.append(inner_list[i])
-                    elif i == 1:
-                        active.append(inner_list[i])
-                    elif i == 2:
-                        finalized.append(inner_list[i])
-            
-            
-            y_axis.append(cancelled)
-            y_axis.append(active)
-            y_axis.append(finalized)
-       
+            # Populate the goal_status_count dictionary with the counts for this goal
+            for task_count in task_counts:
+                goal_status_count.setdefault(goal, {})
+                goal_status_count[goal][task_count['status']] = task_count['task_goal_count']
+        
+        # Add the counts to the y_axis dictionary for each status
+        for goal, goal_status in goal_status_count.items():
+            for status, count in goal_status.items():
+                y_axis[status].append(count)
+            # Add 0 counts for statuses without any tasks
+            for status in y_axis:
+                if status not in goal_status:
+                    y_axis[status].append(0)
+        
         # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
-            "labels_graph": x_axis,
-            "values_graph": y_axis,
-            "legend": ['Finalized','Active','Cancelled']
+            "labels_graph": list(goal_status_count.keys()),
+            "values_graph": list(y_axis.values()),
+            "legend": list(y_axis.keys())
         }
         return Response(front_end_dictionary)
-
 
 class Dashboard_Long_Medium_Term_Goals(APIView):
     ''' Display all the medium term goals and indicate the % of progress in each one once they have been finalized. '''
