@@ -171,13 +171,7 @@ class Dashboard_Goals_Quarter(APIView):
 
         '''Show only the results of the logged in user'''
         goal_type = 'Short'
-        #quarter   = (month-1)//3+1
-        #initialDayQuarter = datetime(year, 3 * quarter - 2, 1)
-        #lastDayQuarter    = datetime(year, (3 * quarter)%12+1, 1) + timedelta(days=-1)
-
-        # Return only the initial date with 0 because the ending date can be obtained by adding 7 additional days
-        #initial_date, ending_date = get_start_end_date(year, week)
-
+       
         goal_task_finalized = {}
         goal_task_total     = {}
 
@@ -223,16 +217,6 @@ class Dashboard_Goals_Quarter(APIView):
                     percentages_task_goals[goal] = 0
 
             x_axis, y_axis = zip(*percentages_task_goals.items())
-
-            #qs_current_user_goals_quarter = Goal.objects.filter(accounts=1, 
-            #                                                    initial_date__gte=initialDayQuarter, 
-            #                                                    initial_date__lte=lastDayQuarter).values('id').values_list('id')
-
-            
-            #x_axis = list(qs_current_user_goals_quarter.values_list('goal')) #name of the goals to be displayed in the x axis
-            # tasks -> goals
-            #qs = Task.objects.filter(goal__in=goal_ids)
-            # qs = Task.objects.filter(status='A
 
         # only the goals with finalized tasks are being displayed, fix this
         front_end_dictionary = {
@@ -425,8 +409,6 @@ def update_task(request, id):
 
     # task.goal.values() allows me to see all the fields that are associated to the relationship
     initial_value_goal = task.goal.values_list('goal',flat=True)[0]
-    
-    # task.category.values() 
     initial_value_category = task.category.values_list('category',flat=True)[0]
 
     # overwrite the task, do not create a new one
@@ -460,22 +442,15 @@ def update_task(request, id):
             new_category_id = Category.objects.values_list('id',flat=True).filter(accounts=request.user.id, category=request.POST.get('category', None))[0]
 
             if old_goal_id!=new_goal_id:
-
                 # Associate the new goal to the current task
-                # print("Associating the task with the new goal")
                 task.goal.add(new_goal_id)
-
-                # remove the old goal from the current task
-                # print("Deleting the task with the new goal")
+                # remove the old goal from the current task                
                 task.goal.remove(old_goal_id)
 
             if old_category_id!= new_category_id:
                 # Associate the new category to the current task
-                # print("Associating the category with the new task")
                 task.category.add(new_category_id)
-
                 # Remove the old category from the current task
-                # print("Removing the category from the new task")
                 task.category.remove(old_category_id)
             
             # calculate the  points
