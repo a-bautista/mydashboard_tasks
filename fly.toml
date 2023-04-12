@@ -1,0 +1,36 @@
+# fly.toml file generated for telos-dashboard on 2023-04-01T16:26:17-07:00
+
+app = "telos-dashboard"
+kill_signal = "SIGINT"
+kill_timeout = 5
+mounts = []
+primary_region = "sea"
+processes = []
+
+[deploy]
+  release_command = "python manage.py migrate"
+
+[env]
+  PORT = "8000"
+
+[[services]]
+  internal_port = 8000
+  processes = ["app"]
+  protocol = "tcp"
+  [services.concurrency]
+    hard_limit = 25
+    soft_limit = 20
+    type = "connections"
+
+  [[services.ports]]
+    force_https = true
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+[[statics]]
+  guest_path = "/code/static"
+  url_prefix = "/static/"

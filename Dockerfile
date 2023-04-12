@@ -1,41 +1,26 @@
-# Base Image
-FROM python:3.10.5
+ARG PYTHON_VERSION=3.10-slim-buster
 
-# create and set working directory
-RUN mkdir /app
-WORKDIR /app
+FROM python:${PYTHON_VERSION}
 
-# Add current directory code to working directory
-ADD . /app/
-
-# set default environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV LANG C.UTF-8
-ENV DEBIAN_FRONTEND=noninteractive
 
-# set project environment variables
-# grab these via Python's os.environ
-# these are 100% optional here
-# $PORT is set by Heroku
-ENV PORT=8888
+RUN mkdir -p /code
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        tzdata \
-        python3-setuptools \
-        python3-pip \
-        python3-dev \
-        python3-venv \
-        git \
-        && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists/*
+WORKDIR /code
 
+COPY requirements.txt /tmp/requirements.txt
 
-# install environment dependencies
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+RUN set -ex && \
+    pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm -rf /root/.cache/
 
-# Expose is NOT supported by Heroku
-# EXPOSE 8888
-CMD gunicorn mydashboard.wsgi:application --bind 0.0.0.0:$PORT
+COPY . /code/
+
+RUN python manage.py collectstatic --noinput
+
+EXPOSE 8000
+
+# replace demo.wsgi with <project_name>.wsgi
+CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "mydashboard.wsgi"]

@@ -21,13 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY_DJANGO']
+SECRET_KEY = os.environ.get('SECRET_KEY_DJANGO')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['telos-dashboard-container.herokuapp.com', '0.0.0.0', '127.0.0.1', 'localhost', 'www.telos-app.xyz', 'telos-app.xyz']
-
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', 'telos-dashboard.fly.dev', 'https://telos-dashboard.fly.dev']
 
 # Application definition
 
@@ -59,6 +58,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://telos-dashboard.fly.dev']
+
 ROOT_URLCONF = 'mydashboard.urls'
 
 TEMPLATES = [
@@ -79,33 +80,22 @@ TEMPLATES = [
 
 # this overwrites the default behavior for the User model and use the custom model
 AUTH_USER_MODEL = 'accounts.Account'
-
 WSGI_APPLICATION = 'mydashboard.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-# If this app is deployed to Heroku, remove the comments from below
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PWD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': 5433
     }
 }
-
-# If this app is deployed to Heroku, add comments to this Databases section. This section is used with the docker-compose.yml file
-# for connecting your postgres db. 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'postgres',
-#        'USER': 'postgres',
-#        'PASSWORD': 'postgres_password',
-#        'HOST': 'db',
-#        'PORT': 5432
-#    }
-#}
 
 import dj_database_url
 db_from_env = dj_database_url.config()
@@ -149,7 +139,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR,'static'),)
 #STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, 'static', 'mydashboard'))
@@ -165,13 +154,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # when logged in successfully, log in to the main dashboard
-LOGIN_REDIRECT_URL = 'main_dashboard'
-LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = os.environ.get('LOGIN_REDIRECT_URL')
+LOGIN_URL = os.environ.get('LOGIN_URL')
 
 # AWS storage keys
-AWS_ACCESS_KEY_ID       = os.environ['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY   = os.environ['AWS_SECRET_ACCESS_KEY']
-AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_ACCESS_KEY_ID       = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY   = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
 
 # files won't be overwritten but renamed
 AWS_S3_FILE_OVERWRITE = False
@@ -181,61 +170,12 @@ AWS_DEFAULT_ACL = None
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-
-# email settings password reset with sendgrid - not working
-
-# Send grid credentials
-# SENDGRID_API_KEY = os.environ["SENDGRID_API_KEY"]
-# SENDGRID_PASSWORD= os.environ["SENDGRID_PASSWORD"]
-# SENDGRID_USERNAME= os.environ["SENDGRID_USERNAME"]
-
-# email settings
-# EMAIL_HOST = 'smtp.sendgrid.net'
-
-
-# previous combinations that didn't send any email
-
-#EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_PASSWORD"]
-
-#EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-#EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-
-#EMAIL_HOST_USER = 'apikey'
-#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_PASSWORD"]
-
-#EMAIL_HOST_USER = 'apikey'
-#EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-
-# EMAIL_HOST_USER = 'apikey'
-# EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-# FROM_EMAIL = 'telosappxyz@gmail.com'
-
-# EMAIL_HOST_USER = 'apikey'
-# EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
-
-# EMAIL_HOST_USER = 'apikey'
-# EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
-
-#EMAIL_HOST_USER = 'apikey'
-#EMAIL_HOST_PASSWORD = os.environ["SENDGRID_API_KEY"]
-#FROM_EMAIL = 'telosappxyz@gmail.com'
-
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
-
-#SENDGRID_SANDBOX_MODE_IN_DEBUG = True
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-
-
 # email settings password reset with Gmail - working
 
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-EMAIL_PORT = 587
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_EMAIL')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

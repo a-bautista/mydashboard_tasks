@@ -28,7 +28,7 @@ Other steps that you need to perform in the db:
     `select * from pg_database where datistemplate = false;` -- check all the databases
     `\du` -- check all the current users
     `alter role postgres with password 'new_password'` -- change the password of user postgres
-    `create database mydashboard_tasks owner = postgres;` -- create the mydashboard_tasks db
+    `create database \du owner = postgres;` -- create the mydashboard_tasks db
     `psql mydashboard_tasks postgres`; -- connect to the newly created db
     `` -- create the table task
 
@@ -210,12 +210,41 @@ After you have created the db, you need to apply the migrations and create a sup
     `heroku run python3 manage.py makemigrations -a djangodocker`
     `heroku run python3 manage.py createsuperuser -a djangodocker`
 
+## Fly.io with containerized docker
+### 
+
+    `fly launch`
+
+### 1. Migrate the postgresql db from Heroku to Fly.io
+
+    `heroku pg:backups:capture -a telos-dashboard-container`
+    `heroku pg:backups:download -a telos-dashboard-container`
+
+### 2. Create a new db in fly.io and restore the .dump file
+
+    `CREATE DATABASE mydashboard_tasks`
+
+### Set up the DJANGO_URL
+
+    `flyctl secrets set DATABASE_URL=postgres://<username>:<password>@telos.flycast:5433/mydashboard_tasks`
+
+### Create the schema heroku_ext for restoring the database
+
+    `pg_restore -h localhost -p 5433 -U postgres --no-acl --no-owner -v -e -d mydashboard_tasks --schema=heroku_ext latest.dump`
+
+### Restore the db
+
+    `pg_restore -h localhost -p 5433 -U postgres --no-acl --no-owner -v -e -d mydashboard_tasks latest.dump `
+
+### Deploy to fly.io
+
+    `fly deploy`
 
 ### Heroku with containerized docker
 
 ## set the volumes
 
-    sudo docker run -p 3000:8888 -v$(pwd):/app  mydashboard_web
+    `sudo docker run -p 3000:8888 -v$(pwd):/app  mydashboard_web`
 
 
 ### 1. Type the following command to apply the `sudo heroku container:login` successfully. This command provides the login to connect into the Heroku Container Registry.
